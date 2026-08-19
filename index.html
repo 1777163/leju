@@ -599,7 +599,7 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
 .login-error.show{display:block;animation:fadeInUp 0.3s ease}
 
 /* ===== App Shell ===== */
-.app{max-width:440px;margin:0 auto;min-height:100vh;position:relative;background:var(--bg-gradient);padding-top:var(--space-xs)}
+.app{max-width:440px;margin:0 auto;min-height:100vh;min-height:100dvh;position:relative;background:var(--bg-gradient);padding-top:var(--space-xs)}
 /* Topbar */
 .topbar{position:sticky;top:0;z-index:var(--z-sticky);display:flex;align-items:center;justify-content:space-between;padding:var(--space-md) var(--screen-margin) var(--space-sm);background:var(--bg)}
 .topbar-left{display:flex;align-items:center;gap:10px}
@@ -1009,11 +1009,15 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
 .photo-loc{display:inline-flex;align-items:center;gap:2px;font-size:var(--fs-micro);font-weight:600;padding:1px 6px;border-radius:var(--radius-pill);background:var(--success-soft);color:var(--success);white-space:nowrap;cursor:pointer;text-decoration:none}
 .photo-loc .icon{width:11px;height:11px}
 /* WeChat browser banner */
-.wx-banner{position:fixed;top:0;left:0;right:0;z-index:9998;background:#07C160;color:#fff;padding:8px 12px;display:none;align-items:center;gap:8px;font-size:var(--fs-small);font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,0.15)}
-.wx-banner.show{display:flex}
-.wx-banner .wb-icon{width:20px;height:20px;flex-shrink:0}
-.wx-banner .wb-close{margin-left:auto;width:24px;height:24px;border:none;background:rgba(255,255,255,0.2);border-radius:var(--radius-pill);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.wx-banner .wb-close .icon{width:14px;height:14px}
+/* CSS Fullscreen mode (for WeChat and browsers without Fullscreen API) */
+body.css-fs .topbar{display:none}
+body.css-fs .app{padding-top:0}
+body.css-fs .fab-float{bottom:12px}
+body.css-fs .view-content{padding-top:var(--space-xs)}
+body.css-fs .sidebar{top:0;height:100dvh}
+/* Fullscreen exit button (only visible in CSS fullscreen) */
+.fs-exit{display:none;position:fixed;top:8px;right:8px;z-index:10000;width:36px;height:36px;border:none;border-radius:var(--radius-pill);background:rgba(0,0,0,0.5);color:#fff;font-size:13px;cursor:pointer;align-items:center;justify-content:center;gap:4px}
+body.css-fs .fs-exit{display:flex}
 /* Camera overlay */
 .cam-overlay{position:fixed;inset:0;z-index:9999;background:#000;display:none;flex-direction:column;align-items:center}
 .cam-overlay.show{display:flex}
@@ -1242,12 +1246,9 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
 </style>
 </head>
 <body>
-<!-- WeChat browser banner -->
-<div class="wx-banner" id="wx-banner">
-  <svg class="wb-icon icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-  <span>微信内无法使用拍照功能，请点右上角 <strong>···</strong> 选择「在浏览器中打开」</span>
-  <button class="wb-close" onclick="document.getElementById('wx-banner').classList.remove('show')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
-</div>
+
+<!-- CSS Fullscreen exit button -->
+<button class="fs-exit" onclick="toggleFullscreen()">退出全屏</button>
 
 <!-- ===== Settings Auth Screen ===== -->
 <div class="login-screen" id="settings-auth-screen" style="display:none">
@@ -1804,6 +1805,7 @@ const SUPABASE_KEY='sb_publishable_W245zs3ryJAJnh3DAxBHGg_MNfAGAxB';
 const SB_API=SUPABASE_URL+'/rest/v1/shift_records';
 const SB_PHOTOS_API=SUPABASE_URL+'/rest/v1/shift_photos';
 const SB_HEADERS={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=representation'};
+const SB_POST_HEADERS={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'};
 let RECORDS_CACHE=[], isSyncing=false;
 
 /* ===== Sections Data（原样保留） ===== */
@@ -3130,19 +3132,26 @@ async function savePhoto(dataUrl,storeId,storeName,shift,lat,lng){
   const id='ph_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
   const ts=Date.now();
   const photo={id,data:dataUrl,ts,store:storeName,storeId,shift,lat,lng};
-  /* Try cloud first */
+  /* Try cloud first — use minimal headers to avoid large response body */
   try{
     const res=await fetch(SB_PHOTOS_API,{
-      method:'POST',headers:SB_HEADERS,
+      method:'POST',headers:SB_POST_HEADERS,
       body:JSON.stringify({id:id,data_url:dataUrl,ts:ts,store_id:storeId,store_name:storeName,shift:shift,lat:lat||null,lng:lng||null})
     });
     if(res.ok){
+      console.log('[Photo] Upload success:',id);
       PHOTOS_CACHE.unshift(photo);
       renderPhotoGrid();
       return;
+    }else{
+      const errText=await res.text().catch(()=>'');
+      console.error('[Photo] Upload failed:',res.status,errText.substring(0,200));
     }
-  }catch(e){/* fall through to localStorage */}
+  }catch(e){
+    console.error('[Photo] Upload error:',e.message);
+  }
   /* Fallback localStorage */
+  console.log('[Photo] Falling back to localStorage:',id);
   const photos=getPhotosLocal();
   photos.unshift(photo);
   localStorage.setItem(PHOTO_KEY,JSON.stringify(photos));
@@ -3603,11 +3612,12 @@ function initDisplaySettings(){
   const s=getDisplaySettings();
   setFontSize(s.fontSize||'M',true);
 
-  /* 微信浏览器检测 */
+  /* 微信浏览器检测 — 自动 CSS 全屏 */
   const ua=navigator.userAgent;
-  if(/MicroMessenger/i.test(ua)){
-    const banner=document.getElementById('wx-banner');
-    if(banner)setTimeout(()=>banner.classList.add('show'),500);
+  const isWeChat=/MicroMessenger/i.test(ua);
+  if(isWeChat){
+    /* 微信 WebView 不支持 Fullscreen API，自动启用 CSS 全屏模式 */
+    document.body.classList.add('css-fs');
   }
 
   /* 全屏状态监听 */
@@ -3641,17 +3651,31 @@ function toggleThemePopover(e){
   else{pop.classList.add('show');}
 }
 
-/* 全屏切换 */
+/* 全屏切换 — 微信用 CSS 全屏，其他浏览器用 Fullscreen API */
 function toggleFullscreen(){
-  if(!document.fullscreenElement){
+  const ua=navigator.userAgent;
+  const isWeChat=/MicroMessenger/i.test(ua);
+  /* 微信 WebView：只能用 CSS 全屏 */
+  if(isWeChat){
+    document.body.classList.toggle('css-fs');
+    showToast(document.body.classList.contains('css-fs')?'已进入全屏':'已退出全屏','info');
+    return;
+  }
+  /* 其他浏览器：优先用 Fullscreen API */
+  if(!document.fullscreenElement && !document.webkitFullscreenElement){
     const el=document.documentElement;
     if(el.requestFullscreen)el.requestFullscreen();
     else if(el.webkitRequestFullscreen)el.webkitRequestFullscreen();
     else if(el.msRequestFullscreen)el.msRequestFullscreen();
-    else showToast('当前浏览器不支持全屏','warn');
+    else{
+      /* API 不支持时回退到 CSS 全屏 */
+      document.body.classList.toggle('css-fs');
+      showToast(document.body.classList.contains('css-fs')?'已进入全屏':'已退出全屏','info');
+    }
   }else{
     if(document.exitFullscreen)document.exitFullscreen();
     else if(document.webkitExitFullscreen)document.webkitExitFullscreen();
+    else document.body.classList.remove('css-fs');
   }
 }
 
