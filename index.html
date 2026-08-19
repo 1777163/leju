@@ -1000,6 +1000,7 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
 .photo-empty .pe-icon .icon{width:28px;height:28px}
 .photo-empty p{color:var(--text-muted);font-size:var(--fs-small)}
 .photo-action-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px var(--screen-margin)}
+.photo-filter-info{padding:4px var(--screen-margin) 8px;font-size:var(--fs-small);color:var(--text-muted);font-weight:600}
 .photo-action-bar .pa-info{font-size:var(--fs-caption);color:var(--text-muted);font-weight:600}
 .photo-cam-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:var(--radius-pill);border:none;background:var(--primary);color:#fff;font-size:var(--fs-small);font-weight:700;cursor:pointer;box-shadow:var(--shadow-sm);font-family:inherit;transition:var(--transition-fast)}
 .photo-cam-btn:active{transform:scale(0.96)}
@@ -1010,13 +1011,15 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
 .photo-loc .icon{width:11px;height:11px}
 /* WeChat browser banner */
 /* CSS Fullscreen mode (for WeChat and browsers without Fullscreen API) */
-body.css-fs .topbar{display:none}
-body.css-fs .app{padding-top:0}
+body.css-fs .topbar{display:none!important}
+body.css-fs .app{padding-top:0;min-height:100dvh}
 body.css-fs .fab-float{bottom:12px}
 body.css-fs .view-content{padding-top:var(--space-xs)}
 body.css-fs .sidebar{top:0;height:100dvh}
+body.css-fs .view{padding-top:0}
+body.css-fs .view-home-hero{padding-top:var(--space-sm)}
 /* Fullscreen exit button (only visible in CSS fullscreen) */
-.fs-exit{display:none;position:fixed;top:8px;right:8px;z-index:10000;width:36px;height:36px;border:none;border-radius:var(--radius-pill);background:rgba(0,0,0,0.5);color:#fff;font-size:13px;cursor:pointer;align-items:center;justify-content:center;gap:4px}
+.fs-exit{display:none;position:fixed;top:8px;right:8px;z-index:10000;width:auto;height:36px;padding:0 14px;border:none;border-radius:var(--radius-pill);background:rgba(196,79,230,0.85);color:#fff;font-size:13px;font-weight:600;cursor:pointer;display:none;align-items:center;justify-content:center;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,0.25)}
 body.css-fs .fs-exit{display:flex}
 /* Camera overlay */
 .cam-overlay{position:fixed;inset:0;z-index:9999;background:#000;display:none;flex-direction:column;align-items:center}
@@ -3104,6 +3107,15 @@ const PHOTO_TTL=16*60*60*1000; /* 16小时毫秒 */
 const PHOTO_KEY='lq_shift_photos'; /* localStorage fallback key */
 let PHOTOS_CACHE=[]; /* 内存缓存，渲染同步读 */
 let cameraStream=null;
+const PHOTO_SEL_KEY='lq_photo_sel'; /* 记住选择 */
+
+/* 保存/读取选择 */
+function savePhotoSel(storeVal,shiftVal){
+  try{localStorage.setItem(PHOTO_SEL_KEY,JSON.stringify({s:storeVal,h:shiftVal}));}catch(e){}
+}
+function loadPhotoSel(){
+  try{return JSON.parse(localStorage.getItem(PHOTO_SEL_KEY)||'{}');}catch(e){return{}}
+}
 
 function getPhotosLocal(){
   try{
@@ -3194,13 +3206,29 @@ function timeRemaining(ts){
 }
 function photoActionBarHtml(){
   const stores=getStores();
-  const opts=stores.map(s=>'<option value="'+s.id+'|'+s.name+'">'+s.name+'</option>').join('');
+  const sel=loadPhotoSel();
+  const opts=stores.map(s=>{
+    const v=s.id+'|'+s.name;
+    const isSel=sel.s===v?' selected':'';
+    return'<option value="'+v+'"'+isSel+'>'+s.name+'</option>';
+  }).join('');
+  const shiftOpts=['早班','中班','晚班'].map(sh=>{
+    const isSel=sel.h===sh?' selected':'';
+    return'<option value="'+sh+'"'+isSel+'>'+sh+'</option>';
+  }).join('');
   return '<div class="photo-action-bar">'+
-    '<select id="photo-store-sel"><option value="">选择门店</option>'+opts+'</select>'+
-    '<select id="photo-shift-sel"><option value="">选择班次</option><option value="早班">早班</option><option value="中班">中班</option><option value="晚班">晚班</option></select>'+
+    '<select id="photo-store-sel" onchange="onPhotoFilterChange()"><option value="">全部门店</option>'+opts+'</select>'+
+    '<select id="photo-shift-sel" onchange="onPhotoFilterChange()"><option value="">全部班次</option>'+shiftOpts+'</select>'+
     '<span class="pa-info">16h后自动删除</span>'+
     '<button class="photo-cam-btn" onclick="openCamera()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>拍照</button>'+
   '</div>';
+}
+/* 选择变化时保存 + 重新渲染 */
+function onPhotoFilterChange(){
+  const ss=document.getElementById('photo-store-sel');
+  const sh=document.getElementById('photo-shift-sel');
+  savePhotoSel(ss?ss.value:'',sh?sh.value:'');
+  renderPhotoGrid();
 }
 function getPhotoContext(){
   const ss=document.getElementById('photo-store-sel');
@@ -3208,19 +3236,39 @@ function getPhotoContext(){
   let storeId='',storeName='',shift='';
   if(ss&&ss.value){const[v,n]=ss.value.split('|');storeId=v;storeName=n;}
   if(sh&&sh.value)shift=sh.value;
+  /* 保存选择 */
+  savePhotoSel(ss?ss.value:'',sh?sh.value:'');
   return{storeId,storeName,shift};
 }
 function renderPhotoGrid(){
-  const photos=getPhotos();
+  /* 获取当前筛选 */
+  const sel=loadPhotoSel();
+  const photos=getPhotos().filter(p=>{
+    if(sel.s){const[v,n]=sel.s.split('|');if(p.storeId!==v&&p.store!==n)return false;}
+    if(sel.h&&p.shift!==sel.h)return false;
+    return true;
+  });
+  renderPhotoGridFiltered(photos);
+}
+function renderPhotoGridFiltered(photos){
   const el=document.getElementById('photo-content');
   if(!el)return;
   const bar=photoActionBarHtml();
+  /* 筛选信息 */
+  const sel=loadPhotoSel();
+  let filterInfo='';
+  if(sel.s||sel.h){
+    const parts=[];
+    if(sel.s){const[,n]=sel.s.split('|');parts.push(n);}
+    if(sel.h)parts.push(sel.h);
+    filterInfo='<div class="photo-filter-info">当前筛选: '+parts.join(' · ')+' （共'+photos.length+'张）</div>';
+  }
   if(photos.length===0){
-    el.innerHTML=bar+'<div class="photo-empty"><div class="pe-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></div><p>暂无实拍照片<br>选择门店和班次后点击拍照</p></div>';
+    el.innerHTML=bar+filterInfo+'<div class="photo-empty"><div class="pe-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></div><p>'+(sel.s||sel.h?'当前筛选无照片<br>更换筛选条件或拍新照片':'暂无实拍照片<br>选择门店和班次后点击拍照')+'</p></div>';
     setTimeout(bindRipples,50);
     return;
   }
-  el.innerHTML=bar+'<div class="photo-grid">'+photos.map(p=>{
+  el.innerHTML=bar+filterInfo+'<div class="photo-grid">'+photos.map(p=>{
     const tags=[];
     if(p.store)tags.push('<span class="photo-tag">'+p.store+'</span>');
     if(p.shift)tags.push('<span class="photo-tag">'+p.shift+'</span>');
@@ -3618,6 +3666,7 @@ function initDisplaySettings(){
   if(isWeChat){
     /* 微信 WebView 不支持 Fullscreen API，自动启用 CSS 全屏模式 */
     document.body.classList.add('css-fs');
+    setTimeout(()=>showToast('已自动全屏，点右上角退出全屏','info'),800);
   }
 
   /* 全屏状态监听 */
