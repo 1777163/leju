@@ -999,9 +999,13 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
 .photo-empty .pe-icon{width:56px;height:56px;border-radius:var(--radius-md);background:var(--primary-fade);color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
 .photo-empty .pe-icon .icon{width:28px;height:28px}
 .photo-empty p{color:var(--text-muted);font-size:var(--fs-small)}
-.photo-action-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px var(--screen-margin)}
+.photo-action-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px var(--screen-margin) 6px}
 .photo-filter-info{padding:4px var(--screen-margin) 8px;font-size:var(--fs-small);color:var(--text-muted);font-weight:600}
-.photo-action-bar .pa-info{font-size:var(--fs-caption);color:var(--text-muted);font-weight:600}
+.photo-shift-tabs{display:flex;gap:6px;padding:0 var(--screen-margin) 10px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.photo-shift-tab{padding:6px 14px;border-radius:var(--radius-pill);border:1.5px solid var(--border);font-size:var(--fs-small);font-weight:600;cursor:pointer;background:var(--surface);color:var(--text-muted);white-space:nowrap;transition:var(--transition-fast);font-family:inherit}
+.photo-shift-tab:active{transform:scale(0.95)}
+.photo-shift-tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.photo-shift-tab .tab-count{font-size:var(--fs-micro);opacity:0.7;margin-left:4px}
 .photo-cam-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:var(--radius-pill);border:none;background:var(--primary);color:#fff;font-size:var(--fs-small);font-weight:700;cursor:pointer;box-shadow:var(--shadow-sm);font-family:inherit;transition:var(--transition-fast)}
 .photo-cam-btn:active{transform:scale(0.96)}
 .photo-cam-btn .icon{width:18px;height:18px}
@@ -1009,18 +1013,6 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
 .photo-tag{display:inline-flex;align-items:center;gap:3px;font-size:var(--fs-micro);font-weight:600;padding:1px 6px;border-radius:var(--radius-pill);background:var(--primary-fade);color:var(--primary);white-space:nowrap}
 .photo-loc{display:inline-flex;align-items:center;gap:2px;font-size:var(--fs-micro);font-weight:600;padding:1px 6px;border-radius:var(--radius-pill);background:var(--success-soft);color:var(--success);white-space:nowrap;cursor:pointer;text-decoration:none}
 .photo-loc .icon{width:11px;height:11px}
-/* WeChat browser banner */
-/* CSS Fullscreen mode (for WeChat and browsers without Fullscreen API) */
-body.css-fs .topbar{display:none!important}
-body.css-fs .app{padding-top:0;min-height:100dvh}
-body.css-fs .fab-float{bottom:12px}
-body.css-fs .view-content{padding-top:var(--space-xs)}
-body.css-fs .sidebar{top:0;height:100dvh}
-body.css-fs .view{padding-top:0}
-body.css-fs .view-home-hero{padding-top:var(--space-sm)}
-/* Fullscreen exit button (only visible in CSS fullscreen) */
-.fs-exit{display:none;position:fixed;top:8px;right:8px;z-index:10000;width:auto;height:36px;padding:0 14px;border:none;border-radius:var(--radius-pill);background:rgba(196,79,230,0.85);color:#fff;font-size:13px;font-weight:600;cursor:pointer;display:none;align-items:center;justify-content:center;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,0.25)}
-body.css-fs .fs-exit{display:flex}
 /* Camera overlay */
 .cam-overlay{position:fixed;inset:0;z-index:9999;background:#000;display:none;flex-direction:column;align-items:center}
 .cam-overlay.show{display:flex}
@@ -1249,9 +1241,6 @@ body.css-fs .fs-exit{display:flex}
 </style>
 </head>
 <body>
-
-<!-- CSS Fullscreen exit button -->
-<button class="fs-exit" onclick="toggleFullscreen()">退出全屏</button>
 
 <!-- ===== Settings Auth Screen ===== -->
 <div class="login-screen" id="settings-auth-screen" style="display:none">
@@ -3212,32 +3201,42 @@ function photoActionBarHtml(){
     const isSel=sel.s===v?' selected':'';
     return'<option value="'+v+'"'+isSel+'>'+s.name+'</option>';
   }).join('');
-  const shiftOpts=['早班','中班','晚班'].map(sh=>{
-    const isSel=sel.h===sh?' selected':'';
-    return'<option value="'+sh+'"'+isSel+'>'+sh+'</option>';
+  /* 班次 tab 按钮 + 计数 */
+  const allPhotos=getPhotos();
+  const shifts=['','早班','中班','晚班'];
+  const tabsHtml=shifts.map(sh=>{
+    const cnt=sh?allPhotos.filter(p=>p.shift===sh).length:allPhotos.length;
+    const isAct=sh===(sel.h||'')?' active':'';
+    const label=sh||'全部';
+    return'<button class="photo-shift-tab'+isAct+'" onclick="setShiftFilter(\''+sh+'\')">'+label+'<span class="tab-count">'+cnt+'</span></button>';
   }).join('');
   return '<div class="photo-action-bar">'+
     '<select id="photo-store-sel" onchange="onPhotoFilterChange()"><option value="">全部门店</option>'+opts+'</select>'+
-    '<select id="photo-shift-sel" onchange="onPhotoFilterChange()"><option value="">全部班次</option>'+shiftOpts+'</select>'+
-    '<span class="pa-info">16h后自动删除</span>'+
     '<button class="photo-cam-btn" onclick="openCamera()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>拍照</button>'+
-  '</div>';
+  '</div>'+
+  '<div class="photo-shift-tabs">'+tabsHtml+'</div>';
+}
+/* 点击班次 tab */
+function setShiftFilter(shift){
+  const sel=loadPhotoSel();
+  savePhotoSel(sel.s||'',shift);
+  renderPhotoGrid();
 }
 /* 选择变化时保存 + 重新渲染 */
 function onPhotoFilterChange(){
   const ss=document.getElementById('photo-store-sel');
-  const sh=document.getElementById('photo-shift-sel');
-  savePhotoSel(ss?ss.value:'',sh?sh.value:'');
+  const sh=loadPhotoSel();
+  savePhotoSel(ss?ss.value:'',sh.h||'');
   renderPhotoGrid();
 }
 function getPhotoContext(){
   const ss=document.getElementById('photo-store-sel');
-  const sh=document.getElementById('photo-shift-sel');
+  const sel=loadPhotoSel();
   let storeId='',storeName='',shift='';
   if(ss&&ss.value){const[v,n]=ss.value.split('|');storeId=v;storeName=n;}
-  if(sh&&sh.value)shift=sh.value;
+  shift=sel.h||'';
   /* 保存选择 */
-  savePhotoSel(ss?ss.value:'',sh?sh.value:'');
+  savePhotoSel(ss?ss.value:'',shift);
   return{storeId,storeName,shift};
 }
 function renderPhotoGrid(){
@@ -3660,15 +3659,6 @@ function initDisplaySettings(){
   const s=getDisplaySettings();
   setFontSize(s.fontSize||'M',true);
 
-  /* 微信浏览器检测 — 自动 CSS 全屏 */
-  const ua=navigator.userAgent;
-  const isWeChat=/MicroMessenger/i.test(ua);
-  if(isWeChat){
-    /* 微信 WebView 不支持 Fullscreen API，自动启用 CSS 全屏模式 */
-    document.body.classList.add('css-fs');
-    setTimeout(()=>showToast('已自动全屏，点右上角退出全屏','info'),800);
-  }
-
   /* 全屏状态监听 */
   document.addEventListener('fullscreenchange',()=>{
     /* 全屏切换后重新计算布局 */
@@ -3700,31 +3690,17 @@ function toggleThemePopover(e){
   else{pop.classList.add('show');}
 }
 
-/* 全屏切换 — 微信用 CSS 全屏，其他浏览器用 Fullscreen API */
+/* 全屏切换 */
 function toggleFullscreen(){
-  const ua=navigator.userAgent;
-  const isWeChat=/MicroMessenger/i.test(ua);
-  /* 微信 WebView：只能用 CSS 全屏 */
-  if(isWeChat){
-    document.body.classList.toggle('css-fs');
-    showToast(document.body.classList.contains('css-fs')?'已进入全屏':'已退出全屏','info');
-    return;
-  }
-  /* 其他浏览器：优先用 Fullscreen API */
   if(!document.fullscreenElement && !document.webkitFullscreenElement){
     const el=document.documentElement;
     if(el.requestFullscreen)el.requestFullscreen();
     else if(el.webkitRequestFullscreen)el.webkitRequestFullscreen();
     else if(el.msRequestFullscreen)el.msRequestFullscreen();
-    else{
-      /* API 不支持时回退到 CSS 全屏 */
-      document.body.classList.toggle('css-fs');
-      showToast(document.body.classList.contains('css-fs')?'已进入全屏':'已退出全屏','info');
-    }
+    else showToast('当前浏览器不支持全屏','warn');
   }else{
     if(document.exitFullscreen)document.exitFullscreen();
     else if(document.webkitExitFullscreen)document.webkitExitFullscreen();
-    else document.body.classList.remove('css-fs');
   }
 }
 
