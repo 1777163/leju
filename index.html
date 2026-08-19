@@ -911,9 +911,14 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
 /* Admin Input (replaces inline onfocus/onblur) */
 .admin-input{width:100%;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:11px 12px;font-size:var(--fs-body);outline:none;font-family:inherit;background:var(--surface);transition:var(--transition-fast)}
 .admin-input:focus{border-color:var(--primary-light);background:var(--card-bg);box-shadow:var(--shadow-focus)}
-/* Sidebar Admin Section */
+/* Sidebar Admin Section — Collapsible */
 .sidebar-admin{border-top:1px solid var(--divider);padding:var(--space-md) var(--card-pad)}
-.sa-title{font-size:var(--fs-caption);font-weight:700;color:var(--text-muted);margin-bottom:var(--space-sm);text-transform:uppercase;letter-spacing:0.5px}
+.sa-header{display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;padding:4px 0}
+.sa-title{font-size:var(--fs-caption);font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;flex:1}
+.sa-chevron{width:16px;height:16px;color:var(--text-muted);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);transform:rotate(0deg)}
+.sidebar-admin.collapsed .sa-chevron{transform:rotate(-90deg)}
+.sa-items{overflow:hidden;max-height:400px;transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1)}
+.sidebar-admin.collapsed .sa-items{max-height:0;overflow:hidden}
 .sa-item{display:flex;align-items:center;gap:10px;padding:10px 0;cursor:pointer;font-size:var(--fs-body);font-weight:600;color:var(--text-primary);transition:var(--transition-fast)}
 .sa-item:active{transform:scale(0.98);color:var(--primary)}
 .sa-item .icon{width:18px;height:18px;color:var(--primary);flex-shrink:0}
@@ -1627,23 +1632,28 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
   <div class="sidebar-list" id="record-list">
     <div class="empty-state"><div class="es-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4a3 3 0 0 1 6 0"/></svg></div><p>暂无记录</p></div>
   </div>
-  <div class="sidebar-admin" id="sidebar-admin-section">
-    <div class="sa-title">管理员功能</div>
-    <div class="sa-item" onclick="adminAction('storeMgmt')">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v10a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9"/></svg>门店管理
-      <span class="sa-lock" id="lock-storeMgmt"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>需管理员</span>
+  <div class="sidebar-admin collapsed" id="sidebar-admin-section">
+    <div class="sa-header" onclick="toggleAdminSection()">
+      <div class="sa-title">管理员功能</div>
+      <svg class="sa-chevron icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
     </div>
-    <div class="sa-item" onclick="adminAction('exportCSV')">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>导出数据
-      <span class="sa-lock" id="lock-exportCSV"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>需管理员</span>
-    </div>
-    <div class="sa-item" onclick="adminAction('sync')">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>同步数据
-      <span class="sa-lock" id="lock-sync"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>需管理员</span>
-    </div>
-    <div class="sa-item" onclick="adminAction('changePwd')">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="3.5"/><path d="m10 13 9-9"/><path d="m16 6 2 2"/><path d="m19 3 2 2"/></svg>修改密码
-      <span class="sa-lock" id="lock-changePwd"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>需管理员</span>
+    <div class="sa-items">
+      <div class="sa-item" onclick="adminAction('storeMgmt')">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v10a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9"/></svg>门店管理
+        <span class="sa-lock" id="lock-storeMgmt"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>需管理员</span>
+      </div>
+      <div class="sa-item" onclick="adminAction('exportCSV')">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>导出数据
+        <span class="sa-lock" id="lock-exportCSV"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>需管理员</span>
+      </div>
+      <div class="sa-item" onclick="adminAction('sync')">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>同步数据
+        <span class="sa-lock" id="lock-sync"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>需管理员</span>
+      </div>
+      <div class="sa-item" onclick="adminAction('changePwd')">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="3.5"/><path d="m10 13 9-9"/><path d="m16 6 2 2"/><path d="m19 3 2 2"/></svg>修改密码
+        <span class="sa-lock" id="lock-changePwd"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>需管理员</span>
+      </div>
     </div>
   </div>
   <div class="sidebar-footer">
@@ -2590,6 +2600,10 @@ function renderSidebar(){
   if(!html)html='<div class="empty-state"><div class="es-icon">'+ic('clipboard')+'</div><p>暂无记录</p></div>';
   list.innerHTML=html;
   setTimeout(bindRipples,50);
+}
+
+function toggleAdminSection(){
+  document.getElementById('sidebar-admin-section').classList.toggle('collapsed');
 }
 
 function openSidebar(){
