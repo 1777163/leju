@@ -1006,6 +1006,8 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
 .photo-cam-btn .icon{width:18px;height:18px}
 .photo-action-bar select{padding:8px 10px;border-radius:var(--radius-sm);border:1.5px solid var(--border);font-size:var(--fs-small);background:var(--surface);color:var(--text);font-family:inherit;cursor:pointer;outline:none}
 .photo-tag{display:inline-flex;align-items:center;gap:3px;font-size:var(--fs-micro);font-weight:600;padding:1px 6px;border-radius:var(--radius-pill);background:var(--primary-fade);color:var(--primary);white-space:nowrap}
+.photo-loc{display:inline-flex;align-items:center;gap:2px;font-size:var(--fs-micro);font-weight:600;padding:1px 6px;border-radius:var(--radius-pill);background:var(--success-soft);color:var(--success);white-space:nowrap;cursor:pointer;text-decoration:none}
+.photo-loc .icon{width:11px;height:11px}
 /* Camera overlay */
 .cam-overlay{position:fixed;inset:0;z-index:9999;background:#000;display:none;flex-direction:column;align-items:center}
 .cam-overlay.show{display:flex}
@@ -3096,7 +3098,7 @@ async function loadPhotosFromCloud(){
     if(res.ok){
       const rows=await res.json();
       const cutoff=Date.now()-PHOTO_TTL;
-      PHOTOS_CACHE=rows.filter(p=>p.ts>cutoff).map(r=>({id:r.id,data:r.data_url,ts:r.ts,store:r.store_name,storeId:r.store_id,shift:r.shift}));
+      PHOTOS_CACHE=rows.filter(p=>p.ts>cutoff).map(r=>({id:r.id,data:r.data_url,ts:r.ts,store:r.store_name,storeId:r.store_id,shift:r.shift,lat:r.lat,lng:r.lng}));
       return;
     }
   }catch(e){/* fall through to localStorage */}
@@ -3104,15 +3106,15 @@ async function loadPhotosFromCloud(){
 }
 function getPhotos(){return PHOTOS_CACHE}
 
-async function savePhoto(dataUrl,storeId,storeName,shift){
+async function savePhoto(dataUrl,storeId,storeName,shift,lat,lng){
   const id='ph_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
   const ts=Date.now();
-  const photo={id,data:dataUrl,ts,store:storeName,storeId,shift};
+  const photo={id,data:dataUrl,ts,store:storeName,storeId,shift,lat,lng};
   /* Try cloud first */
   try{
     const res=await fetch(SB_PHOTOS_API,{
       method:'POST',headers:SB_HEADERS,
-      body:JSON.stringify({id:id,data_url:dataUrl,ts:ts,store_id:storeId,store_name:storeName,shift:shift})
+      body:JSON.stringify({id:id,data_url:dataUrl,ts:ts,store_id:storeId,store_name:storeName,shift:shift,lat:lat||null,lng:lng||null})
     });
     if(res.ok){
       PHOTOS_CACHE.unshift(photo);
@@ -3193,6 +3195,7 @@ function renderPhotoGrid(){
     const tags=[];
     if(p.store)tags.push('<span class="photo-tag">'+p.store+'</span>');
     if(p.shift)tags.push('<span class="photo-tag">'+p.shift+'</span>');
+    if(p.lat&&p.lng)tags.push('<a class="photo-loc" href="https://maps.qq.com/?q='+p.lat+','+p.lng+'" target="_blank"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>'+p.lat.toFixed(4)+','+p.lng.toFixed(4)+'</a>');
     return '<div class="photo-item" data-id="'+p.id+'">'+
       '<img src="'+p.data+'" onclick="viewPhoto(\''+p.id+'\')" alt="交接班照片">'+
       '<div class="pi-badge">'+timeRemaining(p.ts)+'</div>'+
@@ -3219,10 +3222,21 @@ async function openCamera(){
   const ctx=getPhotoContext();
   if(!ctx.storeId){showToast('请先选择门店','warn');return;}
   if(!ctx.shift){showToast('请先选择班次','warn');return;}
+  /* 检查相机权限状态（仅请求相机，不请求麦克风） */
+  if(navigator.permissions){
+    try{
+      const perm=await navigator.permissions.query({name:'camera'});
+      if(perm.state==='denied'){
+        showToast('相机权限被拒绝，请在浏览器设置中允许','error');
+        return;
+      }
+    }catch(e){/* 部分浏览器不支持 permissions API，继续尝试 */}
+  }
   const overlay=document.getElementById('cam-overlay');
   const video=document.getElementById('cam-video');
   overlay.classList.add('show');
   try{
+    /* audio:false 确保只访问相机，不访问麦克风 */
     cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});
     video.srcObject=cameraStream;
   }catch(e){
@@ -3262,8 +3276,21 @@ async function capturePhoto(){
   const dataUrl=canvas.toDataURL('image/jpeg',0.7);
   closeCamera();
   showToast('正在保存照片...','info');
-  await savePhoto(dataUrl,ctx.storeId,ctx.storeName,ctx.shift);
-  showToast('照片已保存（16小时后自动删除）','success');
+  /* 获取 GPS 定位（与拍照同时进行，不阻塞保存） */
+  let lat=null,lng=null;
+  try{
+    const pos=await new Promise((resolve,reject)=>{
+      if(!navigator.geolocation){reject(new Error('no geolocation'));return;}
+      navigator.geolocation.getCurrentPosition(
+        p=>resolve({lat:p.coords.latitude,lng:p.coords.longitude}),
+        e=>reject(e),
+        {enableHighAccuracy:true,timeout:5000,maximumAge:300000}
+      );
+    });
+    lat=pos.lat;lng=pos.lng;
+  }catch(e){/* 定位失败不阻塞保存 */}
+  await savePhoto(dataUrl,ctx.storeId,ctx.storeName,ctx.shift,lat,lng);
+  showToast('照片已保存（16小时后自动删除）'+(lat?' · 已记录定位':''),'success');
   if(recordsViewTab!=='photo')setRecordsViewTab('photo');
   /* 刷新云端照片列表 */
   await loadPhotosFromCloud();
