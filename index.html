@@ -1008,6 +1008,12 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
 .photo-tag{display:inline-flex;align-items:center;gap:3px;font-size:var(--fs-micro);font-weight:600;padding:1px 6px;border-radius:var(--radius-pill);background:var(--primary-fade);color:var(--primary);white-space:nowrap}
 .photo-loc{display:inline-flex;align-items:center;gap:2px;font-size:var(--fs-micro);font-weight:600;padding:1px 6px;border-radius:var(--radius-pill);background:var(--success-soft);color:var(--success);white-space:nowrap;cursor:pointer;text-decoration:none}
 .photo-loc .icon{width:11px;height:11px}
+/* WeChat browser banner */
+.wx-banner{position:fixed;top:0;left:0;right:0;z-index:9998;background:#07C160;color:#fff;padding:8px 12px;display:none;align-items:center;gap:8px;font-size:var(--fs-small);font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,0.15)}
+.wx-banner.show{display:flex}
+.wx-banner .wb-icon{width:20px;height:20px;flex-shrink:0}
+.wx-banner .wb-close{margin-left:auto;width:24px;height:24px;border:none;background:rgba(255,255,255,0.2);border-radius:var(--radius-pill);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.wx-banner .wb-close .icon{width:14px;height:14px}
 /* Camera overlay */
 .cam-overlay{position:fixed;inset:0;z-index:9999;background:#000;display:none;flex-direction:column;align-items:center}
 .cam-overlay.show{display:flex}
@@ -1236,6 +1242,12 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
 </style>
 </head>
 <body>
+<!-- WeChat browser banner -->
+<div class="wx-banner" id="wx-banner">
+  <svg class="wb-icon icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+  <span>微信内无法使用拍照功能，请点右上角 <strong>···</strong> 选择「在浏览器中打开」</span>
+  <button class="wb-close" onclick="document.getElementById('wx-banner').classList.remove('show')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+</div>
 
 <!-- ===== Settings Auth Screen ===== -->
 <div class="login-screen" id="settings-auth-screen" style="display:none">
@@ -1511,6 +1523,14 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
               <div class="si-sub">过渡和交互动画</div>
             </div>
             <div class="toggle-switch on" id="anim-toggle" onclick="toggleSetting('anim',this)"></div>
+          </div>
+          <div class="settings-item" onclick="toggleFullscreen()" style="cursor:pointer">
+            <div class="si-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg></div>
+            <div class="si-info">
+              <div class="si-name">全屏浏览</div>
+              <div class="si-sub">隐藏地址栏 · 更大显示区域</div>
+            </div>
+            <svg class="icon" style="width:18px;height:18px;color:var(--text-muted)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
           </div>
         </div>
       </div>
@@ -3582,6 +3602,19 @@ function updateAboutInfo(){
 function initDisplaySettings(){
   const s=getDisplaySettings();
   setFontSize(s.fontSize||'M',true);
+
+  /* 微信浏览器检测 */
+  const ua=navigator.userAgent;
+  if(/MicroMessenger/i.test(ua)){
+    const banner=document.getElementById('wx-banner');
+    if(banner)setTimeout(()=>banner.classList.add('show'),500);
+  }
+
+  /* 全屏状态监听 */
+  document.addEventListener('fullscreenchange',()=>{
+    /* 全屏切换后重新计算布局 */
+    setTimeout(updateScrollHint,200);
+  });
   const compactToggle=document.getElementById('compact-toggle');
   if(compactToggle){
     compactToggle.classList.toggle('on',s.compact!==false);
@@ -3607,6 +3640,21 @@ function toggleThemePopover(e){
   if(showing){pop.classList.remove('show');}
   else{pop.classList.add('show');}
 }
+
+/* 全屏切换 */
+function toggleFullscreen(){
+  if(!document.fullscreenElement){
+    const el=document.documentElement;
+    if(el.requestFullscreen)el.requestFullscreen();
+    else if(el.webkitRequestFullscreen)el.webkitRequestFullscreen();
+    else if(el.msRequestFullscreen)el.msRequestFullscreen();
+    else showToast('当前浏览器不支持全屏','warn');
+  }else{
+    if(document.exitFullscreen)document.exitFullscreen();
+    else if(document.webkitExitFullscreen)document.webkitExitFullscreen();
+  }
+}
+
 /* 点击页面其它位置关闭主题弹出面板 */
 document.addEventListener('click',e=>{
   const pop=document.getElementById('theme-popover');
