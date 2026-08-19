@@ -985,6 +985,45 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
 .records-pane{display:none;animation:paneFadeIn 0.3s ease}
 .records-pane.active{display:block}
 @keyframes paneFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+/* Photo pane */
+.photo-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 0 80px}
+.photo-item{position:relative;border-radius:var(--radius-md);overflow:hidden;box-shadow:var(--shadow-sm);background:var(--card-bg)}
+.photo-item img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;cursor:pointer}
+.photo-item .pi-bar{padding:6px 8px;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.photo-item .pi-time{font-size:var(--fs-micro);color:var(--text-muted);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.photo-item .pi-del{width:26px;height:26px;border-radius:var(--radius-pill);border:none;background:var(--danger-fade);color:var(--danger);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.photo-item .pi-del:active{transform:scale(0.9)}
+.photo-item .pi-del .icon{width:14px;height:14px}
+.photo-item .pi-badge{position:absolute;top:6px;left:6px;background:rgba(0,0,0,0.65);color:#fff;font-size:var(--fs-micro);padding:2px 7px;border-radius:var(--radius-pill);font-weight:700;backdrop-filter:blur(4px)}
+.photo-empty{text-align:center;padding:48px var(--card-pad)}
+.photo-empty .pe-icon{width:56px;height:56px;border-radius:var(--radius-md);background:var(--primary-fade);color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+.photo-empty .pe-icon .icon{width:28px;height:28px}
+.photo-empty p{color:var(--text-muted);font-size:var(--fs-small)}
+.photo-action-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px var(--screen-margin)}
+.photo-action-bar .pa-info{font-size:var(--fs-caption);color:var(--text-muted);font-weight:600}
+.photo-cam-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:var(--radius-pill);border:none;background:var(--primary);color:#fff;font-size:var(--fs-small);font-weight:700;cursor:pointer;box-shadow:var(--shadow-sm);font-family:inherit;transition:var(--transition-fast)}
+.photo-cam-btn:active{transform:scale(0.96)}
+.photo-cam-btn .icon{width:18px;height:18px}
+/* Camera overlay */
+.cam-overlay{position:fixed;inset:0;z-index:9999;background:#000;display:none;flex-direction:column;align-items:center}
+.cam-overlay.show{display:flex}
+.cam-video{flex:1;width:100%;max-width:500px;object-fit:cover}
+.cam-topbar{width:100%;max-width:500px;display:flex;justify-content:space-between;align-items:center;padding:12px 16px;color:#fff}
+.cam-topbar .ct-title{font-size:var(--fs-body);font-weight:700}
+.cam-close{width:40px;height:40px;border-radius:var(--radius-pill);border:none;background:rgba(255,255,255,0.15);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.cam-close:active{transform:scale(0.9)}
+.cam-close .icon{width:20px;height:20px}
+.cam-bottombar{width:100%;max-width:500px;padding:20px;display:flex;justify-content:center;align-items:center;gap:40px}
+.cam-capture{width:68px;height:68px;border-radius:var(--radius-pill);border:4px solid #fff;background:#fff;cursor:pointer;transition:transform 0.15s ease}
+.cam-capture:active{transform:scale(0.88)}
+.cam-capture-inner{width:100%;height:100%;border-radius:var(--radius-pill);background:var(--primary);border:3px solid #fff}
+.cam-hint{color:rgba(255,255,255,0.7);font-size:var(--fs-caption);text-align:center;padding:0 20px 8px}
+/* Photo viewer modal */
+.pv-overlay{position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;padding:20px}
+.pv-overlay.show{display:flex}
+.pv-overlay img{max-width:100%;max-height:90vh;border-radius:var(--radius-md)}
+.pv-close{position:absolute;top:16px;right:16px;width:40px;height:40px;border-radius:var(--radius-pill);border:none;background:rgba(255,255,255,0.15);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.pv-close .icon{width:20px;height:20px}
 /* Filter panel (collapsible store tabs) */
 .filter-bar{display:flex;align-items:center;justify-content:space-between;padding:0 var(--screen-margin) var(--space-sm)}
 .filter-toggle{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--radius-pill);border:none;background:var(--card-bg);font-size:var(--fs-small);font-weight:600;cursor:pointer;transition:var(--transition-fast);color:var(--text-secondary);box-shadow:var(--shadow-xs);font-family:inherit}
@@ -1395,6 +1434,7 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
           <div class="tab-switch">
             <button class="active" id="tab-list" onclick="setRecordsViewTab('list')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/></svg>列表</button>
             <button id="tab-calendar" onclick="setRecordsViewTab('calendar')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>日历</button>
+            <button id="tab-photo" onclick="setRecordsViewTab('photo')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>实拍</button>
           </div>
           <button class="filter-toggle" id="filter-toggle-btn" onclick="toggleFilterPanel()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>筛选</button>
         </div>
@@ -1405,6 +1445,7 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
       <div class="store-tabs" id="daily-store-tabs"></div>
       <div class="records-pane active" id="pane-list"><div id="list-content"></div></div>
       <div class="records-pane" id="pane-calendar"><div id="daily-content"></div></div>
+      <div class="records-pane" id="pane-photo"><div id="photo-content"></div></div>
     </div>
   </div>
 
@@ -1691,6 +1732,27 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
 
 <!-- ===== Scroll Hint ===== -->
 <div class="scroll-hint" id="scroll-hint" onclick="scrollDownHint()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>下滑查看更多</div>
+
+<!-- ===== Camera Overlay ===== -->
+<div class="cam-overlay" id="cam-overlay">
+  <div class="cam-topbar">
+    <button class="cam-close" onclick="closeCamera()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    <span class="ct-title">拍照</span>
+    <div style="width:40px"></div>
+  </div>
+  <video class="cam-video" id="cam-video" autoplay playsinline></video>
+  <div class="cam-hint" id="cam-hint">对准需要记录的画面，点击下方按钮拍摄</div>
+  <div class="cam-bottombar">
+    <div style="width:40px"></div>
+    <button class="cam-capture" onclick="capturePhoto()"><div class="cam-capture-inner"></div></button>
+    <div style="width:40px"></div>
+  </div>
+</div>
+<!-- ===== Photo Viewer Modal ===== -->
+<div class="pv-overlay" id="pv-overlay" onclick="closePhotoViewer()">
+  <button class="pv-close" onclick="closePhotoViewer()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  <img id="pv-img" src="" alt="照片预览">
+</div>
 
 <!-- ===== Toast ===== -->
 <div class="toast" id="toast"></div>
@@ -1997,6 +2059,7 @@ function showView(name){
   const bn=document.getElementById('bn-'+name);
   if(bn)bn.classList.add('active');
   closeSidebar();
+  closeCamera();
   window.scrollTo(0,0);
   if(name==='home')renderHome();
   if(name==='records')renderRecordsView();
@@ -2981,12 +3044,20 @@ let recordsViewTab='list';
 function renderRecordsView(){
   const paneCal=document.getElementById('pane-calendar');
   const paneList=document.getElementById('pane-list');
+  const panePhoto=document.getElementById('pane-photo');
   if(recordsViewTab==='list'){
     if(paneCal)paneCal.classList.remove('active');
+    if(panePhoto)panePhoto.classList.remove('active');
     if(paneList)paneList.classList.add('active');
     renderRecordsList();
+  }else if(recordsViewTab==='photo'){
+    if(paneList)paneList.classList.remove('active');
+    if(paneCal)paneCal.classList.remove('active');
+    if(panePhoto)panePhoto.classList.add('active');
+    renderPhotoGrid();
   }else{
     if(paneList)paneList.classList.remove('active');
+    if(panePhoto)panePhoto.classList.remove('active');
     if(paneCal)paneCal.classList.add('active');
     renderDailyTrack();
   }
@@ -2995,8 +3066,127 @@ function setRecordsViewTab(t){
   recordsViewTab=t;
   document.getElementById('tab-calendar').classList.toggle('active',t==='calendar');
   document.getElementById('tab-list').classList.toggle('active',t==='list');
+  document.getElementById('tab-photo').classList.toggle('active',t==='photo');
   renderRecordsView();
 }
+
+/* ===== 实拍照片 — 相机 + 16小时自动过期 ===== */
+const PHOTO_TTL=16*60*60*1000; /* 16小时毫秒 */
+const PHOTO_KEY='lq_shift_photos';
+let cameraStream=null;
+
+function getPhotos(){
+  try{
+    const arr=JSON.parse(localStorage.getItem(PHOTO_KEY)||'[]');
+    const now=Date.now();
+    const valid=arr.filter(p=>now-p.ts<PHOTO_TTL);
+    if(valid.length!==arr.length)localStorage.setItem(PHOTO_KEY,JSON.stringify(valid));
+    return valid.sort((a,b)=>b.ts-a.ts);
+  }catch(e){return[]}
+}
+function savePhoto(dataUrl){
+  const photos=getPhotos();
+  const now=Date.now();
+  photos.push({id:'ph_'+now+'_'+Math.random().toString(36).slice(2,6),data:dataUrl,ts:now,store:getCurrentStoreName()});
+  localStorage.setItem(PHOTO_KEY,JSON.stringify(photos));
+  renderPhotoGrid();
+}
+function deletePhoto(id){
+  let photos=getPhotos();
+  photos=photos.filter(p=>p.id!==id);
+  localStorage.setItem(PHOTO_KEY,JSON.stringify(photos));
+  renderPhotoGrid();
+  showToast('照片已删除','info');
+}
+function timeRemaining(ts){
+  const now=Date.now();
+  const remain=PHOTO_TTL-(now-ts);
+  if(remain<=0)return'已过期';
+  const h=Math.floor(remain/3600000);
+  const m=Math.floor((remain%3600000)/60000);
+  return h>0?h+'h'+m+'m后删除':m+'m后删除';
+}
+function renderPhotoGrid(){
+  const photos=getPhotos();
+  const el=document.getElementById('photo-content');
+  if(!el)return;
+  const camBtn='<div class="photo-action-bar"><span class="pa-info">照片保存16小时后自动删除</span><button class="photo-cam-btn" onclick="openCamera()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>拍照</button></div>';
+  if(photos.length===0){
+    el.innerHTML=camBtn+'<div class="photo-empty"><div class="pe-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></div><p>暂无实拍照片<br>点击上方按钮拍摄</p></div>';
+    return;
+  }
+  el.innerHTML=camBtn+'<div class="photo-grid">'+photos.map(p=>
+    '<div class="photo-item" data-id="'+p.id+'">'+
+      '<img src="'+p.data+'" onclick="viewPhoto(\''+p.id+'\')" alt="交接班照片">'+
+      '<div class="pi-badge">'+timeRemaining(p.ts)+'</div>'+
+      '<div class="pi-bar">'+
+        '<span class="pi-time">'+new Date(p.ts).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})+(p.store?' · '+p.store:'')+'</span>'+
+        '<button class="pi-del" onclick="deletePhoto(\''+p.id+'\')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>'+
+      '</div>'+
+    '</div>'
+  ).join('')+'</div>';
+  setTimeout(bindRipples,50);
+}
+function viewPhoto(id){
+  const photos=getPhotos();
+  const p=photos.find(x=>x.id===id);
+  if(!p)return;
+  document.getElementById('pv-img').src=p.data;
+  document.getElementById('pv-overlay').classList.add('show');
+}
+function closePhotoViewer(){
+  document.getElementById('pv-overlay').classList.remove('show');
+}
+function getCurrentStoreName(){
+  try{
+    const sel=document.getElementById('filter-store');
+    if(sel&&sel.value)return sel.options[sel.selectedIndex].text;
+  }catch(e){}
+  return '';
+}
+async function openCamera(){
+  const overlay=document.getElementById('cam-overlay');
+  const video=document.getElementById('cam-video');
+  overlay.classList.add('show');
+  try{
+    cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});
+    video.srcObject=cameraStream;
+  }catch(e){
+    cameraStream=await navigator.mediaDevices.getUserMedia({video:true,audio:false});
+    video.srcObject=cameraStream;
+  }
+}
+function closeCamera(){
+  const overlay=document.getElementById('cam-overlay');
+  const video=document.getElementById('cam-video');
+  overlay.classList.remove('show');
+  if(cameraStream){
+    cameraStream.getTracks().forEach(t=>t.stop());
+    cameraStream=null;
+  }
+  video.srcObject=null;
+}
+function capturePhoto(){
+  const video=document.getElementById('cam-video');
+  if(!video||!video.videoWidth){
+    showToast('相机未就绪','warn');
+    return;
+  }
+  const canvas=document.createElement('canvas');
+  const maxW=1024;
+  const ratio=video.videoHeight/video.videoWidth;
+  canvas.width=Math.min(video.videoWidth,maxW);
+  canvas.height=Math.round(canvas.width*ratio);
+  const ctx=canvas.getContext('2d');
+  ctx.drawImage(video,0,0,canvas.width,canvas.height);
+  const dataUrl=canvas.toDataURL('image/jpeg',0.7);
+  savePhoto(dataUrl);
+  closeCamera();
+  showToast('照片已保存（16小时后自动删除）','success');
+  /* 切换到实拍 tab 确保用户看到照片 */
+  if(recordsViewTab!=='photo')setRecordsViewTab('photo');
+}
+
 function todaySummaryHtml(stores,todayStr){
   const todayRecs=getRecords().filter(r=>r.date===todayStr);
   const maps={};
