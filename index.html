@@ -690,14 +690,19 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
 .sh-action{font-size:var(--fs-small);color:var(--primary);font-weight:600;cursor:pointer;padding:5px 12px;border-radius:var(--radius-pill);background:var(--primary-fade);display:inline-flex;align-items:center;gap:4px}
 .sh-action .icon{width:14px;height:14px}
 /* Store Shift Overview */
-.store-shift-row{display:flex;align-items:center;justify-content:space-between;padding:11px var(--card-pad);border-top:1px solid var(--divider);gap:10px}
-.store-shift-row:first-child{border-top:none}
-.ssr-name{font-size:var(--fs-body);font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:45%}
-.ssr-dots{display:flex;align-items:center;gap:16px;flex-shrink:0}
-.ssr-dot-wrap{display:flex;flex-direction:column;align-items:center;gap:3px}
-.ssr-dot{width:10px;height:10px;border-radius:50%;display:block;transition:var(--transition-fast)}
-.ssr-dot.done{box-shadow:0 0 0 3px var(--success-light)}
-.ssr-dot-label{font-size:var(--fs-micro);color:var(--text-muted);font-weight:500}
+/* Overview store grid */
+.store-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 var(--card-pad) var(--space-sm)}
+.store-grid.single{grid-template-columns:1fr}
+.store-mini-card{background:var(--surface);border-radius:var(--radius-sm);padding:10px 8px 8px;border:1px solid var(--border-soft);transition:var(--transition-fast)}
+.store-mini-card:active{transform:scale(0.98)}
+.smc-name{font-size:var(--fs-caption);font-weight:700;color:var(--text);text-align:center;margin-bottom:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.smc-shifts{display:flex;justify-content:center;gap:6px}
+.smc-shift{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;max-width:48px}
+.smc-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;transition:var(--transition-fast)}
+.smc-dot.done{color:#fff}
+.smc-dot.undone{background:var(--border);color:var(--text-muted)}
+.smc-dot .icon{width:12px;height:12px}
+.smc-label{font-size:10px;font-weight:600;color:var(--text-muted)}
 /* Record Item */
 .record-item{display:flex;align-items:center;gap:12px;padding:12px var(--card-pad);border-top:1px solid var(--divider);cursor:pointer;transition:var(--transition-tap)}
 .record-item:active{background:var(--primary-fade)}
@@ -936,7 +941,7 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
 .detail-back .icon{width:20px;height:20px}
 .detail-titles{flex:1;min-width:0}
 .detail-titles h2{font-size:var(--fs-h2);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.detail-titles p{font-size:var(--fs-caption);color:var(--text-muted)}
+.detail-titles p{font-size:var(--fs-body);color:var(--text-secondary);font-weight:600}
 /* Summary card */
 .detail-summary{margin:0 var(--screen-margin) var(--space-sm);background:var(--card-bg);border-radius:var(--radius);padding:var(--space-md) var(--card-pad);box-shadow:var(--shadow-xs);display:flex;align-items:center;gap:var(--space-md)}
 .ds-stat{flex:1;text-align:center}
@@ -955,7 +960,7 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
 .detail-section.collapsed .ds-chevron{transform:rotate(-90deg)}
 .detail-section.collapsed .detail-section-body{display:none}
 .detail-section-body{padding:0 var(--card-pad) var(--space-sm)}
-.detail-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-top:1px solid var(--divider)}
+.detail-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-top:1px solid var(--divider)}
 .detail-item:first-child{border-top:none}
 .di-name{flex:1;min-width:0}
 .di-name b{font-size:var(--fs-body);font-weight:700}
@@ -999,20 +1004,20 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
 .photo-empty .pe-icon{width:56px;height:56px;border-radius:var(--radius-md);background:var(--primary-fade);color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
 .photo-empty .pe-icon .icon{width:28px;height:28px}
 .photo-empty p{color:var(--text-muted);font-size:var(--fs-small)}
-.photo-action-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px var(--screen-margin) 6px}
+.photo-action-bar{display:flex;align-items:center;gap:8px;padding:12px var(--screen-margin) 6px;flex-wrap:wrap}
 .photo-filter-info{padding:4px var(--screen-margin) 8px;font-size:var(--fs-small);color:var(--text-muted);font-weight:600}
-.photo-shift-tabs{display:flex;gap:6px;padding:0 var(--screen-margin) 10px;overflow-x:auto;-webkit-overflow-scrolling:touch}
-.photo-shift-tab{padding:6px 14px;border-radius:var(--radius-pill);border:1.5px solid var(--border);font-size:var(--fs-small);font-weight:600;cursor:pointer;background:var(--surface);color:var(--text-muted);white-space:nowrap;transition:var(--transition-fast);font-family:inherit}
-.photo-shift-tab:active{transform:scale(0.95)}
-.photo-shift-tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
-.photo-shift-tab .tab-count{font-size:var(--fs-micro);opacity:0.7;margin-left:4px}
-.photo-cam-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:var(--radius-pill);border:none;background:var(--primary);color:#fff;font-size:var(--fs-small);font-weight:700;cursor:pointer;box-shadow:var(--shadow-sm);font-family:inherit;transition:var(--transition-fast)}
+.photo-shift-inline{display:flex;gap:4px}
+.photo-shift-btn{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--border);font-size:14px;font-weight:700;cursor:pointer;background:var(--surface);color:var(--text-muted);transition:var(--transition-fast);font-family:inherit;display:flex;align-items:center;justify-content:center;position:relative}
+.photo-shift-btn:active{transform:scale(0.92)}
+.photo-shift-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.photo-shift-btn .psb-count{position:absolute;top:-4px;right:-4px;background:var(--danger);color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0 3px}
+.photo-shift-btn.active .psb-count{background:rgba(255,255,255,0.3)}
+.photo-cam-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-pill);border:none;background:var(--primary);color:#fff;font-size:var(--fs-small);font-weight:700;cursor:pointer;box-shadow:var(--shadow-sm);font-family:inherit;transition:var(--transition-fast);margin-left:auto}
 .photo-cam-btn:active{transform:scale(0.96)}
 .photo-cam-btn .icon{width:18px;height:18px}
-.photo-action-bar select{padding:8px 10px;border-radius:var(--radius-sm);border:1.5px solid var(--border);font-size:var(--fs-small);background:var(--surface);color:var(--text);font-family:inherit;cursor:pointer;outline:none}
+.photo-action-bar select{padding:7px 10px;border-radius:var(--radius-sm);border:1.5px solid var(--border);font-size:var(--fs-small);background:var(--surface);color:var(--text);font-family:inherit;cursor:pointer;outline:none;min-width:100px}
 .photo-tag{display:inline-flex;align-items:center;gap:3px;font-size:var(--fs-micro);font-weight:600;padding:1px 6px;border-radius:var(--radius-pill);background:var(--primary-fade);color:var(--primary);white-space:nowrap}
-.photo-loc{display:inline-flex;align-items:center;gap:2px;font-size:var(--fs-micro);font-weight:600;padding:1px 6px;border-radius:var(--radius-pill);background:var(--success-soft);color:var(--success);white-space:nowrap;cursor:pointer;text-decoration:none}
-.photo-loc .icon{width:11px;height:11px}
+.photo-tag .icon{width:11px;height:11px}
 /* Camera overlay */
 .cam-overlay{position:fixed;inset:0;z-index:9999;background:#000;display:none;flex-direction:column;align-items:center}
 .cam-overlay.show{display:flex}
@@ -1075,6 +1080,23 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
 .tc-body{padding:0 var(--card-pad) var(--space-md)}
 .tc-body .day-cards{margin:0}
 .tc-body .day-detail-table{margin:0;background:transparent;box-shadow:none;border-radius:0}
+/* Collapsible store group in records list */
+.store-group-collapse{margin:0 var(--screen-margin) var(--space-xs);background:var(--card-bg);border-radius:var(--radius-sm);overflow:hidden;box-shadow:var(--shadow-xs);border:1px solid var(--border-soft)}
+.sgc-header{display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;padding:10px var(--card-pad);transition:var(--transition-fast)}
+.sgc-header:active{background:var(--surface)}
+.sgc-icon{width:16px;height:16px;color:var(--primary);flex-shrink:0}
+.sgc-name{font-size:var(--fs-body);font-weight:700;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sgc-count{font-size:var(--fs-caption);font-weight:700;color:var(--primary);background:var(--primary-fade);padding:2px 8px;border-radius:var(--radius-pill)}
+.sgc-chevron{width:16px;height:16px;color:var(--text-muted);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);transform:rotate(0deg)}
+.store-group-collapse.collapsed .sgc-chevron{transform:rotate(-90deg)}
+.sgc-body{overflow:hidden;max-height:600px;transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1)}
+.store-group-collapse.collapsed .sgc-body{max-height:0;overflow:hidden}
+.sgc-body .record-item{border-radius:0;margin:0}
+/* History button */
+.history-btn-wrap{padding:16px var(--screen-margin) 24px;text-align:center}
+.history-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 24px;border-radius:var(--radius-pill);border:1.5px solid var(--border);font-size:var(--fs-small);font-weight:600;cursor:pointer;background:var(--surface);color:var(--text-secondary);font-family:inherit;transition:var(--transition-fast)}
+.history-btn:active{transform:scale(0.96)}
+.history-btn .icon{width:16px;height:16px}
 .shift-card{background:var(--card-bg);border-radius:var(--radius-sm);padding:12px var(--card-pad);box-shadow:var(--shadow-xs);display:flex;align-items:center;gap:12px;cursor:pointer;transition:var(--transition-fast);border-left:3px solid transparent}
 .shift-card:active{transform:scale(0.98)}
 .shift-card.pass{border-left-color:var(--success)}
@@ -2727,7 +2749,7 @@ function viewRecord(id){
   document.getElementById('view-detail').classList.add('active');
   document.querySelectorAll('.bn-item,.fab-float').forEach(b=>b.classList.remove('active'));
   window.scrollTo(0,0);
-  document.getElementById('detail-title').textContent=(record.storeName||'未分类')+' · '+record.date+' '+record.shift;
+  document.getElementById('detail-title').textContent=(record.storeName||'未分类')+' · '+record.shift+' · '+record.date;
   document.getElementById('detail-subtitle').textContent='交班：'+record.handover+' → 接班：'+record.takeover;
   const secNames=['一','二','三','四','五','六','七'];
   /* 统计合格/不合格/未检查总数 */
@@ -2760,7 +2782,7 @@ function viewRecord(id){
     const summaryChip=sFail>0?'<span style="font-size:11px;font-weight:600;color:var(--danger);background:var(--danger-soft);padding:2px 8px;border-radius:var(--radius-pill);margin-left:auto">'+sFail+'项不合格</span>':'<span style="font-size:11px;font-weight:600;color:var(--success);background:var(--success-soft);padding:2px 8px;border-radius:var(--radius-pill);margin-left:auto">'+sPass+'项合格</span>';
     html+='<div class="detail-section '+collapsed+'" style="--sec-color:'+sc.main+';--sec-soft:'+sc.soft+'"><div class="detail-section-title" onclick="toggleDetailSection(this)"><span class="num-badge" style="background:'+sc.soft+';color:'+sc.main+'">'+secNames[sec.id-1]+'</span>第'+secNames[sec.id-1]+'部分：'+sec.title+summaryChip+'<span class="ds-chevron">'+ic('chevronDown')+'</span></div><div class="detail-section-body">'+brHtml+itemsHtml+'</div></div>';
   });
-  html+='<div class="detail-section" style="--sec-color:#3DA878;--sec-soft:#EAF6EF"><div class="detail-section-title" onclick="toggleDetailSection(this)"><span class="num-badge" style="background:#EAF6EF;color:#3DA878">'+ic('shieldCheck')+'</span>交接班承诺<span class="ds-chevron">'+ic('chevronDown')+'</span></div><div class="detail-section-body"><div style="margin-bottom:8px;font-size:13px;display:flex;gap:6px">'+ic('shieldCheck')+'<div><b style="color:var(--primary)">交班承诺：</b>本人已如实说明所有存在问题，并配合整改。</div></div><div style="font-size:13px;display:flex;gap:6px">'+ic('check')+'<div><b style="color:var(--primary)">接班承诺：</b>本人已逐项现场确认，问题记录属实。</div></div><div style="margin-top:10px;font-size:12px;color:var(--text-muted)">提交时间：'+new Date(record.timestamp).toLocaleString('zh-CN')+'</div></div></div>';
+  html+='<div class="detail-section collapsed compact" style="--sec-color:#3DA878;--sec-soft:#EAF6EF"><div class="detail-section-title" onclick="toggleDetailSection(this)"><span class="num-badge" style="background:#EAF6EF;color:#3DA878">'+ic('shieldCheck')+'</span>交接班承诺<span class="ds-chevron">'+ic('chevronDown')+'</span></div><div class="detail-section-body"><div style="margin-bottom:8px;font-size:13px;display:flex;gap:6px">'+ic('shieldCheck')+'<div><b style="color:var(--primary)">交班承诺：</b>本人已如实说明所有存在问题，并配合整改。</div></div><div style="font-size:13px;display:flex;gap:6px">'+ic('check')+'<div><b style="color:var(--primary)">接班承诺：</b>本人已逐项现场确认，问题记录属实。</div></div><div style="margin-top:10px;font-size:12px;color:var(--text-muted)">提交时间：'+new Date(record.timestamp).toLocaleString('zh-CN')+'</div></div></div>';
   document.getElementById('detail-content').innerHTML=html;
   setTimeout(bindRipples,50);
 }
@@ -2820,15 +2842,21 @@ function renderHome(){
   if(stores.length===0){
     ov='<div style="padding:16px;text-align:center;color:var(--text-muted);font-size:13px">暂无门店，请先在设置中添加门店</div>';
   }else{
-    const shiftMeta=[{sh:'早',color:'#E0A047'},{sh:'中',color:'#3DA878'},{sh:'晚',color:'#7A6BA8'}];
+    const shiftMeta=[{sh:'早班',short:'早',color:'#E0A047'},{sh:'中班',short:'中',color:'#3DA878'},{sh:'晚班',short:'晚',color:'#7A6BA8'}];
+    const gridCls=stores.length===1?'store-grid single':'store-grid';
+    ov='<div class="'+gridCls+'">';
     stores.forEach(s=>{
-      ov+='<div class="store-shift-row"><div class="ssr-name">'+s.name+'</div><div class="ssr-dots">';
+      ov+='<div class="store-mini-card"><div class="smc-name">'+s.name+'</div><div class="smc-shifts">';
       shiftMeta.forEach(o=>{
-        const isDone=records.some(r=>r.storeId===s.id&&r.date===today&&r.shift===o.sh+'班');
-        ov+='<div class="ssr-dot-wrap"><span class="ssr-dot '+(isDone?'done':'')+'" style="background:'+(isDone?o.color:'var(--border)')+'"></span><span class="ssr-dot-label">'+o.sh+'</span></div>';
+        const isDone=records.some(r=>r.storeId===s.id&&r.date===today&&r.shift===o.sh);
+        const dotCls=isDone?'done':'undone';
+        const dotStyle=isDone?'background:'+o.color:'';
+        const checkIcon=isDone?'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>':'';
+        ov+='<div class="smc-shift"><span class="smc-dot '+dotCls+'" style="'+dotStyle+'">'+checkIcon+'</span><span class="smc-label">'+o.short+'</span></div>';
       });
       ov+='</div></div>';
     });
+    ov+='</div>';
   }
   document.getElementById('home-overview').innerHTML=ov;
   const recent=records.slice(0,5);
@@ -2891,10 +2919,10 @@ async function refreshData(silent){
   if(svg)svg.classList.add('spin');
   if(!silent)showToast('正在同步云端数据...','info');
   try{
-    await loadStoresFromCloud();
-    await syncRecordsFromCloud();
-    await loadPhotosFromCloud();
-    await cleanupExpiredPhotos();
+    await loadStoresFromCloud().catch(e=>console.error('stores sync err:',e));
+    await syncRecordsFromCloud().catch(e=>console.error('records sync err:',e));
+    await loadPhotosFromCloud().catch(e=>console.error('photos sync err:',e));
+    cleanupExpiredPhotos().catch(e=>console.error('cleanup err:',e));
   }catch(e){console.error('refresh failed',e)}
   lastSyncTime=Date.now();
   populateStoreSelect();populateFilterStores();renderStoreMgmt();renderSidebar();renderHome();populateNameDatalists();
@@ -3117,27 +3145,32 @@ function getPhotosLocal(){
 }
 async function loadPhotosFromCloud(){
   try{
-    const res=await fetch(SB_PHOTOS_API+'?select=*&order=ts.desc',{headers:SB_HEADERS});
+    const controller=new AbortController();
+    const timeoutId=setTimeout(()=>controller.abort(),12000);
+    const res=await fetch(SB_PHOTOS_API+'?select=*&order=ts.desc&limit=50',{headers:SB_HEADERS,signal:controller.signal});
+    clearTimeout(timeoutId);
     if(res.ok){
       const rows=await res.json();
       const cutoff=Date.now()-PHOTO_TTL;
-      PHOTOS_CACHE=rows.filter(p=>p.ts>cutoff).map(r=>({id:r.id,data:r.data_url,ts:r.ts,store:r.store_name,storeId:r.store_id,shift:r.shift,lat:r.lat,lng:r.lng}));
+      PHOTOS_CACHE=rows.filter(p=>p.ts>cutoff).map(r=>({id:r.id,data:r.data_url,ts:r.ts,store:r.store_name,storeId:r.store_id,shift:r.shift}));
+      console.log('[Photo] Loaded',PHOTOS_CACHE.length,'photos from cloud');
       return;
     }
-  }catch(e){/* fall through to localStorage */}
+    console.error('[Photo] Cloud load failed:',res.status);
+  }catch(e){console.error('[Photo] Cloud load error:',e.message)}
   PHOTOS_CACHE=getPhotosLocal();
 }
 function getPhotos(){return PHOTOS_CACHE}
 
-async function savePhoto(dataUrl,storeId,storeName,shift,lat,lng){
+async function savePhoto(dataUrl,storeId,storeName,shift){
   const id='ph_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
   const ts=Date.now();
-  const photo={id,data:dataUrl,ts,store:storeName,storeId,shift,lat,lng};
+  const photo={id,data:dataUrl,ts,store:storeName,storeId,shift};
   /* Try cloud first — use minimal headers to avoid large response body */
   try{
     const res=await fetch(SB_PHOTOS_API,{
       method:'POST',headers:SB_POST_HEADERS,
-      body:JSON.stringify({id:id,data_url:dataUrl,ts:ts,store_id:storeId,store_name:storeName,shift:shift,lat:lat||null,lng:lng||null})
+      body:JSON.stringify({id:id,data_url:dataUrl,ts:ts,store_id:storeId,store_name:storeName,shift:shift})
     });
     if(res.ok){
       console.log('[Photo] Upload success:',id);
@@ -3201,20 +3234,23 @@ function photoActionBarHtml(){
     const isSel=sel.s===v?' selected':'';
     return'<option value="'+v+'"'+isSel+'>'+s.name+'</option>';
   }).join('');
-  /* 班次 tab 按钮 + 计数 */
   const allPhotos=getPhotos();
-  const shifts=['','早班','中班','晚班'];
-  const tabsHtml=shifts.map(sh=>{
-    const cnt=sh?allPhotos.filter(p=>p.shift===sh).length:allPhotos.length;
-    const isAct=sh===(sel.h||'')?' active':'';
-    const label=sh||'全部';
-    return'<button class="photo-shift-tab'+isAct+'" onclick="setShiftFilter(\''+sh+'\')">'+label+'<span class="tab-count">'+cnt+'</span></button>';
+  /* 早中晚 单字按钮 + 计数 */
+  const shiftMap=[{key:'早班',label:'早'},{key:'中班',label:'中'},{key:'晚班',label:'晚'}];
+  const tabsHtml=shiftMap.map(o=>{
+    const cnt=allPhotos.filter(p=>p.shift===o.key).length;
+    const isAct=sel.h===o.key?' active':'';
+    return'<button class="photo-shift-btn'+isAct+'" onclick="setShiftFilter(\''+o.key+'\')">'+o.label+(cnt?'<span class="psb-count">'+cnt+'</span>':'')+'</button>';
   }).join('');
+  /* 全部 按钮 */
+  const allCnt=allPhotos.length;
+  const allAct=!sel.h?' active':'';
+  const allTab='<button class="photo-shift-btn'+allAct+'" onclick="setShiftFilter(\'\')" style="font-size:11px">全'+(allCnt?'<span class="psb-count">'+allCnt+'</span>':'')+'</button>';
   return '<div class="photo-action-bar">'+
     '<select id="photo-store-sel" onchange="onPhotoFilterChange()"><option value="">全部门店</option>'+opts+'</select>'+
+    '<div class="photo-shift-inline">'+allTab+tabsHtml+'</div>'+
     '<button class="photo-cam-btn" onclick="openCamera()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>拍照</button>'+
-  '</div>'+
-  '<div class="photo-shift-tabs">'+tabsHtml+'</div>';
+  '</div>';
 }
 /* 点击班次 tab */
 function setShiftFilter(shift){
@@ -3271,7 +3307,6 @@ function renderPhotoGridFiltered(photos){
     const tags=[];
     if(p.store)tags.push('<span class="photo-tag">'+p.store+'</span>');
     if(p.shift)tags.push('<span class="photo-tag">'+p.shift+'</span>');
-    if(p.lat&&p.lng)tags.push('<a class="photo-loc" href="https://maps.qq.com/?q='+p.lat+','+p.lng+'" target="_blank"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>'+p.lat.toFixed(4)+','+p.lng.toFixed(4)+'</a>');
     return '<div class="photo-item" data-id="'+p.id+'">'+
       '<img src="'+p.data+'" onclick="viewPhoto(\''+p.id+'\')" alt="交接班照片">'+
       '<div class="pi-badge">'+timeRemaining(p.ts)+'</div>'+
@@ -3352,21 +3387,8 @@ async function capturePhoto(){
   const dataUrl=canvas.toDataURL('image/jpeg',0.7);
   closeCamera();
   showToast('正在保存照片...','info');
-  /* 获取 GPS 定位（与拍照同时进行，不阻塞保存） */
-  let lat=null,lng=null;
-  try{
-    const pos=await new Promise((resolve,reject)=>{
-      if(!navigator.geolocation){reject(new Error('no geolocation'));return;}
-      navigator.geolocation.getCurrentPosition(
-        p=>resolve({lat:p.coords.latitude,lng:p.coords.longitude}),
-        e=>reject(e),
-        {enableHighAccuracy:true,timeout:5000,maximumAge:300000}
-      );
-    });
-    lat=pos.lat;lng=pos.lng;
-  }catch(e){/* 定位失败不阻塞保存 */}
-  await savePhoto(dataUrl,ctx.storeId,ctx.storeName,ctx.shift,lat,lng);
-  showToast('照片已保存（16小时后自动删除）'+(lat?' · 已记录定位':''),'success');
+  await savePhoto(dataUrl,ctx.storeId,ctx.storeName,ctx.shift);
+  showToast('照片已保存（16小时后自动删除）','success');
   if(recordsViewTab!=='photo')setRecordsViewTab('photo');
   /* 刷新云端照片列表 */
   await loadPhotosFromCloud();
@@ -3393,25 +3415,73 @@ function todaySummaryHtml(stores,todayStr){
     '</div>'+
     '<div class="tc-body"><div class="day-detail-table"><table>'+rows+'</table></div></div></div>';
 }
+let recordsListMode='today'; /* 'today' or 'history' */
 function renderRecordsList(){
   const todayStr=localDateStr(new Date());
-  const records=getRecords().filter(r=>r.date!==todayStr);
+  const allRecords=getRecords();
   const stores=getStores();
   const el=document.getElementById('list-content');
   if(!el)return;
   let html=todaySummaryHtml(stores,todayStr);
-  if(records.length===0){html+='<div class="empty-state"><div class="es-icon">'+ic('clipboard')+'</div><p>暂无历史记录</p></div>';el.innerHTML=html;setTimeout(bindRipples,50);return}
-  html+='<div class="records-list">';
+  /* Filter records based on mode */
+  const records=recordsListMode==='today'
+    ?allRecords.filter(r=>r.date===todayStr)
+    :allRecords.filter(r=>r.date!==todayStr);
+  if(records.length===0){
+    const msg=recordsListMode==='today'?'今日暂无提交记录':'暂无历史记录';
+    html+='<div class="empty-state"><div class="es-icon">'+ic('clipboard')+'</div><p>'+msg+'</p></div>';
+    if(recordsListMode==='today'){
+      /* Show history button even when no today's records */
+      const histCount=allRecords.filter(r=>r.date!==todayStr).length;
+      if(histCount>0){
+        html+='<div class="history-btn-wrap"><button class="history-btn" onclick="toggleRecordsListMode()">'+ic('clock')+'查看历史记录 ('+histCount+')</button></div>';
+      }
+    }
+    el.innerHTML=html;setTimeout(bindRipples,50);return;
+  }
+  /* Group by store */
   const grouped={};
   records.forEach(r=>{if(r.storeId){if(!grouped[r.storeId])grouped[r.storeId]=[];grouped[r.storeId].push(r)}});
+  /* Render store groups with collapsible sections */
   stores.forEach(store=>{
-    const sr=grouped[store.id]||[];if(!sr.length)return;
-    html+='<div class="store-group-label" style="padding:10px 16px 4px">'+ic('store')+store.name+' ('+sr.length+')</div>';
+    const sr=grouped[store.id]||[];
+    if(!sr.length)return;
+    const gid='sgc-'+store.id;
+    /* Count fail records */
+    const failCnt=sr.filter(r=>failCountOf(r)>0).length;
+    html+='<div class="store-group-collapse" id="'+gid+'">';
+    html+='<div class="sgc-header" onclick="toggleStoreGroup(\''+gid+'\')">';
+    html+=ic('store').replace('class="icon"','class="sgc-icon icon"');
+    html+='<span class="sgc-name">'+store.name+'</span>';
+    html+='<span class="sgc-count">'+sr.length+'条</span>';
+    if(failCnt>0)html+='<span class="sgc-count" style="color:var(--danger);background:var(--danger-fade)">'+failCnt+'不合格</span>';
+    html+='<svg class="sgc-chevron icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+    html+='</div><div class="sgc-body">';
     html+=sr.map(r=>recordItemHtml(r,failCountOf(r),fmtTime(r.timestamp))).join('');
+    html+='</div></div>';
   });
+  /* History/today toggle button at bottom */
+  html+='<div class="history-btn-wrap">';
+  if(recordsListMode==='today'){
+    const histCount=allRecords.filter(r=>r.date!==todayStr).length;
+    if(histCount>0){
+      html+='<button class="history-btn" onclick="toggleRecordsListMode()">'+ic('clock')+'查看历史记录 ('+histCount+')</button>';
+    }
+  }else{
+    html+='<button class="history-btn" onclick="toggleRecordsListMode()">'+ic('calendar')+'返回今日记录</button>';
+  }
   html+='</div>';
   el.innerHTML=html;
   setTimeout(bindRipples,50);
+}
+function toggleStoreGroup(gid){
+  const el=document.getElementById(gid);
+  if(el)el.classList.toggle('collapsed');
+  if(navigator.vibrate)navigator.vibrate(8);
+}
+function toggleRecordsListMode(){
+  recordsListMode=recordsListMode==='today'?'history':'today';
+  renderRecordsList();
 }
 
 /* ===== Config & Stores（原样保留 + UI 更新） ===== */
