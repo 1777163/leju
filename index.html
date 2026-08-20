@@ -722,13 +722,14 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .store-mini-card:active{transform:scale(0.98)}
 .smc-name{font-size:var(--fs-caption);font-weight:700;color:var(--text);text-align:center;margin-bottom:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .smc-shifts{display:flex;justify-content:center;gap:6px}
-.smc-shift{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;max-width:48px}
-.smc-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;transition:var(--transition-fast)}
+.smc-shift{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;min-width:0;max-width:72px}
+.smc-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;transition:var(--transition-fast);flex-shrink:0}
 .smc-dot.done{color:#fff;cursor:pointer}
 .smc-dot.done:active{transform:scale(0.85)}
 .smc-dot.undone{background:var(--border);color:var(--text-muted)}
 .smc-dot .icon{width:12px;height:12px}
-.smc-label{font-size:10px;font-weight:600;color:var(--text-muted)}
+.smc-label{font-size:10px;font-weight:600;color:var(--text-muted);line-height:1}
+.smc-meta{font-size:9px;font-weight:600;color:var(--text-secondary);line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;padding:0 2px}
 /* Record Item */
 .record-item{display:flex;align-items:center;gap:12px;padding:12px var(--card-pad);border-top:1px solid var(--divider);cursor:pointer;transition:var(--transition-tap)}
 .record-item:active{background:var(--primary-fade)}
@@ -2981,7 +2982,17 @@ function renderHome(){
         const dotStyle=isDone?'background:'+o.color:'';
         const checkIcon=isDone?'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>':'';
         const clickAttr=isDone?' onclick="event.stopPropagation();viewRecord(\''+rec.id+'\')"':' style="pointer-events:none"';
-        ov+='<div class="smc-shift"><span class="smc-dot '+dotCls+'" style="'+dotStyle+'"'+clickAttr+'>'+checkIcon+'</span><span class="smc-label">'+o.short+'</span></div>';
+        let metaHtml='';
+        if(isDone){
+          const who=esc(rec.handover||rec.takeover||'—');
+          const tm=new Date(rec.timestamp).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+          metaHtml='<span class="smc-meta" title="'+who+' '+tm+'">'+who+' '+tm+'</span>';
+        }
+        ov+='<div class="smc-shift">'+
+          '<span class="smc-dot '+dotCls+'" style="'+dotStyle+'"'+clickAttr+'>'+checkIcon+'</span>'+
+          '<span class="smc-label">'+o.short+'</span>'+
+          metaHtml+
+        '</div>';
       });
       ov+='</div></div>';
     });
