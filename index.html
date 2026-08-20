@@ -624,28 +624,30 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
 .hero-card{margin:4px var(--screen-margin) var(--space-base);border-radius:var(--radius-lg);overflow:hidden;background:var(--gradient-hero);padding:var(--space-lg);color:#fff;position:relative;box-shadow:var(--shadow)}
 .hero-card::before{content:'';position:absolute;top:-40px;right:-30px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,0.08)}
 .hero-card::after{content:'';position:absolute;bottom:-30px;left:-20px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,0.05)}
-.hero-date{font-size:var(--fs-small);opacity:0.85;position:relative;z-index:1;display:flex;align-items:center;gap:6px}
-.hero-title{font-size:var(--fs-title);font-weight:700;margin-top:4px;position:relative;z-index:1;letter-spacing:var(--tracking-tight);line-height:var(--lh-tight)}
-.hero-progress{display:flex;align-items:center;gap:var(--space-base);margin-top:var(--space-base);position:relative;z-index:1}
-.progress-ring{width:68px;height:68px;position:relative;flex-shrink:0}
+.hero-header{display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative;z-index:1}
+.hero-title{font-size:var(--fs-title);font-weight:700;letter-spacing:var(--tracking-tight);line-height:var(--lh-tight)}
+.hero-date{font-size:var(--fs-caption);opacity:0.85;font-weight:600;background:rgba(255,255,255,0.12);padding:4px 10px;border-radius:var(--radius-pill);white-space:nowrap}
+/* Progress row: ring left, numbers+bar right */
+.hero-progress{display:flex;align-items:center;gap:var(--space-md);margin-top:var(--space-lg);position:relative;z-index:1}
+.progress-ring{width:64px;height:64px;position:relative;flex-shrink:0}
 .progress-ring svg{transform:rotate(-90deg)}
 .progress-ring .bg-circle{stroke:rgba(255,255,255,0.18)}
 .progress-ring .fg-circle{stroke:#fff;stroke-linecap:round;transition:stroke-dashoffset 0.8s ease}
-.progress-ring .pct{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:var(--fs-stat);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:var(--tracking-tight)}
+.progress-ring .pct{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:var(--fs-subtitle);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:var(--tracking-tight)}
 .progress-info{flex:1;min-width:0}
 .progress-info .pi-num{font-size:var(--fs-stat);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:var(--tracking-tight)}
 .progress-info .pi-num small{font-size:var(--fs-body);opacity:0.75;font-weight:600}
-.progress-info .pi-label{font-size:var(--fs-caption);opacity:0.9;margin-top:2px}
-.progress-bar-mini{height:6px;border-radius:var(--radius-pill);background:rgba(255,255,255,0.18);margin-top:8px;overflow:hidden}
+.progress-info .pi-label{font-size:var(--fs-small);opacity:0.9;margin-top:2px}
+.progress-bar-mini{height:7px;border-radius:var(--radius-pill);background:rgba(255,255,255,0.18);margin-top:8px;overflow:hidden}
 .progress-bar-mini .fill{height:100%;border-radius:var(--radius-pill);background:#fff;transition:width 0.8s ease}
 /* Hero shift summary */
-.hero-shifts{display:flex;gap:8px;margin-top:var(--space-base);position:relative;z-index:1}
-.hero-shift{flex:1;background:rgba(255,255,255,0.12);border-radius:var(--radius-sm);padding:8px 6px;text-align:center;backdrop-filter:blur(4px)}
-.hero-shift .hs-name{font-size:var(--fs-micro);opacity:0.85;display:flex;align-items:center;justify-content:center;gap:3px}
-.hero-shift .hs-name .icon{width:13px;height:13px}
-.hero-shift .hs-count{font-size:var(--fs-subtitle);font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
-.hero-shift .hs-count small{font-size:var(--fs-micro);opacity:0.7;font-weight:600}
-.hero-shift.done{background:rgba(255,255,255,0.22)}
+.hero-shifts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:var(--space-lg);position:relative;z-index:1}
+.hero-shift{flex:1;background:rgba(255,255,255,0.12);border-radius:var(--radius-sm);padding:12px 6px 10px;text-align:center;backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;gap:4px}
+.hero-shift .hs-icon{width:18px;height:18px;opacity:0.9}
+.hero-shift .hs-name{font-size:var(--fs-small);font-weight:600;opacity:0.9}
+.hero-shift .hs-count{font-size:var(--fs-stat);font-weight:800;font-variant-numeric:tabular-nums}
+.hero-shift .hs-count small{font-size:var(--fs-caption);opacity:0.8;font-weight:600}
+.hero-shift.done{background:rgba(255,255,255,0.24)}
 .theme-toggle-btn{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;color:#fff;cursor:pointer;z-index:2;backdrop-filter:blur(4px);transition:var(--transition-fast)}
 .theme-toggle-btn:active{background:rgba(255,255,255,0.25);transform:scale(0.92)}
 .theme-toggle-btn .icon{width:18px;height:18px}
@@ -1323,13 +1325,15 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
           <div class="tp-dot" data-theme-val="aurora" data-neon="1" onclick="setTheme('aurora')" style="background:linear-gradient(135deg,#008F5E,#00E5A0)" title="极光翠绿"></div>
           </div>
         </div>
-        <div class="hero-date" id="hero-date"></div>
-        <div class="hero-title">今日交接班概览</div>
+        <div class="hero-header">
+          <div class="hero-title">今日交接班概览</div>
+          <div class="hero-date" id="hero-date"></div>
+        </div>
         <div class="hero-progress">
           <div class="progress-ring">
-            <svg width="68" height="68">
-              <circle class="bg-circle" cx="34" cy="34" r="30" fill="none" stroke-width="5"/>
-              <circle class="fg-circle" cx="34" cy="34" r="30" fill="none" stroke-width="5" stroke-dasharray="188.5" stroke-dashoffset="188.5"/>
+            <svg width="64" height="64">
+              <circle class="bg-circle" cx="32" cy="32" r="28" fill="none" stroke-width="5"/>
+              <circle class="fg-circle" cx="32" cy="32" r="28" fill="none" stroke-width="5" stroke-dasharray="175.9" stroke-dashoffset="175.9"/>
             </svg>
             <div class="pct">0%</div>
           </div>
@@ -2817,25 +2821,31 @@ function renderHome(){
   const now=new Date();
   const today=localDateStr(now);
   const weekDays=['周日','周一','周二','周三','周四','周五','周六'];
-  document.getElementById('hero-date').textContent=today+' · '+weekDays[now.getDay()];
+  document.getElementById('hero-date').textContent=String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+weekDays[now.getDay()];
   const totalSlots=stores.length*3;
   const donePairs=new Set();
   records.filter(r=>r.date===today).forEach(r=>donePairs.add((r.storeId||'')+'|'+r.shift));
   let done=0;
   donePairs.forEach(p=>{if(stores.some(s=>s.id===p.split('|')[0]))done++});
   const pct=totalSlots?Math.round(done/totalSlots*100):0;
-  const circumference=2*Math.PI*30;
+  const circumference=2*Math.PI*28;
   document.querySelector('.progress-ring .fg-circle').style.strokeDashoffset=circumference*(1-pct/100);
   document.querySelector('.progress-ring .pct').textContent=pct+'%';
   document.querySelector('.progress-info .pi-num').innerHTML=done+'<small>/'+totalSlots+' 班次</small>';
-  document.querySelector('.progress-info .pi-label').textContent=(totalSlots>0&&done>=totalSlots)?'今日全部完成':(totalSlots>0?'已完成 · 还差 '+(totalSlots-done)+' 个班次':'暂无门店，请先添加');
+  document.querySelector('.progress-info .pi-label').textContent=(totalSlots>0&&done>=totalSlots)?'今日全部完成':(totalSlots>0?'还差 '+(totalSlots-done)+' 个班次':'暂无门店，请先添加');
   document.querySelector('.progress-bar-mini .fill').style.width=pct+'%';
   /* [新] hero 内嵌三班今日概览（进度+概览合一） */
   let hs='';
   [{sh:'早班',ic:'sunrise',color:'#E0A047'},{sh:'中班',ic:'sun',color:'#3DA878'},{sh:'晚班',ic:'moon',color:'#7A6BA8'}].forEach(o=>{
     const dn=stores.filter(s=>records.some(r=>r.storeId===s.id&&r.date===today&&r.shift===o.sh)).length;
     const tot=stores.length;
-    hs+='<div class="hero-shift '+(tot>0&&dn>=tot?'done':'')+'" style="border-top:2px solid '+o.color+'"><div class="hs-name">'+ic(o.ic)+o.sh+'</div><div class="hs-count">'+dn+'<small>/'+tot+'</small></div></div>';
+    const doneAll=tot>0&&dn>=tot;
+    const opacity=tot===0?0.5:1;
+    hs+='<div class="hero-shift '+(doneAll?'done':'')+'" style="border-top:2px solid '+o.color+';opacity:'+opacity+'">'+
+      ic(o.ic,'hs-icon')+
+      '<div class="hs-name">'+o.sh+'</div>'+
+      '<div class="hs-count">'+dn+'<small>/'+tot+'</small></div>'+
+    '</div>';
   });
   document.getElementById('hero-shifts').innerHTML=hs;
   let ov='';
