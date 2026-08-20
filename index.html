@@ -724,7 +724,8 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .smc-shifts{display:flex;justify-content:center;gap:6px}
 .smc-shift{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;max-width:48px}
 .smc-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;transition:var(--transition-fast)}
-.smc-dot.done{color:#fff}
+.smc-dot.done{color:#fff;cursor:pointer}
+.smc-dot.done:active{transform:scale(0.85)}
 .smc-dot.undone{background:var(--border);color:var(--text-muted)}
 .smc-dot .icon{width:12px;height:12px}
 .smc-label{font-size:10px;font-weight:600;color:var(--text-muted)}
@@ -2758,10 +2759,11 @@ function filterBy(mode){
 function failCountOf(r){let n=0;Object.values(r.sections||{}).forEach(s=>(s.items||[]).forEach(it=>{if(it.result==='fail')n++}));return n}
 function fmtTime(ts){try{return new Date(ts).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})}catch{return''}}
 function recordItemHtml(r,failCount,time){
+  const people=(r.handover||r.takeover)?('交：'+(r.handover||'-')+' · 接：'+(r.takeover||'-')):'';
   return '<div class="record-item" onclick="viewRecord(\''+r.id+'\')">'+
     '<div class="ri-badge '+(failCount>0?'fail':'pass')+'">'+(failCount>0?ic('alert'):ic('check'))+'</div>'+
     '<div class="ri-info"><div class="ri-store">'+(r.storeName||'未分类')+' · '+r.shift+'</div>'+
-    '<div class="ri-meta">'+r.date+' '+time+' · '+(failCount>0?failCount+'项不合格':'全部合格')+'</div></div>'+
+    '<div class="ri-meta">'+r.date+' '+time+' · '+(failCount>0?failCount+'项不合格':'全部合格')+(people?' · '+people:'')+'</div></div>'+
     '<div class="ri-arrow">'+ic('chevronRight')+'</div></div>';
 }
 
@@ -2943,13 +2945,17 @@ function renderHome(){
     const gridCls=stores.length===1?'store-grid single':'store-grid';
     ov='<div class="'+gridCls+'">';
     stores.forEach(s=>{
+      const recMap={};
+      records.forEach(r=>{if(r.storeId===s.id&&r.date===today)recMap[r.shift]=r});
       ov+='<div class="store-mini-card"><div class="smc-name">'+s.name+'</div><div class="smc-shifts">';
       shiftMeta.forEach(o=>{
-        const isDone=records.some(r=>r.storeId===s.id&&r.date===today&&r.shift===o.sh);
+        const rec=recMap[o.sh];
+        const isDone=!!rec;
         const dotCls=isDone?'done':'undone';
         const dotStyle=isDone?'background:'+o.color:'';
         const checkIcon=isDone?'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>':'';
-        ov+='<div class="smc-shift"><span class="smc-dot '+dotCls+'" style="'+dotStyle+'">'+checkIcon+'</span><span class="smc-label">'+o.short+'</span></div>';
+        const clickAttr=isDone?' onclick="event.stopPropagation();viewRecord(\''+rec.id+'\')"':' style="pointer-events:none"';
+        ov+='<div class="smc-shift"><span class="smc-dot '+dotCls+'" style="'+dotStyle+'"'+clickAttr+'>'+checkIcon+'</span><span class="smc-label">'+o.short+'</span></div>';
       });
       ov+='</div></div>';
     });
