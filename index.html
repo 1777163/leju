@@ -600,6 +600,30 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
 
 /* ===== App Shell ===== */
 .app{max-width:440px;margin:0 auto;min-height:100vh;min-height:100dvh;position:relative;background:var(--bg-gradient);padding-top:var(--space-xs)}
+/* ===== 伪全屏模式（微信浏览器等不支持 Fullscreen API 的环境） ===== */
+html[data-pseudo-fs] body{overflow:hidden!important}
+html[data-pseudo-fs] .app{
+  position:fixed!important;inset:0!important;
+  max-width:100%!important;
+  height:100dvh!important;height:100vh;
+  overflow-y:auto!important;-webkit-overflow-scrolling:touch;
+  padding-top:0!important;z-index:9999!important;
+  background:var(--bg-gradient);
+}
+html[data-pseudo-fs] .topbar{padding-top:max(var(--space-md),env(safe-area-inset-top,0px))}
+html[data-pseudo-fs] .bottom-nav{padding-bottom:max(6px,env(safe-area-inset-bottom,0px))}
+html[data-pseudo-fs] .view-content{padding-top:var(--space-sm)}
+.pseudo-fs-exit{
+  position:fixed;top:max(12px,env(safe-area-inset-top,0px));right:16px;z-index:10000;
+  display:none;align-items:center;gap:6px;
+  padding:8px 14px;border-radius:var(--radius-pill);border:none;
+  background:var(--primary);color:#fff;font-size:var(--fs-small);font-weight:600;
+  cursor:pointer;box-shadow:var(--shadow-md);transition:var(--transition-press);
+  font-family:inherit;
+}
+.pseudo-fs-exit:active{transform:scale(0.94)}
+.pseudo-fs-exit .icon{width:15px;height:15px;stroke-width:2}
+html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 /* Topbar */
 .topbar{position:sticky;top:0;z-index:var(--z-sticky);display:flex;align-items:center;justify-content:space-between;padding:var(--space-md) var(--screen-margin) var(--space-sm);background:var(--bg)}
 .topbar-left{display:flex;align-items:center;gap:10px}
@@ -1834,6 +1858,8 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
 
 <!-- ===== Toast ===== -->
 <div class="toast" id="toast"></div>
+<!-- ===== 伪全屏退出按钮（微信浏览器等） ===== -->
+<button class="pseudo-fs-exit" onclick="toggleFullscreen()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 9H4M9 4v5M15 9h5M15 4v5M9 15H4M9 14v5M15 15h5M15 14v5"/></svg>退出全屏</button>
 <script>
 /* ============================================================
    樂聚娱乐 · 每日交接班检查记录表  v3.8 (UI 重写版)
@@ -3938,18 +3964,46 @@ function toggleThemePopover(e){
   else{pop.classList.add('show');}
 }
 
-/* 全屏切换 */
+/* 全屏切换（兼容微信内置浏览器） */
+var _pseudoFs=false;
+function isWeChatBrowser(){return /MicroMessenger/i.test(navigator.userAgent)}
 function toggleFullscreen(){
-  if(!document.fullscreenElement && !document.webkitFullscreenElement){
-    const el=document.documentElement;
-    if(el.requestFullscreen)el.requestFullscreen();
-    else if(el.webkitRequestFullscreen)el.webkitRequestFullscreen();
-    else if(el.msRequestFullscreen)el.msRequestFullscreen();
-    else showToast('当前浏览器不支持全屏','warn');
-  }else{
+  /* 检测是否已处于伪全屏状态 */
+  if(_pseudoFs){
+    _exitPseudoFs();return;
+  }
+  /* 检测是否已处于原生全屏状态 */
+  var inNativeFS=document.fullscreenElement||document.webkitFullscreenElement;
+  if(inNativeFS){
     if(document.exitFullscreen)document.exitFullscreen();
     else if(document.webkitExitFullscreen)document.webkitExitFullscreen();
+    return;
   }
+  /* 微信浏览器 / 不支持 Fullscreen API → CSS 伪全屏 */
+  if(isWeChatBrowser()){
+    _enterPseudoFs();return;
+  }
+  /* 非微信浏览器 → 尝试原生 Fullscreen API */
+  var el=document.documentElement;
+  if(el.requestFullscreen)el.requestFullscreen().catch(function(){_enterPseudoFs()});
+  else if(el.webkitRequestFullscreen)el.webkitRequestFullscreen();
+  else if(el.msRequestFullscreen)el.msRequestFullscreen();
+  else _enterPseudoFs(); /* 全部不支持 → 回退伪全屏 */
+}
+function _enterPseudoFs(){
+  _pseudoFs=true;
+  document.documentElement.setAttribute('data-pseudo-fs','');
+  document.body.style.overflow='hidden';
+  window.scrollTo(0,0);
+  showToast('已进入全屏浏览模式','info');
+  setTimeout(updateScrollHint,200);
+}
+function _exitPseudoFs(){
+  _pseudoFs=false;
+  document.documentElement.removeAttribute('data-pseudo-fs');
+  document.body.style.overflow='';
+  showToast('已退出全屏','info');
+  setTimeout(updateScrollHint,200);
 }
 
 /* 点击页面其它位置关闭主题弹出面板 */
