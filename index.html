@@ -722,14 +722,13 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .store-mini-card:active{transform:scale(0.98)}
 .smc-name{font-size:var(--fs-caption);font-weight:700;color:var(--text);text-align:center;margin-bottom:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .smc-shifts{display:flex;justify-content:center;gap:6px}
-.smc-shift{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;min-width:0;max-width:72px}
-.smc-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;transition:var(--transition-fast);flex-shrink:0}
+.smc-shift{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;max-width:48px}
+.smc-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;transition:var(--transition-fast)}
 .smc-dot.done{color:#fff;cursor:pointer}
 .smc-dot.done:active{transform:scale(0.85)}
 .smc-dot.undone{background:var(--border);color:var(--text-muted)}
 .smc-dot .icon{width:12px;height:12px}
-.smc-label{font-size:10px;font-weight:600;color:var(--text-muted);line-height:1}
-.smc-meta{font-size:9px;font-weight:600;color:var(--text-secondary);line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;padding:0 2px}
+.smc-label{font-size:10px;font-weight:600;color:var(--text-muted)}
 /* Record Item */
 .record-item{display:flex;align-items:center;gap:12px;padding:12px var(--card-pad);border-top:1px solid var(--divider);cursor:pointer;transition:var(--transition-tap)}
 .record-item:active{background:var(--primary-fade)}
@@ -1187,16 +1186,25 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .day-detail-table td{padding:12px var(--card-pad);font-size:var(--fs-body)}
 .day-detail-table .dd-store{font-weight:700;display:flex;align-items:center;gap:6px;color:var(--text)}
 .day-detail-table .dd-store .icon{width:14px;height:14px;color:var(--primary)}
-.day-detail-table .dd-dots{display:flex;align-items:center;gap:8px;justify-content:center}
+.day-detail-table .dd-dots{display:flex;align-items:flex-start;gap:14px;justify-content:center;padding:4px 0}
 .day-detail-table .dd-count{font-weight:800;font-variant-numeric:tabular-nums;text-align:right;color:var(--text-secondary)}
 .day-detail-table .dd-count small{font-size:var(--fs-caption);font-weight:600;opacity:.7}
+.sdot-cell{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;min-width:54px;transition:transform .15s}
+.sdot-cell:active{transform:scale(0.95)}
+.sdot-cell .sdot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.sdot-cell.pass .sdot{background:var(--success)}
+.sdot-cell.fail .sdot{background:var(--warning)}
+.sdot-cell.miss .sdot{background:var(--danger-soft);border:2px solid var(--danger);box-sizing:border-box}
+.sdot-cell.wait .sdot{background:var(--border);opacity:.6}
+.sdot-cell.pass:hover,.sdot-cell.fail:hover{transform:scale(1.05)}
+.sdot-name{font-size:11px;font-weight:600;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:56px;line-height:1.2}
+.sdot-time{font-size:10px;color:var(--text-muted);line-height:1}
+/* Legacy sdot (kept for compatibility, not used in detail table) */
 .sdot{width:14px;height:14px;border-radius:50%;display:inline-block;cursor:pointer;transition:transform .15s,box-shadow .15s;position:relative}
-.sdot:active{transform:scale(.85)}
 .sdot.pass{background:var(--success)}
 .sdot.fail{background:var(--warning)}
 .sdot.miss{background:var(--danger-soft);border:2px solid var(--danger)}
 .sdot.wait{background:var(--border);opacity:.6}
-.sdot.pass:hover,.sdot.fail:hover{transform:scale(1.25);box-shadow:0 0 0 2px var(--card-bg),0 0 8px rgba(0,0,0,0.15)}
 /* Calendar */
 .cal-card{margin:0 var(--screen-margin) var(--space-base);background:var(--card-bg);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm)}
 .cal-head{display:flex;align-items:center;justify-content:space-between;padding:var(--space-md) var(--card-pad) var(--space-sm)}
@@ -2982,17 +2990,7 @@ function renderHome(){
         const dotStyle=isDone?'background:'+o.color:'';
         const checkIcon=isDone?'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>':'';
         const clickAttr=isDone?' onclick="event.stopPropagation();viewRecord(\''+rec.id+'\')"':' style="pointer-events:none"';
-        let metaHtml='';
-        if(isDone){
-          const who=esc(rec.handover||rec.takeover||'—');
-          const tm=new Date(rec.timestamp).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
-          metaHtml='<span class="smc-meta" title="'+who+' '+tm+'">'+who+' '+tm+'</span>';
-        }
-        ov+='<div class="smc-shift">'+
-          '<span class="smc-dot '+dotCls+'" style="'+dotStyle+'"'+clickAttr+'>'+checkIcon+'</span>'+
-          '<span class="smc-label">'+o.short+'</span>'+
-          metaHtml+
-        '</div>';
+        ov+='<div class="smc-shift"><span class="smc-dot '+dotCls+'" style="'+dotStyle+'"'+clickAttr+'>'+checkIcon+'</span><span class="smc-label">'+o.short+'</span></div>';
       });
       ov+='</div></div>';
     });
@@ -3145,10 +3143,20 @@ function renderDailyTrack(){
       const d=getDay(sid,date);
       const sName=storeName(sid);
       const shiftDot=(rec,label)=>{
-        if(rec){const fc=failCount(rec);return '<span class="sdot '+(!fc?'pass':'fail')+'" title="'+label+' · '+(fc?fc+'项不合格':'全部合格')+'" onclick="event.stopPropagation();viewRecord(\''+rec.id+'\')"></span>';}
-        if(isPast)return '<span class="sdot miss" title="'+label+' · 缺交"></span>';
-        if(isToday)return '<span class="sdot wait" title="'+label+' · 待提交"></span>';
-        return '<span class="sdot miss" title="'+label+' · 缺交"></span>';
+        if(rec){
+          const fc=failCount(rec);
+          const cls=!fc?'pass':'fail';
+          const who=esc(rec.handover||rec.takeover||'—');
+          const tm=fmtTime(rec.timestamp);
+          return '<span class="sdot-cell '+cls+'" onclick="event.stopPropagation();viewRecord(\''+rec.id+'\')">'+
+            '<span class="sdot '+cls+'"></span>'+
+            '<span class="sdot-name" title="'+who+' '+tm+' · '+(fc?fc+'项不合格':'全部合格')+'">'+who+'</span>'+
+            '<span class="sdot-time">'+tm+'</span>'+
+            '</span>';
+        }
+        if(isPast)return '<span class="sdot-cell miss"><span class="sdot miss"></span><span class="sdot-name">'+label.replace('班','')+'</span><span class="sdot-time">缺交</span></span>';
+        if(isToday)return '<span class="sdot-cell wait"><span class="sdot wait"></span><span class="sdot-name">'+label.replace('班','')+'</span><span class="sdot-time">待提交</span></span>';
+        return '<span class="sdot-cell miss"><span class="sdot miss"></span><span class="sdot-name">'+label.replace('班','')+'</span><span class="sdot-time">缺交</span></span>';
       };
       const doneCnt=[d.early,d.mid,d.night].filter(x=>x).length;
       rows+='<tr><td class="dd-store">'+ic('store')+sName+'</td><td class="dd-dots">'+shiftDot(d.early,'早班')+shiftDot(d.mid,'中班')+shiftDot(d.night,'晚班')+'</td><td class="dd-count">'+doneCnt+'<small>/3</small></td></tr>';
@@ -3164,10 +3172,20 @@ function renderDailyTrack(){
       const d=getDay(sid,date);
       const sName=storeName(sid);
       const shiftDot=(rec,label)=>{
-        if(rec){const fc=failCount(rec);return '<span class="sdot '+(!fc?'pass':'fail')+'" title="'+label+' · '+(fc?fc+'项不合格':'全部合格')+' · 点击查看" onclick="event.stopPropagation();viewRecord(\''+rec.id+'\')"></span>';}
-        if(isPast)return '<span class="sdot miss" title="'+label+' · 缺交"></span>';
-        if(isToday)return '<span class="sdot wait" title="'+label+' · 待提交"></span>';
-        return '<span class="sdot miss" title="'+label+' · 缺交"></span>';
+        if(rec){
+          const fc=failCount(rec);
+          const cls=!fc?'pass':'fail';
+          const who=esc(rec.handover||rec.takeover||'—');
+          const tm=fmtTime(rec.timestamp);
+          return '<span class="sdot-cell '+cls+'" onclick="event.stopPropagation();viewRecord(\''+rec.id+'\')">'+
+            '<span class="sdot '+cls+'"></span>'+
+            '<span class="sdot-name" title="'+who+' '+tm+' · '+(fc?fc+'项不合格':'全部合格')+' · 点击查看">'+who+'</span>'+
+            '<span class="sdot-time">'+tm+'</span>'+
+            '</span>';
+        }
+        if(isPast)return '<span class="sdot-cell miss"><span class="sdot miss"></span><span class="sdot-name">'+label.replace('班','')+'</span><span class="sdot-time">缺交</span></span>';
+        if(isToday)return '<span class="sdot-cell wait"><span class="sdot wait"></span><span class="sdot-name">'+label.replace('班','')+'</span><span class="sdot-time">待提交</span></span>';
+        return '<span class="sdot-cell miss"><span class="sdot miss"></span><span class="sdot-name">'+label.replace('班','')+'</span><span class="sdot-time">缺交</span></span>';
       };
       const doneCnt=[d.early,d.mid,d.night].filter(x=>x).length;
       rows+='<tr><td class="dd-store">'+ic('store')+sName+'</td><td class="dd-dots">'+shiftDot(d.early,'早班')+shiftDot(d.mid,'中班')+shiftDot(d.night,'晚班')+'</td><td class="dd-count">'+doneCnt+'<small>/3</small></td></tr>';
@@ -3765,9 +3783,22 @@ function todaySummaryHtml(stores,todayStr){
   let rows='';
   stores.forEach(s=>{
     const d=maps[s.id]||{early:null,mid:null,night:null};
-    const shiftDot=(rec)=>{if(rec){const fc=failCountOf(rec);return '<span class="sdot '+(fc?'fail':'pass')+'" onclick="event.stopPropagation();viewRecord(\''+rec.id+'\')"></span>';}return '<span class="sdot miss"></span>'};
+    const shiftDot=(rec,label)=>{
+      if(rec){
+        const fc=failCountOf(rec);
+        const cls=fc?'fail':'pass';
+        const who=esc(rec.handover||rec.takeover||'—');
+        const tm=fmtTime(rec.timestamp);
+        return '<span class="sdot-cell '+cls+'" onclick="event.stopPropagation();viewRecord(\''+rec.id+'\')">'+
+          '<span class="sdot '+cls+'"></span>'+
+          '<span class="sdot-name" title="'+who+' '+tm+' · '+(fc?fc+'项不合格':'全部合格')+'">'+who+'</span>'+
+          '<span class="sdot-time">'+tm+'</span>'+
+        '</span>';
+      }
+      return '<span class="sdot-cell miss"><span class="sdot miss"></span><span class="sdot-name">'+(label||'')+'</span><span class="sdot-time">缺交</span></span>';
+    };
     const doneCnt=[d.early,d.mid,d.night].filter(x=>x).length;totalToday+=doneCnt;
-    rows+='<tr><td class="dd-store">'+ic('store')+s.name+'</td><td class="dd-dots">'+shiftDot(d.early)+shiftDot(d.mid)+shiftDot(d.night)+'</td><td class="dd-count">'+doneCnt+'<small>/3</small></td></tr>';
+    rows+='<tr><td class="dd-store">'+ic('store')+s.name+'</td><td class="dd-dots">'+shiftDot(d.early,'早')+shiftDot(d.mid,'中')+shiftDot(d.night,'晚')+'</td><td class="dd-count">'+doneCnt+'<small>/3</small></td></tr>';
   });
   return '<div class="today-collapse" id="today-collapse-section">'+
     '<div class="tc-header">'+
