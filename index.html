@@ -3183,6 +3183,8 @@ function renderRecordsView(){
     if(paneList)paneList.classList.remove('active');
     if(paneCal)paneCal.classList.remove('active');
     if(panePhoto)panePhoto.classList.add('active');
+    /* Ensure photos are loaded from cloud when entering photo tab */
+    if(PHOTOS_CACHE.length===0)loadPhotosFromCloud().then(()=>renderPhotoGrid());
     renderPhotoGrid();
   }else{
     if(paneList)paneList.classList.remove('active');
@@ -3221,7 +3223,8 @@ async function loadPhotosFromCloud(){
   try{
     const controller=new AbortController();
     const timeoutId=setTimeout(()=>controller.abort(),15000);
-    const res=await fetch(SB_PHOTOS_API+'?select=*&deleted=is.false&order=ts.desc&limit=30',{headers:SB_HEADERS,signal:controller.signal});
+    /* NOTE: removed 'deleted=is.false' filter — column doesn't exist in DB, causes 42703 error */
+    const res=await fetch(SB_PHOTOS_API+'?select=id,data_url,ts,store_name,store_id,shift&order=ts.desc&limit=30',{headers:SB_HEADERS,signal:controller.signal});
     clearTimeout(timeoutId);
     if(res.ok){
       const rows=await res.json();
@@ -3264,30 +3267,28 @@ async function savePhoto(dataUrl,storeId,storeName,shift){
 }
 
 async function deletePhoto(id){
-  /* 云端：软删除（标记为已删除，移入回收站） */
+  /* 云端：硬删除（deleted 列不存在，无法软删除） */
   try{
     await fetch(SB_PHOTOS_API+'?id=eq.'+id,{
-      method:'PATCH',
-      headers:SB_POST_HEADERS,
-      body:JSON.stringify({deleted:true,deleted_at:new Date().toISOString()})
+      method:'DELETE',
+      headers:SB_POST_HEADERS
     });
   }catch(e){}
   /* 缓存移除 */
   PHOTOS_CACHE=PHOTOS_CACHE.filter(p=>p.id!==id);
   renderPhotoGrid();
-  showToast('照片已移入回收站','info');
+  showToast('照片已删除','info');
 }
 
 async function cleanupExpiredPhotos(){
   const cutoff=Date.now()-PHOTO_TTL;
-  /* 云端：将过期照片标记为已删除（移入回收站），而非直接删除 */
+  /* 云端：硬删除过期照片（deleted 列不存在，无法软删除） */
   try{
-    await fetch(SB_PHOTOS_API+'?ts=lt.'+cutoff+'&deleted=is.false',{
-      method:'PATCH',
-      headers:SB_POST_HEADERS,
-      body:JSON.stringify({deleted:true,deleted_at:new Date().toISOString()})
+    await fetch(SB_PHOTOS_API+'?ts=lt.'+cutoff,{
+      method:'DELETE',
+      headers:SB_POST_HEADERS
     });
-    console.log('[Photo] Expired photos moved to recycle bin');
+    console.log('[Photo] Expired photos deleted');
   }catch(e){console.error('[Photo] Cleanup error:',e.message)}
 }
 
@@ -3303,12 +3304,15 @@ async function loadDeletedPhotos(){
   try{
     const controller=new AbortController();
     const timeoutId=setTimeout(()=>controller.abort(),15000);
-    const res=await fetch(SB_PHOTOS_API+'?select=id,data_url,ts,store_name,store_id,shift,deleted_at&deleted=is.true&order=deleted_at.desc&limit=60',{headers:SB_HEADERS,signal:controller.signal});
+    /* NOTE: deleted column doesn't exist — recycle bin requires DB schema upgrade */
+    const res=await fetch(SB_PHOTOS_API+'?select=id,data_url,ts,store_name,store_id,shift&order=ts.desc&limit=60',{headers:SB_HEADERS,signal:controller.signal});
     clearTimeout(timeoutId);
     if(res.ok){
       const rows=await res.json();
-      RECYCLE_BIN_CACHE=rows.map(r=>({id:r.id,data:r.data_url,ts:r.ts,store:r.store_name,storeId:r.store_id,shift:r.shift,deletedAt:r.deleted_at}));
-      console.log('[RecycleBin] Loaded',RECYCLE_BIN_CACHE.length,'deleted photos');
+      const cutoff=Date.now()-PHOTO_TTL;
+      /* Show expired photos (older than TTL) as "recycled" */
+      RECYCLE_BIN_CACHE=rows.filter(p=>p.ts<=cutoff).map(r=>({id:r.id,data:r.data_url,ts:r.ts,store:r.store_name,storeId:r.store_id,shift:r.shift}));
+      console.log('[RecycleBin] Found',RECYCLE_BIN_CACHE.length,'expired photos');
     }else{
       console.error('[RecycleBin] Load failed:',res.status);
       RECYCLE_BIN_CACHE=[];
@@ -3377,9 +3381,12 @@ function confirmEmptyRecycleBin(){
 async function emptyRecycleBin(){
   const cnt=RECYCLE_BIN_CACHE.length;
   try{
+    /* Delete all expired photos by their IDs */
+    const ids=RECYCLE_BIN_CACHE.map(p=>p.id);
+    if(ids.length===0){showToast('回收站已为空','info');return;}
     const controller=new AbortController();
     const timeoutId=setTimeout(()=>controller.abort(),15000);
-    const res=await fetch(SB_PHOTOS_API+'?deleted=is.true',{method:'DELETE',headers:SB_HEADERS,signal:controller.signal});
+    const res=await fetch(SB_PHOTOS_API+'?id=in.('+ids.join(',')+')',{method:'DELETE',headers:SB_HEADERS,signal:controller.signal});
     clearTimeout(timeoutId);
     if(res.ok||res.status===204){
       console.log('[RecycleBin] Emptied',cnt,'photos');
