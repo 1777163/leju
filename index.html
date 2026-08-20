@@ -3220,14 +3220,18 @@ function getPhotosLocal(){
 async function loadPhotosFromCloud(){
   try{
     const controller=new AbortController();
-    const timeoutId=setTimeout(()=>controller.abort(),12000);
+    const timeoutId=setTimeout(()=>controller.abort(),15000);
     const res=await fetch(SB_PHOTOS_API+'?select=*&deleted=is.false&order=ts.desc&limit=50',{headers:SB_HEADERS,signal:controller.signal});
     clearTimeout(timeoutId);
     if(res.ok){
       const rows=await res.json();
       const cutoff=Date.now()-PHOTO_TTL;
-      PHOTOS_CACHE=rows.filter(p=>p.ts>cutoff).map(r=>({id:r.id,data:r.data_url,ts:r.ts,store:r.store_name,storeId:r.store_id,shift:r.shift}));
-      console.log('[Photo] Loaded',PHOTOS_CACHE.length,'active photos from cloud');
+      const cloudPhotos=rows.filter(p=>p.ts>cutoff).map(r=>({id:r.id,data:r.data_url,ts:r.ts,store:r.store_name,storeId:r.store_id,shift:r.shift}));
+      /* Merge: cloud photos + local-only photos (not in cloud, e.g. failed uploads) */
+      const cloudIds=new Set(cloudPhotos.map(p=>p.id));
+      const localOnly=getPhotosLocal().filter(p=>!cloudIds.has(p.id));
+      PHOTOS_CACHE=[...cloudPhotos,...localOnly].sort((a,b)=>b.ts-a.ts);
+      console.log('[Photo] Loaded',cloudPhotos.length,'cloud +',localOnly.length,'local-only =',PHOTOS_CACHE.length,'total');
       return;
     }
     console.error('[Photo] Cloud load failed:',res.status);
@@ -3240,6 +3244,7 @@ async function savePhoto(dataUrl,storeId,storeName,shift){
   const id='ph_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
   const ts=Date.now();
   const photo={id,data:dataUrl,ts,store:storeName,storeId,shift};
+  let cloudOk=false;
   /* Try cloud first — use minimal headers to avoid large response body */
   try{
     const res=await fetch(SB_PHOTOS_API,{
@@ -3248,9 +3253,7 @@ async function savePhoto(dataUrl,storeId,storeName,shift){
     });
     if(res.ok){
       console.log('[Photo] Upload success:',id);
-      PHOTOS_CACHE.unshift(photo);
-      renderPhotoGrid();
-      return;
+      cloudOk=true;
     }else{
       const errText=await res.text().catch(()=>'');
       console.error('[Photo] Upload failed:',res.status,errText.substring(0,200));
@@ -3258,13 +3261,16 @@ async function savePhoto(dataUrl,storeId,storeName,shift){
   }catch(e){
     console.error('[Photo] Upload error:',e.message);
   }
-  /* Fallback localStorage */
-  console.log('[Photo] Falling back to localStorage:',id);
+  /* Always save to localStorage as backup (even if cloud succeeded) */
   const photos=getPhotosLocal();
   photos.unshift(photo);
-  localStorage.setItem(PHOTO_KEY,JSON.stringify(photos));
-  PHOTOS_CACHE=photos;
+  try{localStorage.setItem(PHOTO_KEY,JSON.stringify(photos));}catch(e){console.error('[Photo] localStorage full:',e.message)}
+  /* Update cache: merge with existing to avoid losing other photos */
+  const existingIds=new Set(PHOTOS_CACHE.map(p=>p.id));
+  if(!existingIds.has(id))PHOTOS_CACHE.unshift(photo);
+  PHOTOS_CACHE.sort((a,b)=>b.ts-a.ts);
   renderPhotoGrid();
+  return cloudOk;
 }
 
 async function deletePhoto(id){
@@ -3591,11 +3597,13 @@ async function capturePhoto(){
   const dataUrl=canvas.toDataURL('image/jpeg',0.7);
   closeCamera();
   showToast('正在保存照片...','info');
-  await savePhoto(dataUrl,ctx.storeId,ctx.storeName,ctx.shift);
-  showToast('照片已保存（16小时后自动删除）','success');
+  const cloudOk=await savePhoto(dataUrl,ctx.storeId,ctx.storeName,ctx.shift);
+  if(cloudOk){
+    showToast('照片已保存并同步云端（16小时后自动删除）','success');
+  }else{
+    showToast('照片已保存到本机（云端同步失败，仅本机可见）','warn');
+  }
   if(recordsViewTab!=='photo')setRecordsViewTab('photo');
-  /* 刷新云端照片列表 */
-  await loadPhotosFromCloud();
   renderPhotoGrid();
 }
 
