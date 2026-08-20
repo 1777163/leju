@@ -627,17 +627,16 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
 .hero-header{display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative;z-index:1}
 .hero-title{font-size:var(--fs-title);font-weight:700;letter-spacing:var(--tracking-tight);line-height:var(--lh-tight)}
 .hero-date{font-size:var(--fs-caption);opacity:0.85;font-weight:600;background:rgba(255,255,255,0.12);padding:4px 10px;border-radius:var(--radius-pill);white-space:nowrap}
-/* Progress row: ring left, numbers+bar right */
-.hero-progress{display:flex;align-items:center;gap:var(--space-md);margin-top:var(--space-lg);position:relative;z-index:1}
-.progress-ring{width:64px;height:64px;position:relative;flex-shrink:0}
+/* Progress: ring centered, info below */
+.hero-progress{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:var(--space-lg);position:relative;z-index:1}
+.progress-ring{width:88px;height:88px;position:relative;flex-shrink:0}
 .progress-ring svg{transform:rotate(-90deg)}
 .progress-ring .bg-circle{stroke:rgba(255,255,255,0.18)}
 .progress-ring .fg-circle{stroke:#fff;stroke-linecap:round;transition:stroke-dashoffset 0.8s ease}
-.progress-ring .pct{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:var(--fs-subtitle);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:var(--tracking-tight)}
-.progress-info{flex:1;min-width:0}
-.progress-info .pi-num{font-size:var(--fs-stat);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:var(--tracking-tight)}
-.progress-info .pi-num small{font-size:var(--fs-body);opacity:0.75;font-weight:600}
-.progress-info .pi-label{font-size:var(--fs-small);opacity:0.9;margin-top:2px}
+.progress-ring .pct{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:var(--fs-h2);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:var(--tracking-tight);text-align:center;line-height:1.1}
+.progress-ring .pct small{display:block;font-size:var(--fs-micro);font-weight:600;opacity:0.7;margin-top:2px}
+.progress-info{text-align:center;width:100%;max-width:240px}
+.progress-info .pi-label{font-size:var(--fs-small);opacity:0.85;margin-top:2px}
 .progress-bar-mini{height:7px;border-radius:var(--radius-pill);background:rgba(255,255,255,0.18);margin-top:8px;overflow:hidden}
 .progress-bar-mini .fill{height:100%;border-radius:var(--radius-pill);background:#fff;transition:width 0.8s ease}
 /* Hero shift summary */
@@ -1008,18 +1007,40 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
 .photo-empty p{color:var(--text-muted);font-size:var(--fs-small)}
 .photo-action-bar{display:flex;align-items:center;gap:8px;padding:12px var(--screen-margin) 6px;flex-wrap:wrap}
 .photo-filter-info{padding:4px var(--screen-margin) 8px;font-size:var(--fs-small);color:var(--text-muted);font-weight:600}
-.photo-shift-inline{display:flex;gap:4px}
-.photo-shift-btn{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--border);font-size:14px;font-weight:700;cursor:pointer;background:var(--surface);color:var(--text-muted);transition:var(--transition-fast);font-family:inherit;display:flex;align-items:center;justify-content:center;position:relative}
+.photo-shift-inline{display:flex;gap:6px}
+.photo-shift-btn{min-width:38px;height:34px;padding:0 10px;border-radius:var(--radius-pill);border:1px solid var(--border);font-size:14px;font-weight:700;cursor:pointer;background:var(--surface);color:var(--text-muted);transition:all .25s cubic-bezier(.4,0,.2,1);font-family:inherit;display:flex;align-items:center;justify-content:center;position:relative}
 .photo-shift-btn:active{transform:scale(0.92)}
-.photo-shift-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
-.photo-shift-btn .psb-count{position:absolute;top:-4px;right:-4px;background:var(--danger);color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0 3px}
+.photo-shift-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.photo-shift-btn .psb-count{position:absolute;top:-5px;right:-5px;background:var(--danger);color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:var(--radius-pill);display:flex;align-items:center;justify-content:center;padding:0 4px;box-shadow:0 1px 3px rgba(0,0,0,.12)}
 .photo-shift-btn.active .psb-count{background:rgba(255,255,255,0.3)}
-.photo-cam-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-pill);border:none;background:var(--primary);color:#fff;font-size:var(--fs-small);font-weight:700;cursor:pointer;box-shadow:var(--shadow-sm);font-family:inherit;transition:var(--transition-fast);margin-left:auto}
+.photo-cam-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-pill);border:none;background:var(--primary);color:#fff;font-size:var(--fs-small);font-weight:700;cursor:pointer;box-shadow:var(--shadow-sm);font-family:inherit;transition:all .25s cubic-bezier(.4,0,.2,1);margin-left:auto}
 .photo-cam-btn:active{transform:scale(0.96)}
 .photo-cam-btn .icon{width:18px;height:18px}
-.photo-action-bar select{padding:7px 10px;border-radius:var(--radius-sm);border:1.5px solid var(--border);font-size:var(--fs-small);background:var(--surface);color:var(--text);font-family:inherit;cursor:pointer;outline:none;min-width:100px}
+.photo-action-bar select{padding:7px 12px;border-radius:var(--radius-pill);border:1px solid var(--border);font-size:var(--fs-small);background:var(--surface);color:var(--text);font-family:inherit;cursor:pointer;outline:none;min-width:100px;transition:all .25s ease}
 .photo-tag{display:inline-flex;align-items:center;gap:3px;font-size:var(--fs-micro);font-weight:600;padding:1px 6px;border-radius:var(--radius-pill);background:var(--primary-fade);color:var(--primary);white-space:nowrap}
 .photo-tag .icon{width:11px;height:11px}
+/* Recycle Bin */
+.rb-banner{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:var(--radius-md);background:var(--primary-fade);color:var(--primary);font-size:var(--fs-small);font-weight:600;margin-bottom:var(--space-md)}
+.rb-banner .icon{width:18px;height:18px;flex-shrink:0}
+.rb-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-md)}
+.rb-count{font-size:var(--fs-small);color:var(--text-muted);font-weight:600}
+.rb-empty-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-pill);border:none;background:var(--danger);color:#fff;font-size:var(--fs-small);font-weight:700;cursor:pointer;box-shadow:var(--shadow-sm);font-family:inherit;transition:all .25s cubic-bezier(.4,0,.2,1)}
+.rb-empty-btn:active{transform:scale(0.96)}
+.rb-empty-btn .icon{width:16px;height:16px}
+.rb-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.rb-item{position:relative;border-radius:var(--radius-md);overflow:hidden;background:var(--card-bg);box-shadow:var(--shadow-xs)}
+.rb-item img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;filter:grayscale(0.3) opacity(0.85)}
+.rb-item .rb-badge{position:absolute;top:6px;left:6px;background:rgba(0,0,0,0.65);color:#fff;font-size:var(--fs-micro);padding:2px 7px;border-radius:var(--radius-pill);font-weight:700;backdrop-filter:blur(4px)}
+.rb-item .rb-info{padding:6px 8px}
+.rb-item .rb-info .rb-store{font-size:var(--fs-micro);font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rb-item .rb-info .rb-time{font-size:var(--fs-micro);color:var(--text-muted);margin-top:1px}
+.rb-empty{text-align:center;padding:60px var(--card-pad)}
+.rb-empty .rb-e-icon{width:56px;height:56px;border-radius:var(--radius-md);background:var(--primary-fade);color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+.rb-empty .rb-e-icon .icon{width:28px;height:28px}
+.rb-empty p{color:var(--text-muted);font-size:var(--fs-small)}
+.rb-loading{text-align:center;padding:40px var(--card-pad);color:var(--text-muted);font-size:var(--fs-small)}
+.rb-loading .spinner{width:32px;height:32px;border:2.5px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 10px}
+@keyframes spin{to{transform:rotate(360deg)}}
 /* Camera overlay */
 .cam-overlay{position:fixed;inset:0;z-index:9999;background:#000;display:none;flex-direction:column;align-items:center}
 .cam-overlay.show{display:flex}
@@ -1331,14 +1352,13 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
         </div>
         <div class="hero-progress">
           <div class="progress-ring">
-            <svg width="64" height="64">
-              <circle class="bg-circle" cx="32" cy="32" r="28" fill="none" stroke-width="5"/>
-              <circle class="fg-circle" cx="32" cy="32" r="28" fill="none" stroke-width="5" stroke-dasharray="175.9" stroke-dashoffset="175.9"/>
+            <svg width="88" height="88">
+              <circle class="bg-circle" cx="44" cy="44" r="40" fill="none" stroke-width="5"/>
+              <circle class="fg-circle" cx="44" cy="44" r="40" fill="none" stroke-width="5" stroke-dasharray="251.3" stroke-dashoffset="251.3"/>
             </svg>
-            <div class="pct">0%</div>
+            <div class="pct" id="hero-pct">0%<small>0/15 班次</small></div>
           </div>
           <div class="progress-info">
-            <div class="pi-num">0<small>/0 班次</small></div>
             <div class="pi-label">暂无数据</div>
             <div class="progress-bar-mini"><div class="fill" style="width:0%"></div></div>
           </div>
@@ -1481,6 +1501,17 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
       <div class="records-pane active" id="pane-list"><div id="list-content"></div></div>
       <div class="records-pane" id="pane-calendar"><div id="daily-content"></div></div>
       <div class="records-pane" id="pane-photo"><div id="photo-content"></div></div>
+    </div>
+  </div>
+
+  <!-- ===== Recycle Bin View (admin only) ===== -->
+  <div class="view" id="view-recycleBin">
+    <div class="view-content">
+      <div class="records-header">
+        <h2><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M10 11v6M14 11v6"/></svg>回收站</h2>
+        <button class="filter-toggle" onclick="showView('records')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>返回</button>
+      </div>
+      <div id="recycle-bin-content"></div>
     </div>
   </div>
 
@@ -1734,6 +1765,10 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-he
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>同步数据
         <span class="sa-lock" id="lock-sync"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>需管理员</span>
       </div>
+      <div class="sa-item" onclick="adminAction('recycleBin')">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M10 11v6M14 11v6"/></svg>照片回收站
+        <span class="sa-lock" id="lock-recycleBin"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>需管理员</span>
+      </div>
       <div class="sa-item" onclick="adminAction('changePwd')">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="3.5"/><path d="m10 13 9-9"/><path d="m16 6 2 2"/><path d="m19 3 2 2"/></svg>修改密码
         <span class="sa-lock" id="lock-changePwd"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>需管理员</span>
@@ -1970,6 +2005,10 @@ function executeAdminAction(action){
       break;
     case 'sync':
       refreshData(false);
+      break;
+    case 'recycleBin':
+      showView('recycleBin');
+      renderRecycleBin();
       break;
     case 'changePwd':
       showView('settings');
@@ -2828,10 +2867,9 @@ function renderHome(){
   let done=0;
   donePairs.forEach(p=>{if(stores.some(s=>s.id===p.split('|')[0]))done++});
   const pct=totalSlots?Math.round(done/totalSlots*100):0;
-  const circumference=2*Math.PI*28;
+  const circumference=2*Math.PI*40;
   document.querySelector('.progress-ring .fg-circle').style.strokeDashoffset=circumference*(1-pct/100);
-  document.querySelector('.progress-ring .pct').textContent=pct+'%';
-  document.querySelector('.progress-info .pi-num').innerHTML=done+'<small>/'+totalSlots+' 班次</small>';
+  document.getElementById('hero-pct').innerHTML=pct+'%<small>'+done+'/'+totalSlots+' 班次</small>';
   document.querySelector('.progress-info .pi-label').textContent=(totalSlots>0&&done>=totalSlots)?'今日全部完成':(totalSlots>0?'还差 '+(totalSlots-done)+' 个班次':'暂无门店，请先添加');
   document.querySelector('.progress-bar-mini .fill').style.width=pct+'%';
   /* [新] hero 内嵌三班今日概览（进度+概览合一） */
@@ -2931,8 +2969,8 @@ async function refreshData(silent){
   try{
     await loadStoresFromCloud().catch(e=>console.error('stores sync err:',e));
     await syncRecordsFromCloud().catch(e=>console.error('records sync err:',e));
+    await cleanupExpiredPhotos().catch(e=>console.error('cleanup err:',e));
     await loadPhotosFromCloud().catch(e=>console.error('photos sync err:',e));
-    cleanupExpiredPhotos().catch(e=>console.error('cleanup err:',e));
   }catch(e){console.error('refresh failed',e)}
   lastSyncTime=Date.now();
   populateStoreSelect();populateFilterStores();renderStoreMgmt();renderSidebar();renderHome();populateNameDatalists();
@@ -3157,13 +3195,13 @@ async function loadPhotosFromCloud(){
   try{
     const controller=new AbortController();
     const timeoutId=setTimeout(()=>controller.abort(),12000);
-    const res=await fetch(SB_PHOTOS_API+'?select=*&order=ts.desc&limit=50',{headers:SB_HEADERS,signal:controller.signal});
+    const res=await fetch(SB_PHOTOS_API+'?select=*&deleted=is.false&order=ts.desc&limit=50',{headers:SB_HEADERS,signal:controller.signal});
     clearTimeout(timeoutId);
     if(res.ok){
       const rows=await res.json();
       const cutoff=Date.now()-PHOTO_TTL;
       PHOTOS_CACHE=rows.filter(p=>p.ts>cutoff).map(r=>({id:r.id,data:r.data_url,ts:r.ts,store:r.store_name,storeId:r.store_id,shift:r.shift}));
-      console.log('[Photo] Loaded',PHOTOS_CACHE.length,'photos from cloud');
+      console.log('[Photo] Loaded',PHOTOS_CACHE.length,'active photos from cloud');
       return;
     }
     console.error('[Photo] Cloud load failed:',res.status);
@@ -3204,23 +3242,36 @@ async function savePhoto(dataUrl,storeId,storeName,shift){
 }
 
 async function deletePhoto(id){
-  /* Cloud */
-  try{await fetch(SB_PHOTOS_API+'?id=eq.'+id,{method:'DELETE',headers:SB_HEADERS});}catch(e){}
-  /* Local */
+  /* 云端：软删除（标记为已删除，移入回收站） */
+  try{
+    await fetch(SB_PHOTOS_API+'?id=eq.'+id,{
+      method:'PATCH',
+      headers:SB_POST_HEADERS,
+      body:JSON.stringify({deleted:true,deleted_at:new Date().toISOString()})
+    });
+  }catch(e){}
+  /* 本地缓存移除 */
   try{
     const arr=JSON.parse(localStorage.getItem(PHOTO_KEY)||'[]');
     localStorage.setItem(PHOTO_KEY,JSON.stringify(arr.filter(p=>p.id!==id)));
   }catch(e){}
   PHOTOS_CACHE=PHOTOS_CACHE.filter(p=>p.id!==id);
   renderPhotoGrid();
-  showToast('照片已删除','info');
+  showToast('照片已移入回收站','info');
 }
 
 async function cleanupExpiredPhotos(){
   const cutoff=Date.now()-PHOTO_TTL;
-  /* Cloud: delete old photos */
-  try{await fetch(SB_PHOTOS_API+'?ts=lt.'+cutoff,{method:'DELETE',headers:SB_HEADERS});}catch(e){}
-  /* Local: clean localStorage */
+  /* 云端：将过期照片标记为已删除（移入回收站），而非直接删除 */
+  try{
+    await fetch(SB_PHOTOS_API+'?ts=lt.'+cutoff+'&deleted=is.false',{
+      method:'PATCH',
+      headers:SB_POST_HEADERS,
+      body:JSON.stringify({deleted:true,deleted_at:new Date().toISOString()})
+    });
+    console.log('[Photo] Expired photos moved to recycle bin');
+  }catch(e){console.error('[Photo] Cleanup error:',e.message)}
+  /* 本地：清理 localStorage 中的过期照片 */
   try{
     const arr=JSON.parse(localStorage.getItem(PHOTO_KEY)||'[]');
     const valid=arr.filter(p=>p.ts>cutoff);
@@ -3228,36 +3279,153 @@ async function cleanupExpiredPhotos(){
   }catch(e){}
 }
 
+/* ===== 回收站功能 ===== */
+let RECYCLE_BIN_CACHE=[];
+let RECYCLE_BIN_LOADING=false;
+
+async function loadDeletedPhotos(){
+  if(RECYCLE_BIN_LOADING)return;
+  RECYCLE_BIN_LOADING=true;
+  const el=document.getElementById('recycle-bin-content');
+  if(el)el.innerHTML='<div class="rb-loading"><div class="spinner"></div>正在加载回收站…</div>';
+  try{
+    const controller=new AbortController();
+    const timeoutId=setTimeout(()=>controller.abort(),15000);
+    const res=await fetch(SB_PHOTOS_API+'?select=id,data_url,ts,store_name,store_id,shift,deleted_at&deleted=is.true&order=deleted_at.desc&limit=60',{headers:SB_HEADERS,signal:controller.signal});
+    clearTimeout(timeoutId);
+    if(res.ok){
+      const rows=await res.json();
+      RECYCLE_BIN_CACHE=rows.map(r=>({id:r.id,data:r.data_url,ts:r.ts,store:r.store_name,storeId:r.store_id,shift:r.shift,deletedAt:r.deleted_at}));
+      console.log('[RecycleBin] Loaded',RECYCLE_BIN_CACHE.length,'deleted photos');
+    }else{
+      console.error('[RecycleBin] Load failed:',res.status);
+      RECYCLE_BIN_CACHE=[];
+    }
+  }catch(e){
+    console.error('[RecycleBin] Load error:',e.message);
+    RECYCLE_BIN_CACHE=[];
+  }
+  RECYCLE_BIN_LOADING=false;
+  renderRecycleBinContent();
+}
+
+function renderRecycleBin(){
+  if(!settingsAuthed){
+    /* 未验证管理员，不应该到达这里（adminAction 已拦截） */
+    showView('records');
+    return;
+  }
+  loadDeletedPhotos();
+}
+
+function renderRecycleBinContent(){
+  const el=document.getElementById('recycle-bin-content');
+  if(!el)return;
+  const photos=RECYCLE_BIN_CACHE;
+  if(photos.length===0){
+    el.innerHTML=
+      '<div class="rb-banner"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>回收站为空。已删除的照片会在每天 23:00 自动清除。</div>'+
+      '<div class="rb-empty"><div class="rb-e-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></div><p>回收站是空的</p></div>';
+    setTimeout(bindRipples,50);
+    return;
+  }
+  let html=
+    '<div class="rb-banner"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>回收站中的照片将在每天 23:00 自动彻底清除，也可手动一键清空。</div>'+
+    '<div class="rb-toolbar"><span class="rb-count">共 '+photos.length+' 张照片</span>'+
+    '<button class="rb-empty-btn" onclick="confirmEmptyRecycleBin()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6M14 11v6"/></svg>一键清空</button></div>'+
+    '<div class="rb-grid">';
+  html+=photos.map(p=>{
+    let delStr='';
+    if(p.deletedAt){
+      try{delStr=new Date(p.deletedAt).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})}catch(e){}
+    }
+    return '<div class="rb-item" data-id="'+p.id+'">'+
+      '<img src="'+p.data+'" alt="已删除照片">'+
+      '<div class="rb-badge">已删除</div>'+
+      '<div class="rb-info">'+
+        '<div class="rb-store">'+(p.store||'未知门店')+(p.shift?' · '+p.shift:'')+'</div>'+
+        '<div class="rb-time">'+(delStr?'删除于 '+delStr:'')+'</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+  html+='</div>';
+  el.innerHTML=html;
+  setTimeout(bindRipples,50);
+}
+
+function confirmEmptyRecycleBin(){
+  const cnt=RECYCLE_BIN_CACHE.length;
+  showConfirm(
+    '确定要彻底删除回收站中的 '+cnt+' 张照片吗？此操作不可撤销。',
+    emptyRecycleBin,
+    {title:'清空回收站',okText:'清空',danger:true}
+  );
+}
+
+async function emptyRecycleBin(){
+  const cnt=RECYCLE_BIN_CACHE.length;
+  try{
+    const controller=new AbortController();
+    const timeoutId=setTimeout(()=>controller.abort(),15000);
+    const res=await fetch(SB_PHOTOS_API+'?deleted=is.true',{method:'DELETE',headers:SB_HEADERS,signal:controller.signal});
+    clearTimeout(timeoutId);
+    if(res.ok||res.status===204){
+      console.log('[RecycleBin] Emptied',cnt,'photos');
+      RECYCLE_BIN_CACHE=[];
+      renderRecycleBinContent();
+      showToast('回收站已清空（'+cnt+' 张照片已彻底删除）','success');
+    }else{
+      console.error('[RecycleBin] Empty failed:',res.status);
+      showToast('清空回收站失败，请稍后重试','error');
+    }
+  }catch(e){
+    console.error('[RecycleBin] Empty error:',e.message);
+    showToast('清空回收站失败：'+e.message,'error');
+  }
+}
+
 function timeRemaining(ts){
   const now=Date.now();
   const remain=PHOTO_TTL-(now-ts);
-  if(remain<=0)return'已过期';
+  if(remain<=0)return'待回收';
   const h=Math.floor(remain/3600000);
   const m=Math.floor((remain%3600000)/60000);
-  return h>0?h+'h'+m+'m后删除':m+'m后删除';
+  return h>0?h+'h'+m+'m后回收':m+'m后回收';
 }
 function photoActionBarHtml(){
   const stores=getStores();
   const sel=loadPhotoSel();
+  /* 若未选门店则自动选中第一个 */
+  let storeVal=sel.s;
+  if(!storeVal&&stores.length>0){
+    storeVal=stores[0].id+'|'+stores[0].name;
+    savePhotoSel(storeVal,sel.h||'');
+  }
   const opts=stores.map(s=>{
     const v=s.id+'|'+s.name;
-    const isSel=sel.s===v?' selected':'';
+    const isSel=storeVal===v?' selected':'';
     return'<option value="'+v+'"'+isSel+'>'+s.name+'</option>';
   }).join('');
   const allPhotos=getPhotos();
+  /* 按选中门店过滤照片（与 renderPhotoGrid 逻辑一致） */
+  let storePhotos=allPhotos;
+  if(storeVal){
+    const[v,n]=storeVal.split('|');
+    storePhotos=allPhotos.filter(p=>p.storeId===v||p.store===n);
+  }
   /* 早中晚 单字按钮 + 计数 */
   const shiftMap=[{key:'早班',label:'早'},{key:'中班',label:'中'},{key:'晚班',label:'晚'}];
   const tabsHtml=shiftMap.map(o=>{
-    const cnt=allPhotos.filter(p=>p.shift===o.key).length;
+    const cnt=storePhotos.filter(p=>p.shift===o.key).length;
     const isAct=sel.h===o.key?' active':'';
     return'<button class="photo-shift-btn'+isAct+'" onclick="setShiftFilter(\''+o.key+'\')">'+o.label+(cnt?'<span class="psb-count">'+cnt+'</span>':'')+'</button>';
   }).join('');
   /* 全部 按钮 */
-  const allCnt=allPhotos.length;
+  const allCnt=storePhotos.length;
   const allAct=!sel.h?' active':'';
-  const allTab='<button class="photo-shift-btn'+allAct+'" onclick="setShiftFilter(\'\')" style="font-size:11px">全'+(allCnt?'<span class="psb-count">'+allCnt+'</span>':'')+'</button>';
+  const allTab='<button class="photo-shift-btn'+allAct+'" onclick="setShiftFilter(\'\')">全'+(allCnt?'<span class="psb-count">'+allCnt+'</span>':'')+'</button>';
   return '<div class="photo-action-bar">'+
-    '<select id="photo-store-sel" onchange="onPhotoFilterChange()"><option value="">全部门店</option>'+opts+'</select>'+
+    '<select id="photo-store-sel" onchange="onPhotoFilterChange()">'+opts+'</select>'+
     '<div class="photo-shift-inline">'+allTab+tabsHtml+'</div>'+
     '<button class="photo-cam-btn" onclick="openCamera()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>拍照</button>'+
   '</div>';
@@ -3798,8 +3966,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   initTheme();
   initDisplaySettings();
   initApp();
-  cleanupExpiredPhotos(); /* 清理云端+本地过期照片 */
-  loadPhotosFromCloud(); /* 加载照片到内存缓存 */
+  cleanupExpiredPhotos().catch(()=>{}).then(()=>loadPhotosFromCloud()); /* 先清理过期照片，再加载活跃照片 */
   document.getElementById('settings-auth-pwd').addEventListener('keydown',e=>{if(e.key==='Enter')verifySettingsAccess()});
   /* 点击浮层遮罩关闭 */
   document.querySelectorAll('.modal-overlay').forEach(ov=>{
