@@ -1058,6 +1058,9 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .rb-item .rb-info{padding:6px 8px}
 .rb-item .rb-info .rb-store{font-size:var(--fs-micro);font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rb-item .rb-info .rb-time{font-size:var(--fs-micro);color:var(--text-muted);margin-top:1px}
+.rb-restore-btn{display:flex;align-items:center;justify-content:center;gap:4px;width:100%;padding:6px;border:none;border-top:1px solid var(--border);background:var(--card-bg);color:var(--primary);font-size:var(--fs-micro);font-weight:700;cursor:pointer;font-family:inherit;transition:all .25s cubic-bezier(.4,0,.2,1)}
+.rb-restore-btn:active{transform:scale(0.97);background:var(--primary-fade)}
+.rb-restore-btn .icon{width:14px;height:14px}
 .rb-empty{text-align:center;padding:60px var(--card-pad)}
 .rb-empty .rb-e-icon{width:56px;height:56px;border-radius:var(--radius-md);background:var(--primary-fade);color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
 .rb-empty .rb-e-icon .icon{width:28px;height:28px}
@@ -3223,8 +3226,8 @@ async function loadPhotosFromCloud(){
   try{
     const controller=new AbortController();
     const timeoutId=setTimeout(()=>controller.abort(),15000);
-    /* NOTE: removed 'deleted=is.false' filter — column doesn't exist in DB, causes 42703 error */
-    const res=await fetch(SB_PHOTOS_API+'?select=id,data_url,ts,store_name,store_id,shift&order=ts.desc&limit=30',{headers:SB_HEADERS,signal:controller.signal});
+    /* deleted 列已添加：只加载未删除的活跃照片 */
+    const res=await fetch(SB_PHOTOS_API+'?select=id,data_url,ts,store_name,store_id,shift&deleted=is.false&order=ts.desc&limit=30',{headers:SB_HEADERS,signal:controller.signal});
     clearTimeout(timeoutId);
     if(res.ok){
       const rows=await res.json();
@@ -3267,28 +3270,39 @@ async function savePhoto(dataUrl,storeId,storeName,shift){
 }
 
 async function deletePhoto(id){
-  /* 云端：硬删除（deleted 列不存在，无法软删除） */
+  /* 云端：软删除（标记 deleted=true，放入回收站，23:00 定时彻底清除） */
   try{
-    await fetch(SB_PHOTOS_API+'?id=eq.'+id,{
-      method:'DELETE',
-      headers:SB_POST_HEADERS
+    const res=await fetch(SB_PHOTOS_API+'?id=eq.'+id,{
+      method:'PATCH',
+      headers:SB_POST_HEADERS,
+      body:JSON.stringify({deleted:true,deleted_at:new Date().toISOString()})
     });
-  }catch(e){}
+    if(!res.ok){
+      const errText=await res.text().catch(()=>'');
+      console.error('[Photo] Soft-delete failed:',res.status,errText.substring(0,200));
+    }
+  }catch(e){console.error('[Photo] Soft-delete error:',e.message)}
   /* 缓存移除 */
   PHOTOS_CACHE=PHOTOS_CACHE.filter(p=>p.id!==id);
   renderPhotoGrid();
-  showToast('照片已删除','info');
+  showToast('照片已移入回收站','info');
 }
 
 async function cleanupExpiredPhotos(){
   const cutoff=Date.now()-PHOTO_TTL;
-  /* 云端：硬删除过期照片（deleted 列不存在，无法软删除） */
+  /* 云端：软删除过期照片（标记 deleted=true，放入回收站） */
   try{
-    await fetch(SB_PHOTOS_API+'?ts=lt.'+cutoff,{
-      method:'DELETE',
-      headers:SB_POST_HEADERS
+    const res=await fetch(SB_PHOTOS_API+'?ts=lt.'+cutoff+'&deleted=is.false',{
+      method:'PATCH',
+      headers:SB_POST_HEADERS,
+      body:JSON.stringify({deleted:true,deleted_at:new Date().toISOString()})
     });
-    console.log('[Photo] Expired photos deleted');
+    if(res.ok){
+      console.log('[Photo] Expired photos soft-deleted');
+    }else{
+      const errText=await res.text().catch(()=>'');
+      console.error('[Photo] Expired cleanup failed:',res.status,errText.substring(0,200));
+    }
   }catch(e){console.error('[Photo] Cleanup error:',e.message)}
 }
 
@@ -3304,15 +3318,13 @@ async function loadDeletedPhotos(){
   try{
     const controller=new AbortController();
     const timeoutId=setTimeout(()=>controller.abort(),15000);
-    /* NOTE: deleted column doesn't exist — recycle bin requires DB schema upgrade */
-    const res=await fetch(SB_PHOTOS_API+'?select=id,data_url,ts,store_name,store_id,shift&order=ts.desc&limit=60',{headers:SB_HEADERS,signal:controller.signal});
+    /* 查询 deleted=true 的照片（回收站内容） */
+    const res=await fetch(SB_PHOTOS_API+'?select=id,data_url,ts,store_name,store_id,shift,deleted_at&deleted=is.true&order=deleted_at.desc&limit=60',{headers:SB_HEADERS,signal:controller.signal});
     clearTimeout(timeoutId);
     if(res.ok){
       const rows=await res.json();
-      const cutoff=Date.now()-PHOTO_TTL;
-      /* Show expired photos (older than TTL) as "recycled" */
-      RECYCLE_BIN_CACHE=rows.filter(p=>p.ts<=cutoff).map(r=>({id:r.id,data:r.data_url,ts:r.ts,store:r.store_name,storeId:r.store_id,shift:r.shift}));
-      console.log('[RecycleBin] Found',RECYCLE_BIN_CACHE.length,'expired photos');
+      RECYCLE_BIN_CACHE=rows.map(r=>({id:r.id,data:r.data_url,ts:r.ts,store:r.store_name,storeId:r.store_id,shift:r.shift,deletedAt:r.deleted_at}));
+      console.log('[RecycleBin] Found',RECYCLE_BIN_CACHE.length,'deleted photos');
     }else{
       console.error('[RecycleBin] Load failed:',res.status);
       RECYCLE_BIN_CACHE=[];
@@ -3359,9 +3371,10 @@ function renderRecycleBinContent(){
       '<img src="'+p.data+'" alt="已删除照片">'+
       '<div class="rb-badge">已删除</div>'+
       '<div class="rb-info">'+
-        '<div class="rb-store">'+(p.store||'未知门店')+(p.shift?' · '+p.shift:'')+'</div>'+
+        '<div class="rb-store">'+esc(p.store||'未知门店')+(p.shift?' · '+esc(p.shift):'')+'</div>'+
         '<div class="rb-time">'+(delStr?'删除于 '+delStr:'')+'</div>'+
       '</div>'+
+      '<button class="rb-restore-btn" onclick="restorePhoto(\''+p.id+'\')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 3v6h6"/></svg>恢复</button>'+
     '</div>';
   }).join('');
   html+='</div>';
@@ -3376,6 +3389,34 @@ function confirmEmptyRecycleBin(){
     emptyRecycleBin,
     {title:'清空回收站',okText:'清空',danger:true}
   );
+}
+
+async function restorePhoto(id){
+  /* 恢复照片：将 deleted 改回 false */
+  try{
+    const controller=new AbortController();
+    const timeoutId=setTimeout(()=>controller.abort(),15000);
+    const res=await fetch(SB_PHOTOS_API+'?id=eq.'+id,{
+      method:'PATCH',
+      headers:SB_HEADERS,
+      body:JSON.stringify({deleted:false,deleted_at:null}),
+      signal:controller.signal
+    });
+    clearTimeout(timeoutId);
+    if(res.ok||res.status===204){
+      RECYCLE_BIN_CACHE=RECYCLE_BIN_CACHE.filter(p=>p.id!==id);
+      renderRecycleBinContent();
+      /* 重新加载活跃照片列表 */
+      loadPhotosFromCloud().then(()=>renderPhotoGrid());
+      showToast('照片已恢复','success');
+    }else{
+      console.error('[RecycleBin] Restore failed:',res.status);
+      showToast('恢复失败，请稍后重试','error');
+    }
+  }catch(e){
+    console.error('[RecycleBin] Restore error:',e.message);
+    showToast('恢复失败，请检查网络','error');
+  }
 }
 
 async function emptyRecycleBin(){
