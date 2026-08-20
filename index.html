@@ -614,14 +614,14 @@ html[data-pseudo-fs] .topbar{padding-top:max(var(--space-md),env(safe-area-inset
 html[data-pseudo-fs] .bottom-nav{padding-bottom:max(6px,env(safe-area-inset-bottom,0px))}
 html[data-pseudo-fs] .view-content{padding-top:var(--space-sm)}
 .pseudo-fs-exit{
-  position:fixed;top:max(12px,env(safe-area-inset-top,0px));right:16px;z-index:10000;
+  position:fixed;top:max(12px,env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:10000;
   display:none;align-items:center;gap:6px;
   padding:8px 14px;border-radius:var(--radius-pill);border:none;
   background:var(--primary);color:#fff;font-size:var(--fs-small);font-weight:600;
   cursor:pointer;box-shadow:var(--shadow-md);transition:var(--transition-press);
   font-family:inherit;
 }
-.pseudo-fs-exit:active{transform:scale(0.94)}
+.pseudo-fs-exit:active{transform:translateX(-50%) scale(0.94)}
 .pseudo-fs-exit .icon{width:15px;height:15px;stroke-width:2}
 html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 /* Topbar */
@@ -674,7 +674,7 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .theme-toggle-btn{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;color:#fff;cursor:pointer;z-index:2;backdrop-filter:blur(4px);transition:var(--transition-fast)}
 .theme-toggle-btn:active{background:rgba(255,255,255,0.25);transform:scale(0.92)}
 .theme-toggle-btn .icon{width:18px;height:18px}
-.theme-popover{position:absolute;top:52px;right:12px;background:var(--card-bg);border-radius:var(--radius-sm);box-shadow:var(--shadow-md);padding:10px;display:none;flex-direction:column;gap:8px;z-index:10;align-items:center;min-width:180px}
+.theme-popover{position:fixed;top:58px;right:16px;background:var(--card-bg);border-radius:var(--radius-sm);box-shadow:var(--shadow-md);padding:10px;display:none;flex-direction:column;gap:8px;z-index:100;align-items:center;min-width:180px}
 .theme-popover.show{display:flex;animation:popIn 0.2s ease}
 @keyframes popIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
 .tp-label{font-size:var(--fs-caption);font-weight:700;color:var(--primary);text-align:center;padding:2px 8px 4px;border-bottom:1px solid var(--divider);width:100%}
@@ -1341,7 +1341,29 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
     </div>
     <div class="topbar-right">
       <div class="sync-status" id="sync-status"><span class="sync-dot"></span><span id="sync-text"></span></div>
+      <button class="icon-btn" onclick="toggleThemePopover(event)" title="更改主题"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="12" r="2.5"/><circle cx="12" cy="12" r="2.5"/><circle cx="17" cy="12" r="2.5"/></svg></button>
+      <button class="icon-btn" onclick="toggleFullscreen()" title="全屏浏览"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8V3h5M16 3h5v5M21 16v5h-5M8 21H3v-5"/></svg></button>
       <div class="icon-btn" id="refresh-btn" onclick="refreshData(false)" title="刷新"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></div>
+    </div>
+  </div>
+  <div class="theme-popover" id="theme-popover" onclick="event.stopPropagation()">
+    <div class="tp-label" id="tp-label">霓虹紫彩</div>
+    <div class="tp-dots-row">
+      <div class="tp-dot" data-theme-val="rose" onclick="setTheme('rose')" style="background:linear-gradient(135deg,#8B2D6B,#A03A7A)" title="柔暖玫瑰"></div>
+      <div class="tp-dot" data-theme-val="mint" onclick="setTheme('mint')" style="background:linear-gradient(135deg,#1B7A5A,#2D9D78)" title="清爽薄荷"></div>
+      <div class="tp-dot" data-theme-val="ocean" data-neon="1" onclick="setTheme('ocean')" style="background:linear-gradient(135deg,#0099CC,#3DBFFF)" title="海洋霓虹"></div>
+      <div class="tp-dot" data-theme-val="sunset" data-neon="1" onclick="setTheme('sunset')" style="background:linear-gradient(135deg,#CC4A1A,#FF6B35)" title="霓虹日落"></div>
+      <div class="tp-dot" data-theme-val="forest" onclick="setTheme('forest')" style="background:linear-gradient(135deg,#1A6340,#2D8A5E)" title="森林秘境"></div>
+      <div class="tp-dot active" data-theme-val="neon" data-neon="1" onclick="setTheme('neon')" style="background:linear-gradient(135deg,#8A2FBE,#C44FE6)" title="霓虹紫彩"></div>
+      <div class="tp-dot" data-theme-val="mono" onclick="setTheme('mono')" style="background:linear-gradient(135deg,#1A1A1A,#3A3A3A)" title="极简黑白"></div>
+      <div class="tp-dot" data-theme-val="amber" onclick="setTheme('amber')" style="background:linear-gradient(135deg,#A06F00,#D4920A)" title="琥珀流金"></div>
+      <div class="tp-dot" data-theme-val="coral" onclick="setTheme('coral')" style="background:linear-gradient(135deg,#D94848,#FF6B6B)" title="珊瑚清浅"></div>
+      <div class="tp-dot" data-theme-val="berry" onclick="setTheme('berry')" style="background:linear-gradient(135deg,#B01F50,#E0356B)" title="浆莓粉红"></div>
+      <div class="tp-dot" data-theme-val="lagoon" onclick="setTheme('lagoon')" style="background:linear-gradient(135deg,#106580,#1E88A8)" title="潟湖青绿"></div>
+      <div class="tp-dot" data-theme-val="sand" onclick="setTheme('sand')" style="background:linear-gradient(135deg,#7A5620,#A0732E)" title="沙岩暖棕"></div>
+      <div class="tp-dot" data-theme-val="slate" data-neon="1" onclick="setTheme('slate')" style="background:linear-gradient(135deg,#4A7AA0,#6B9AC4)" title="冷岩深灰"></div>
+      <div class="tp-dot" data-theme-val="indigo" data-neon="1" onclick="setTheme('indigo')" style="background:linear-gradient(135deg,#4A3AB0,#6B5BE0)" title="靛青墨蓝"></div>
+      <div class="tp-dot" data-theme-val="aurora" data-neon="1" onclick="setTheme('aurora')" style="background:linear-gradient(135deg,#008F5E,#00E5A0)" title="极光翠绿"></div>
     </div>
   </div>
 
@@ -1349,31 +1371,10 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
   <div class="view active" id="view-home">
     <div class="view-content">
       <div class="hero-card">
-        <button class="theme-toggle-btn" onclick="toggleThemePopover(event)" title="更改主题"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="12" r="2.5"/><circle cx="12" cy="12" r="2.5"/><circle cx="17" cy="12" r="2.5"/></svg></button>
-        <div class="theme-popover" id="theme-popover" onclick="event.stopPropagation()">
-          <div class="tp-label" id="tp-label">霓虹紫彩</div>
-          <div class="tp-dots-row">
-          <div class="tp-dot" data-theme-val="rose" onclick="setTheme('rose')" style="background:linear-gradient(135deg,#8B2D6B,#A03A7A)" title="柔暖玫瑰"></div>
-          <div class="tp-dot" data-theme-val="mint" onclick="setTheme('mint')" style="background:linear-gradient(135deg,#1B7A5A,#2D9D78)" title="清爽薄荷"></div>
-          <div class="tp-dot" data-theme-val="ocean" data-neon="1" onclick="setTheme('ocean')" style="background:linear-gradient(135deg,#0099CC,#3DBFFF)" title="海洋霓虹"></div>
-          <div class="tp-dot" data-theme-val="sunset" data-neon="1" onclick="setTheme('sunset')" style="background:linear-gradient(135deg,#CC4A1A,#FF6B35)" title="霓虹日落"></div>
-          <div class="tp-dot" data-theme-val="forest" onclick="setTheme('forest')" style="background:linear-gradient(135deg,#1A6340,#2D8A5E)" title="森林秘境"></div>
-          <div class="tp-dot active" data-theme-val="neon" data-neon="1" onclick="setTheme('neon')" style="background:linear-gradient(135deg,#8A2FBE,#C44FE6)" title="霓虹紫彩"></div>
-          <div class="tp-dot" data-theme-val="mono" onclick="setTheme('mono')" style="background:linear-gradient(135deg,#1A1A1A,#3A3A3A)" title="极简黑白"></div>
-          <div class="tp-dot" data-theme-val="amber" onclick="setTheme('amber')" style="background:linear-gradient(135deg,#A06F00,#D4920A)" title="琥珀流金"></div>
-          <div class="tp-dot" data-theme-val="coral" onclick="setTheme('coral')" style="background:linear-gradient(135deg,#D94848,#FF6B6B)" title="珊瑚清浅"></div>
-          <div class="tp-dot" data-theme-val="berry" onclick="setTheme('berry')" style="background:linear-gradient(135deg,#B01F50,#E0356B)" title="浆莓粉红"></div>
-          <div class="tp-dot" data-theme-val="lagoon" onclick="setTheme('lagoon')" style="background:linear-gradient(135deg,#106580,#1E88A8)" title="潟湖青绿"></div>
-          <div class="tp-dot" data-theme-val="sand" onclick="setTheme('sand')" style="background:linear-gradient(135deg,#7A5620,#A0732E)" title="沙岩暖棕"></div>
-          <div class="tp-dot" data-theme-val="slate" data-neon="1" onclick="setTheme('slate')" style="background:linear-gradient(135deg,#4A7AA0,#6B9AC4)" title="冷岩深灰"></div>
-          <div class="tp-dot" data-theme-val="indigo" data-neon="1" onclick="setTheme('indigo')" style="background:linear-gradient(135deg,#4A3AB0,#6B5BE0)" title="靛青墨蓝"></div>
-          <div class="tp-dot" data-theme-val="aurora" data-neon="1" onclick="setTheme('aurora')" style="background:linear-gradient(135deg,#008F5E,#00E5A0)" title="极光翠绿"></div>
-          </div>
-        </div>
         <div class="hero-header">
-          <div class="hero-title">今日交接班概览</div>
-          <div class="hero-date" id="hero-date"></div>
-        </div>
+        <div class="hero-title">今日交接班概览</div>
+        <div class="hero-date" id="hero-date"></div>
+      </div>
         <div class="hero-progress">
           <div class="progress-ring">
             <svg width="88" height="88">
@@ -1878,6 +1879,9 @@ const LAST_STORE_KEY='lq_shift_last_store';  /* [新] 记住上次门店 */
 let currentDetailId=null, openSectionId=null, settingsAuthed=false, isSubmitting=false;
 let lastSyncTime=null, firstLoad=true;        /* [新] 同步状态 / 首次加载骨架 */
 
+/* ===== XSS Protection: escape user-generated content before innerHTML ===== */
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
 /* ===== Supabase Cloud Config ===== */
 const SUPABASE_URL='https://cjqqolvopofqyizohhse.supabase.co';
 const SUPABASE_KEY='sb_publishable_W245zs3ryJAJnh3DAxBHGg_MNfAGAxB';
@@ -2097,7 +2101,7 @@ async function saveAuth(){
   if(password!==confirmPwd){showToast('两次密码不一致','error');return}
   const pwdHash=await sha256(password);
   ADMIN_PWD_HASH=pwdHash;
-  localStorage.setItem(AUTH_KEY,JSON.stringify({pwdHash}));
+  try{localStorage.setItem(AUTH_KEY,JSON.stringify({pwdHash}))}catch(e){console.error('[Storage] Auth save failed:',e.message)}
   document.getElementById('set-password').value='';
   document.getElementById('set-confirm').value='';
   updateAuthStatus();
@@ -2429,7 +2433,7 @@ function saveDraft(){
       const card=document.getElementById('card-'+s.id);if(card&&card.classList.contains('expanded'))draft.expanded.push(s.id);
     });
     draft.pledge=document.getElementById('confirm-pledge').checked;
-    localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));
+    try{localStorage.setItem(DRAFT_KEY,JSON.stringify(draft))}catch(e){console.error('[Storage] Draft save quota exceeded:',e.message)}
   }catch(e){console.error('saveDraft',e)}
 }
 function restoreDraft(){
@@ -2487,7 +2491,7 @@ function populateNameDatalists(){
   const names=new Set();
   records.forEach(r=>{if(r.handover)names.add(r.handover);if(r.takeover)names.add(r.takeover)});
   const dl=document.getElementById('name-options');
-  if(dl)dl.innerHTML=Array.from(names).slice(0,40).map(n=>'<option value="'+n+'">').join('');
+  if(dl)dl.innerHTML=Array.from(names).slice(0,40).map(n=>'<option value="'+esc(n)+'">').join('');
 }
 
 /* ===== Submit（保留逻辑，confirm 替换为浮层） ===== */
@@ -2542,7 +2546,9 @@ async function submitForm(){
       cloudOk=false;
       const records=getRecords();
       records.unshift(record);
-      localStorage.setItem(STORAGE_KEY,JSON.stringify(records));
+      /* Guard against localStorage quota overflow — keep last 30 records max */
+      if(records.length>30)records.length=30;
+      try{localStorage.setItem(STORAGE_KEY,JSON.stringify(records))}catch(e){console.error('[Storage] Quota exceeded, skipping local save:',e.message)}
     }
     try{renderSidebar();renderHome();populateNameDatalists()}catch(e){console.error('render after submit',e)}
     try{resetForm()}catch(e){console.error('resetForm error',e)}
@@ -2610,8 +2616,8 @@ async function syncRecordsFromCloud(){
           try{await insertRecordToCloud(rec);RECORDS_CACHE.unshift(rec)}catch(e){remaining.push(rec)}
         }
       }
-      if(remaining.length>0)localStorage.setItem(STORAGE_KEY,JSON.stringify(remaining));
-      else localStorage.removeItem(STORAGE_KEY);
+      if(remaining.length>0){if(remaining.length>30)remaining.length=30;try{localStorage.setItem(STORAGE_KEY,JSON.stringify(remaining))}catch(e){console.error('[Storage] Migration save failed:',e.message)}}
+      else{try{localStorage.removeItem(STORAGE_KEY)}catch(e){}}
     }
     lastSyncTime=Date.now();
   }catch(e){
@@ -2677,12 +2683,12 @@ function updateFilterSummary(){
   if(!el)return;
   if(!dailyFilterStore){el.innerHTML=ic('store')+'全部门店';return}
   const s=stores.find(x=>x.id===dailyFilterStore);
-  el.innerHTML=ic('store')+(s?s.name:'未知门店');
+  el.innerHTML=ic('store')+esc(s?s.name:'未知门店');
 }
 
 function populateFilterStores(){
   const stores=getStores();
-  const opts='<option value="">全部门店</option>'+stores.map(s=>'<option value="'+s.id+'">'+s.name+'</option>').join('');
+  const opts='<option value="">全部门店</option>'+stores.map(s=>'<option value="'+esc(s.id)+'">'+esc(s.name)+'</option>').join('');
   const fsEl=document.getElementById('filter-store');
   if(fsEl)fsEl.innerHTML=opts;
   const records=getRecords();
@@ -2844,10 +2850,10 @@ function viewRecord(id){
       const rc=it.result==='pass'?'pass':it.result==='fail'?'fail':'na';
       const rt=it.result==='pass'?'合格':it.result==='fail'?'不合格':'未检查';
       const ricon=it.result==='pass'?'check':it.result==='fail'?'x':'clock';
-      return '<div class="detail-item"><div class="di-name"><b>'+it.name+'</b>'+(it.result==='fail'||it.problem?'<div class="di-std">'+it.std+'</div>':'<div class="di-std">'+it.std+'</div>')+(it.problem?'<div class="di-problem">'+ic('alert')+'问题：'+it.problem+'</div>':'')+'</div><div class="di-result '+rc+'">'+ic(ricon)+rt+'</div></div>';
+      return '<div class="detail-item"><div class="di-name"><b>'+esc(it.name)+'</b>'+(it.result==='fail'||it.problem?'<div class="di-std">'+esc(it.std)+'</div>':'<div class="di-std">'+esc(it.std)+'</div>')+(it.problem?'<div class="di-problem">'+ic('alert')+'问题：'+esc(it.problem)+'</div>':'')+'</div><div class="di-result '+rc+'">'+ic(ricon)+rt+'</div></div>';
     }).join('');
     let brHtml='';
-    if(sec.boxRoom&&record.boxRoom)brHtml='<div class="detail-boxroom">'+ic('box')+'<b>问题包厢号：</b>'+record.boxRoom+'</div>';
+    if(sec.boxRoom&&record.boxRoom)brHtml='<div class="detail-boxroom">'+ic('box')+'<b>问题包厢号：</b>'+esc(record.boxRoom)+'</div>';
     const summaryChip=sFail>0?'<span style="font-size:11px;font-weight:600;color:var(--danger);background:var(--danger-soft);padding:2px 8px;border-radius:var(--radius-pill);margin-left:auto">'+sFail+'项不合格</span>':'<span style="font-size:11px;font-weight:600;color:var(--success);background:var(--success-soft);padding:2px 8px;border-radius:var(--radius-pill);margin-left:auto">'+sPass+'项合格</span>';
     html+='<div class="detail-section '+collapsed+'" style="--sec-color:'+sc.main+';--sec-soft:'+sc.soft+'"><div class="detail-section-title" onclick="toggleDetailSection(this)"><span class="num-badge" style="background:'+sc.soft+';color:'+sc.main+'">'+secNames[sec.id-1]+'</span>第'+secNames[sec.id-1]+'部分：'+sec.title+summaryChip+'<span class="ds-chevron">'+ic('chevronDown')+'</span></div><div class="detail-section-body">'+brHtml+itemsHtml+'</div></div>';
   });
@@ -3193,9 +3199,8 @@ function setRecordsViewTab(t){
   renderRecordsView();
 }
 
-/* ===== 实拍照片 — 云端存储(Supabase) + 16h自动过期 + 门店班次关联 ===== */
+/* ===== 实拍照片 — 纯云端存储(Supabase) + 16h自动过期 + 门店班次关联 ===== */
 const PHOTO_TTL=16*60*60*1000; /* 16小时毫秒 */
-const PHOTO_KEY='lq_shift_photos'; /* localStorage fallback key */
 let PHOTOS_CACHE=[]; /* 内存缓存，渲染同步读 */
 let cameraStream=null;
 const PHOTO_SEL_KEY='lq_photo_sel'; /* 记住选择 */
@@ -3208,20 +3213,15 @@ function loadPhotoSel(){
   try{return JSON.parse(localStorage.getItem(PHOTO_SEL_KEY)||'{}');}catch(e){return{}}
 }
 
-function getPhotosLocal(){
-  try{
-    const arr=JSON.parse(localStorage.getItem(PHOTO_KEY)||'[]');
-    const now=Date.now();
-    const valid=arr.filter(p=>now-p.ts<PHOTO_TTL);
-    if(valid.length!==arr.length)localStorage.setItem(PHOTO_KEY,JSON.stringify(valid));
-    return valid.sort((a,b)=>b.ts-a.ts);
-  }catch(e){return[]}
+function loadPhotosLocal(){
+  /* Photos are cloud-only now — kept for backward compat, returns empty */
+  return[];
 }
 async function loadPhotosFromCloud(){
   try{
     const controller=new AbortController();
     const timeoutId=setTimeout(()=>controller.abort(),15000);
-    const res=await fetch(SB_PHOTOS_API+'?select=*&deleted=is.false&order=ts.desc&limit=50',{headers:SB_HEADERS,signal:controller.signal});
+    const res=await fetch(SB_PHOTOS_API+'?select=*&deleted=is.false&order=ts.desc&limit=30',{headers:SB_HEADERS,signal:controller.signal});
     clearTimeout(timeoutId);
     if(res.ok){
       const rows=await res.json();
@@ -3495,8 +3495,8 @@ function renderPhotoGridFiltered(photos){
   }
   el.innerHTML=bar+filterInfo+'<div class="photo-grid">'+photos.map(p=>{
     const tags=[];
-    if(p.store)tags.push('<span class="photo-tag">'+p.store+'</span>');
-    if(p.shift)tags.push('<span class="photo-tag">'+p.shift+'</span>');
+    if(p.store)tags.push('<span class="photo-tag">'+esc(p.store)+'</span>');
+    if(p.shift)tags.push('<span class="photo-tag">'+esc(p.shift)+'</span>');
     return '<div class="photo-item" data-id="'+p.id+'">'+
       '<img src="'+p.data+'" onclick="viewPhoto(\''+p.id+'\')" alt="交接班照片">'+
       '<div class="pi-badge">'+timeRemaining(p.ts)+'</div>'+
@@ -3678,7 +3678,7 @@ function toggleRecordsListMode(){
 
 /* ===== Config & Stores（原样保留 + UI 更新） ===== */
 function getStores(){try{return JSON.parse(localStorage.getItem(STORES_KEY)||'[]')}catch{return[]}}
-function saveStores(stores){localStorage.setItem(STORES_KEY,JSON.stringify(stores))}
+function saveStores(stores){try{localStorage.setItem(STORES_KEY,JSON.stringify(stores))}catch(e){console.error('[Storage] Stores save failed:',e.message)}}
 
 const STORES_CONFIG_ID='__config_stores__';
 async function loadStoresFromCloud(){
@@ -3708,14 +3708,14 @@ function populateStoreSelect(){
   const stores=getStores();
   const sel=document.getElementById('f-store');
   if(stores.length===0){sel.innerHTML='<option value="">请先在设置中添加门店</option>';return}
-  sel.innerHTML='<option value="">请选择门店</option>'+stores.map(s=>'<option value="'+s.id+'">'+s.name+'</option>').join('');
+  sel.innerHTML='<option value="">请选择门店</option>'+stores.map(s=>'<option value="'+esc(s.id)+'">'+esc(s.name)+'</option>').join('');
 }
 
 function renderStoreMgmt(){
   const stores=getStores();
   const list=document.getElementById('store-mgmt-list');
   if(stores.length===0){list.innerHTML='<div style="font-size:12px;color:var(--text-muted);padding:8px 0">暂无门店，请在下方添加</div>';return}
-  list.innerHTML=stores.map(s=>'<span class="store-tag">'+ic('store')+s.name+'<span class="st-del" onclick="deleteStore(\''+s.id+'\')">'+ic('close')+'</span></span>').join('');
+  list.innerHTML=stores.map(s=>'<span class="store-tag">'+ic('store')+esc(s.name)+'<span class="st-del" onclick="deleteStore(\''+esc(s.id)+'\')">'+ic('close')+'</span></span>').join('');
 }
 
 function addStore(){
