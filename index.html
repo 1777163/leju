@@ -1067,6 +1067,15 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .rb-empty p{color:var(--text-muted);font-size:var(--fs-small)}
 .rb-loading{text-align:center;padding:40px var(--card-pad);color:var(--text-muted);font-size:var(--fs-small)}
 .rb-loading .spinner{width:32px;height:32px;border:2.5px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 10px}
+.rb-section-title{font-size:var(--fs-small);font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 8px;padding-left:2px}
+.rb-record-list{display:flex;flex-direction:column;gap:8px}
+.rb-record-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-radius:var(--radius-md);background:var(--card-bg);box-shadow:var(--shadow-xs)}
+.rb-record-item .rb-record-info{flex:1;min-width:0}
+.rb-record-item .rb-store{font-size:var(--fs-small);font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rb-record-item .rb-time{font-size:var(--fs-micro);color:var(--text-muted);margin-top:2px}
+.rb-record-item .rb-restore-btn{width:auto;padding:6px 14px;border:none;border-radius:var(--radius-pill);background:var(--primary-fade);color:var(--primary);font-size:var(--fs-micro);font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:4px}
+.rb-record-item .rb-restore-btn:active{transform:scale(0.96)}
+.rb-record-item .rb-restore-btn .icon{width:14px;height:14px}
 @keyframes spin{to{transform:rotate(360deg)}}
 /* Camera overlay */
 .cam-overlay{position:fixed;inset:0;z-index:9999;background:#000;display:none;flex-direction:column;align-items:center}
@@ -1794,7 +1803,7 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
         <span class="sa-lock" id="lock-sync"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>需管理员</span>
       </div>
       <div class="sa-item" onclick="adminAction('recycleBin')">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M10 11v6M14 11v6"/></svg>照片回收站
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M10 11v6M14 11v6"/></svg>回收站
         <span class="sa-lock" id="lock-recycleBin"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>需管理员</span>
       </div>
       <div class="sa-item" onclick="adminAction('changePwd')">
@@ -2591,7 +2600,7 @@ async function syncRecordsFromCloud(){
   if(isSyncing)return;
   isSyncing=true;
   try{
-    const res=await fetch(SB_API+'?select=data&order=created_at.desc',{headers:SB_HEADERS});
+    const res=await fetch(SB_API+'?select=data&deleted=is.false&order=created_at.desc',{headers:SB_HEADERS});
     if(!res.ok)throw new Error('fetch failed');
     const rows=await res.json();
     const seenIds=new Set();
@@ -2644,7 +2653,12 @@ async function insertRecordToCloud(record){
 }
 
 async function deleteRecordFromCloud(id){
-  const res=await fetch(SB_API+'?id=eq.'+encodeURIComponent(id),{method:'DELETE',headers:SB_HEADERS});
+  /* 软删除：标记 deleted=true，放入回收站 */
+  const res=await fetch(SB_API+'?id=eq.'+encodeURIComponent(id),{
+    method:'PATCH',
+    headers:SB_HEADERS,
+    body:JSON.stringify({deleted:true,deleted_at:new Date().toISOString()})
+  });
   if(!res.ok)throw new Error('delete failed');
 }
 
@@ -2876,10 +2890,10 @@ function toggleDetailSection(el){
 
 async function deleteRecord(){
   if(!currentDetailId)return;
-  showConfirm('确定要删除此条交接班记录吗？删除后无法恢复。',async()=>{
+  showConfirm('确定要删除此条交接班记录吗？记录将移入回收站，可在回收站中恢复。',async()=>{
     try{await deleteRecordFromCloud(currentDetailId)}catch(e){showToast('网络异常，删除失败','error');return}
     RECORDS_CACHE=RECORDS_CACHE.filter(r=>r.id!==currentDetailId);
-    renderSidebar();populateNameDatalists();goBack();showToast('记录已删除','success');
+    renderSidebar();populateNameDatalists();goBack();showToast('记录已移入回收站','success');
   },{danger:true,okText:'删除',title:'删除记录'});
 }
 
@@ -3307,10 +3321,11 @@ async function cleanupExpiredPhotos(){
 }
 
 /* ===== 回收站功能 ===== */
-let RECYCLE_BIN_CACHE=[];
+let RECYCLE_BIN_PHOTOS=[];
+let RECYCLE_BIN_RECORDS=[];
 let RECYCLE_BIN_LOADING=false;
 
-async function loadDeletedPhotos(){
+async function loadDeletedItems(){
   if(RECYCLE_BIN_LOADING)return;
   RECYCLE_BIN_LOADING=true;
   const el=document.getElementById('recycle-bin-content');
@@ -3318,20 +3333,29 @@ async function loadDeletedPhotos(){
   try{
     const controller=new AbortController();
     const timeoutId=setTimeout(()=>controller.abort(),15000);
-    /* 查询 deleted=true 的照片（回收站内容） */
-    const res=await fetch(SB_PHOTOS_API+'?select=id,data_url,ts,store_name,store_id,shift,deleted_at&deleted=is.true&order=deleted_at.desc&limit=60',{headers:SB_HEADERS,signal:controller.signal});
+    /* 并行加载已删除的照片和填表记录 */
+    const [photoRes,recRes]=await Promise.all([
+      fetch(SB_PHOTOS_API+'?select=id,data_url,ts,store_name,store_id,shift,deleted_at&deleted=is.true&order=deleted_at.desc&limit=60',{headers:SB_HEADERS,signal:controller.signal}),
+      fetch(SB_API+'?select=data,deleted_at&deleted=is.true&order=deleted_at.desc&limit=60',{headers:SB_HEADERS,signal:controller.signal})
+    ]);
     clearTimeout(timeoutId);
-    if(res.ok){
-      const rows=await res.json();
-      RECYCLE_BIN_CACHE=rows.map(r=>({id:r.id,data:r.data_url,ts:r.ts,store:r.store_name,storeId:r.store_id,shift:r.shift,deletedAt:r.deleted_at}));
-      console.log('[RecycleBin] Found',RECYCLE_BIN_CACHE.length,'deleted photos');
-    }else{
-      console.error('[RecycleBin] Load failed:',res.status);
-      RECYCLE_BIN_CACHE=[];
+    RECYCLE_BIN_PHOTOS=[];
+    RECYCLE_BIN_RECORDS=[];
+    if(photoRes.ok){
+      const rows=await photoRes.json();
+      RECYCLE_BIN_PHOTOS=rows.map(r=>({id:r.id,data:r.data_url,ts:r.ts,store:r.store_name,storeId:r.store_id,shift:r.shift,deletedAt:r.deleted_at}));
     }
+    if(recRes.ok){
+      const rows=await recRes.json();
+      RECYCLE_BIN_RECORDS=rows
+        .filter(r=>r.data&&!String(r.data.id||'').startsWith('__'))
+        .map(r=>({id:r.data.id,data:r.data,deletedAt:r.deleted_at}));
+    }
+    console.log('[RecycleBin] Found',RECYCLE_BIN_PHOTOS.length,'photos,',RECYCLE_BIN_RECORDS.length,'records');
   }catch(e){
     console.error('[RecycleBin] Load error:',e.message);
-    RECYCLE_BIN_CACHE=[];
+    RECYCLE_BIN_PHOTOS=[];
+    RECYCLE_BIN_RECORDS=[];
   }
   RECYCLE_BIN_LOADING=false;
   renderRecycleBinContent();
@@ -3339,60 +3363,85 @@ async function loadDeletedPhotos(){
 
 function renderRecycleBin(){
   if(!settingsAuthed){
-    /* 未验证管理员，不应该到达这里（adminAction 已拦截） */
     showView('records');
     return;
   }
-  loadDeletedPhotos();
+  loadDeletedItems();
 }
 
 function renderRecycleBinContent(){
   const el=document.getElementById('recycle-bin-content');
   if(!el)return;
-  const photos=RECYCLE_BIN_CACHE;
-  if(photos.length===0){
+  const photos=RECYCLE_BIN_PHOTOS;
+  const records=RECYCLE_BIN_RECORDS;
+  const total=photos.length+records.length;
+  if(total===0){
     el.innerHTML=
-      '<div class="rb-banner"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>回收站为空。已删除的照片会在每天 23:00 自动清除。</div>'+
+      '<div class="rb-banner"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>回收站为空。已删除的照片和记录会在每天 23:00 自动清除。</div>'+
       '<div class="rb-empty"><div class="rb-e-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></div><p>回收站是空的</p></div>';
     setTimeout(bindRipples,50);
     return;
   }
   let html=
-    '<div class="rb-banner"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>回收站中的照片将在每天 23:00 自动彻底清除，也可手动一键清空。</div>'+
-    '<div class="rb-toolbar"><span class="rb-count">共 '+photos.length+' 张照片</span>'+
-    '<button class="rb-empty-btn" onclick="confirmEmptyRecycleBin()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6M14 11v6"/></svg>一键清空</button></div>'+
-    '<div class="rb-grid">';
-  html+=photos.map(p=>{
-    let delStr='';
-    if(p.deletedAt){
-      try{delStr=new Date(p.deletedAt).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})}catch(e){}
-    }
-    return '<div class="rb-item" data-id="'+p.id+'">'+
-      '<img src="'+p.data+'" alt="已删除照片">'+
-      '<div class="rb-badge">已删除</div>'+
-      '<div class="rb-info">'+
-        '<div class="rb-store">'+esc(p.store||'未知门店')+(p.shift?' · '+esc(p.shift):'')+'</div>'+
-        '<div class="rb-time">'+(delStr?'删除于 '+delStr:'')+'</div>'+
-      '</div>'+
-      '<button class="rb-restore-btn" onclick="restorePhoto(\''+p.id+'\')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 3v6h6"/></svg>恢复</button>'+
-    '</div>';
-  }).join('');
-  html+='</div>';
+    '<div class="rb-banner"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>回收站中的照片和记录将在每天 23:00 自动彻底清除，也可手动一键清空。</div>'+
+    '<div class="rb-toolbar"><span class="rb-count">共 '+total+' 项（照片 '+photos.length+' · 记录 '+records.length+'）</span>'+
+    '<button class="rb-empty-btn" onclick="confirmEmptyRecycleBin()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6M14 11v6"/></svg>一键清空</button></div>';
+  /* 照片区 */
+  if(photos.length>0){
+    html+='<div class="rb-section-title">已删除照片</div><div class="rb-grid">';
+    html+=photos.map(p=>{
+      let delStr='';
+      if(p.deletedAt){
+        try{delStr=new Date(p.deletedAt).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})}catch(e){}
+      }
+      return '<div class="rb-item" data-id="'+p.id+'">'+
+        '<img src="'+p.data+'" alt="已删除照片">'+
+        '<div class="rb-badge">已删除</div>'+
+        '<div class="rb-info">'+
+          '<div class="rb-store">'+esc(p.store||'未知门店')+(p.shift?' · '+esc(p.shift):'')+'</div>'+
+          '<div class="rb-time">'+(delStr?'删除于 '+delStr:'')+'</div>'+
+        '</div>'+
+        '<button class="rb-restore-btn" onclick="restorePhoto(\''+p.id+'\')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 3v6h6"/></svg>恢复</button>'+
+      '</div>';
+    }).join('');
+    html+='</div>';
+  }
+  /* 记录区 */
+  if(records.length>0){
+    html+='<div class="rb-section-title">已删除记录</div><div class="rb-record-list">';
+    html+=records.map(r=>{
+      let delStr='';
+      if(r.deletedAt){
+        try{delStr=new Date(r.deletedAt).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})}catch(e){}
+      }
+      const d=r.data||{};
+      const storeName=esc(d.storeName||d.store||'未知门店');
+      const dateStr=d.date||'';
+      const shiftStr=d.shift?' · '+esc(d.shift):'';
+      return '<div class="rb-record-item" data-id="'+r.id+'">'+
+        '<div class="rb-record-info">'+
+          '<div class="rb-store">'+storeName+shiftStr+'</div>'+
+          '<div class="rb-time">'+dateStr+(delStr?' · 删除于 '+delStr:'')+'</div>'+
+        '</div>'+
+        '<button class="rb-restore-btn" onclick="restoreRecord(\''+r.id+'\')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 3v6h6"/></svg>恢复</button>'+
+      '</div>';
+    }).join('');
+    html+='</div>';
+  }
   el.innerHTML=html;
   setTimeout(bindRipples,50);
 }
 
 function confirmEmptyRecycleBin(){
-  const cnt=RECYCLE_BIN_CACHE.length;
+  const total=RECYCLE_BIN_PHOTOS.length+RECYCLE_BIN_RECORDS.length;
   showConfirm(
-    '确定要彻底删除回收站中的 '+cnt+' 张照片吗？此操作不可撤销。',
+    '确定要彻底删除回收站中的 '+total+' 项内容吗？（照片 '+RECYCLE_BIN_PHOTOS.length+' · 记录 '+RECYCLE_BIN_RECORDS.length+'）此操作不可撤销。',
     emptyRecycleBin,
     {title:'清空回收站',okText:'清空',danger:true}
   );
 }
 
 async function restorePhoto(id){
-  /* 恢复照片：将 deleted 改回 false */
   try{
     const controller=new AbortController();
     const timeoutId=setTimeout(()=>controller.abort(),15000);
@@ -3404,42 +3453,74 @@ async function restorePhoto(id){
     });
     clearTimeout(timeoutId);
     if(res.ok||res.status===204){
-      RECYCLE_BIN_CACHE=RECYCLE_BIN_CACHE.filter(p=>p.id!==id);
+      RECYCLE_BIN_PHOTOS=RECYCLE_BIN_PHOTOS.filter(p=>p.id!==id);
       renderRecycleBinContent();
-      /* 重新加载活跃照片列表 */
       loadPhotosFromCloud().then(()=>renderPhotoGrid());
       showToast('照片已恢复','success');
     }else{
-      console.error('[RecycleBin] Restore failed:',res.status);
       showToast('恢复失败，请稍后重试','error');
     }
   }catch(e){
-    console.error('[RecycleBin] Restore error:',e.message);
+    showToast('恢复失败，请检查网络','error');
+  }
+}
+
+async function restoreRecord(id){
+  try{
+    const controller=new AbortController();
+    const timeoutId=setTimeout(()=>controller.abort(),15000);
+    const res=await fetch(SB_API+'?id=eq.'+encodeURIComponent(id),{
+      method:'PATCH',
+      headers:SB_HEADERS,
+      body:JSON.stringify({deleted:false,deleted_at:null}),
+      signal:controller.signal
+    });
+    clearTimeout(timeoutId);
+    if(res.ok||res.status===204){
+      RECYCLE_BIN_RECORDS=RECYCLE_BIN_RECORDS.filter(r=>r.id!==id);
+      renderRecycleBinContent();
+      await syncRecordsFromCloud();
+      renderSidebar();
+      showToast('记录已恢复','success');
+    }else{
+      showToast('恢复失败，请稍后重试','error');
+    }
+  }catch(e){
     showToast('恢复失败，请检查网络','error');
   }
 }
 
 async function emptyRecycleBin(){
-  const cnt=RECYCLE_BIN_CACHE.length;
+  const photoCnt=RECYCLE_BIN_PHOTOS.length;
+  const recCnt=RECYCLE_BIN_RECORDS.length;
+  const total=photoCnt+recCnt;
+  if(total===0){showToast('回收站已为空','info');return;}
   try{
-    /* Delete all expired photos by their IDs */
-    const ids=RECYCLE_BIN_CACHE.map(p=>p.id);
-    if(ids.length===0){showToast('回收站已为空','info');return;}
     const controller=new AbortController();
-    const timeoutId=setTimeout(()=>controller.abort(),15000);
-    const res=await fetch(SB_PHOTOS_API+'?id=in.('+ids.join(',')+')',{method:'DELETE',headers:SB_HEADERS,signal:controller.signal});
+    const timeoutId=setTimeout(()=>controller.abort(),20000);
+    const promises=[];
+    /* 硬删除照片 */
+    if(photoCnt>0){
+      const photoIds=RECYCLE_BIN_PHOTOS.map(p=>p.id);
+      promises.push(fetch(SB_PHOTOS_API+'?id=in.('+photoIds.join(',')+')',{method:'DELETE',headers:SB_HEADERS,signal:controller.signal}));
+    }
+    /* 硬删除记录（排除 __ 前缀配置行） */
+    if(recCnt>0){
+      const recIds=RECYCLE_BIN_RECORDS.map(r=>encodeURIComponent(r.id));
+      promises.push(fetch(SB_API+'?id=in.('+recIds.join(',')+')',{method:'DELETE',headers:SB_HEADERS,signal:controller.signal}));
+    }
+    const results=await Promise.all(promises);
     clearTimeout(timeoutId);
-    if(res.ok||res.status===204){
-      console.log('[RecycleBin] Emptied',cnt,'photos');
-      RECYCLE_BIN_CACHE=[];
+    const allOk=results.every(r=>r.ok||r.status===204);
+    if(allOk){
+      RECYCLE_BIN_PHOTOS=[];
+      RECYCLE_BIN_RECORDS=[];
       renderRecycleBinContent();
-      showToast('回收站已清空（'+cnt+' 张照片已彻底删除）','success');
+      showToast('回收站已清空（'+total+' 项已彻底删除）','success');
     }else{
-      console.error('[RecycleBin] Empty failed:',res.status);
-      showToast('清空回收站失败，请稍后重试','error');
+      showToast('部分清空失败，请稍后重试','error');
     }
   }catch(e){
-    console.error('[RecycleBin] Empty error:',e.message);
     showToast('清空回收站失败：'+e.message,'error');
   }
 }
@@ -3455,13 +3536,10 @@ function timeRemaining(ts){
 function photoActionBarHtml(){
   const stores=getStores();
   const sel=loadPhotoSel();
-  /* 若未选门店则自动选中第一个 */
-  let storeVal=sel.s;
-  if(!storeVal&&stores.length>0){
-    storeVal=stores[0].id+'|'+stores[0].name;
-    savePhotoSel(storeVal,sel.h||'');
-  }
-  const opts=stores.map(s=>{
+  let storeVal=sel.s||'';
+  /* 全部门店选项 + 各门店 */
+  let opts='<option value=""'+(!storeVal?' selected':'')+'>全部门店</option>';
+  opts+=stores.map(s=>{
     const v=s.id+'|'+s.name;
     const isSel=storeVal===v?' selected':'';
     return'<option value="'+v+'"'+isSel+'>'+s.name+'</option>';
