@@ -3226,17 +3226,13 @@ async function loadPhotosFromCloud(){
     if(res.ok){
       const rows=await res.json();
       const cutoff=Date.now()-PHOTO_TTL;
-      const cloudPhotos=rows.filter(p=>p.ts>cutoff).map(r=>({id:r.id,data:r.data_url,ts:r.ts,store:r.store_name,storeId:r.store_id,shift:r.shift}));
-      /* Merge: cloud photos + local-only photos (not in cloud, e.g. failed uploads) */
-      const cloudIds=new Set(cloudPhotos.map(p=>p.id));
-      const localOnly=getPhotosLocal().filter(p=>!cloudIds.has(p.id));
-      PHOTOS_CACHE=[...cloudPhotos,...localOnly].sort((a,b)=>b.ts-a.ts);
-      console.log('[Photo] Loaded',cloudPhotos.length,'cloud +',localOnly.length,'local-only =',PHOTOS_CACHE.length,'total');
+      PHOTOS_CACHE=rows.filter(p=>p.ts>cutoff).map(r=>({id:r.id,data:r.data_url,ts:r.ts,store:r.store_name,storeId:r.store_id,shift:r.shift}));
+      console.log('[Photo] Loaded',PHOTOS_CACHE.length,'photos from cloud');
       return;
     }
     console.error('[Photo] Cloud load failed:',res.status);
   }catch(e){console.error('[Photo] Cloud load error:',e.message)}
-  PHOTOS_CACHE=getPhotosLocal();
+  PHOTOS_CACHE=[];
 }
 function getPhotos(){return PHOTOS_CACHE}
 
@@ -3244,8 +3240,7 @@ async function savePhoto(dataUrl,storeId,storeName,shift){
   const id='ph_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
   const ts=Date.now();
   const photo={id,data:dataUrl,ts,store:storeName,storeId,shift};
-  let cloudOk=false;
-  /* Try cloud first — use minimal headers to avoid large response body */
+  /* Cloud only — no local storage to avoid occupying device space */
   try{
     const res=await fetch(SB_PHOTOS_API,{
       method:'POST',headers:SB_POST_HEADERS,
@@ -3253,7 +3248,11 @@ async function savePhoto(dataUrl,storeId,storeName,shift){
     });
     if(res.ok){
       console.log('[Photo] Upload success:',id);
-      cloudOk=true;
+      const existingIds=new Set(PHOTOS_CACHE.map(p=>p.id));
+      if(!existingIds.has(id))PHOTOS_CACHE.unshift(photo);
+      PHOTOS_CACHE.sort((a,b)=>b.ts-a.ts);
+      renderPhotoGrid();
+      return true;
     }else{
       const errText=await res.text().catch(()=>'');
       console.error('[Photo] Upload failed:',res.status,errText.substring(0,200));
@@ -3261,16 +3260,7 @@ async function savePhoto(dataUrl,storeId,storeName,shift){
   }catch(e){
     console.error('[Photo] Upload error:',e.message);
   }
-  /* Always save to localStorage as backup (even if cloud succeeded) */
-  const photos=getPhotosLocal();
-  photos.unshift(photo);
-  try{localStorage.setItem(PHOTO_KEY,JSON.stringify(photos));}catch(e){console.error('[Photo] localStorage full:',e.message)}
-  /* Update cache: merge with existing to avoid losing other photos */
-  const existingIds=new Set(PHOTOS_CACHE.map(p=>p.id));
-  if(!existingIds.has(id))PHOTOS_CACHE.unshift(photo);
-  PHOTOS_CACHE.sort((a,b)=>b.ts-a.ts);
-  renderPhotoGrid();
-  return cloudOk;
+  return false;
 }
 
 async function deletePhoto(id){
@@ -3282,11 +3272,7 @@ async function deletePhoto(id){
       body:JSON.stringify({deleted:true,deleted_at:new Date().toISOString()})
     });
   }catch(e){}
-  /* 本地缓存移除 */
-  try{
-    const arr=JSON.parse(localStorage.getItem(PHOTO_KEY)||'[]');
-    localStorage.setItem(PHOTO_KEY,JSON.stringify(arr.filter(p=>p.id!==id)));
-  }catch(e){}
+  /* 缓存移除 */
   PHOTOS_CACHE=PHOTOS_CACHE.filter(p=>p.id!==id);
   renderPhotoGrid();
   showToast('照片已移入回收站','info');
@@ -3303,12 +3289,6 @@ async function cleanupExpiredPhotos(){
     });
     console.log('[Photo] Expired photos moved to recycle bin');
   }catch(e){console.error('[Photo] Cleanup error:',e.message)}
-  /* 本地：清理 localStorage 中的过期照片 */
-  try{
-    const arr=JSON.parse(localStorage.getItem(PHOTO_KEY)||'[]');
-    const valid=arr.filter(p=>p.ts>cutoff);
-    if(valid.length!==arr.length)localStorage.setItem(PHOTO_KEY,JSON.stringify(valid));
-  }catch(e){}
 }
 
 /* ===== 回收站功能 ===== */
@@ -3601,7 +3581,7 @@ async function capturePhoto(){
   if(cloudOk){
     showToast('照片已保存并同步云端（16小时后自动删除）','success');
   }else{
-    showToast('照片已保存到本机（云端同步失败，仅本机可见）','warn');
+    showToast('照片上传失败，请检查网络后重试','error');
   }
   if(recordsViewTab!=='photo')setRecordsViewTab('photo');
   renderPhotoGrid();
