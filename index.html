@@ -1513,7 +1513,7 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
           <div class="sp-track"><div class="sp-fill" id="progress-fill" style="width:0%"></div></div>
           <span class="sp-count"><b id="checked-count">0</b>/<span id="total-count">0</span></span>
         </div>
-        <button class="btn-primary" id="submit-btn" onclick="submitForm()" disabled>提交检查表</button>
+        <button class="btn-primary" id="submit-btn" onclick="submitForm()">提交检查表</button>
       </div>
     </div>
   </div>
@@ -2380,7 +2380,6 @@ function updateProgress(){
   const sectionConfirmsOk=SECTIONS.filter(s=>s.confirm).every(s=>{const cb=document.getElementById('confirm-'+s.id);return!cb||cb.checked});
   const canSubmit=checked===ALL_ITEMS.length&&pledgeChecked&&shiftSelected&&handover&&takeover&&storeSelected&&sectionConfirmsOk;
   const submitBtn=document.getElementById('submit-btn');
-  submitBtn.disabled=!canSubmit;
   if(canSubmit)submitBtn.classList.add('pulse-ready');else submitBtn.classList.remove('pulse-ready');
 }
 
@@ -2517,8 +2516,34 @@ async function submitForm(){
   const storeId=document.getElementById('f-store').value;
   const stores=getStores();
   const store=stores.find(s=>s.id===storeId);
-  if(!date||!shift||!handover||!takeover){showToast('请填写日期、班次、交班人和接班人','error');return}
+
+  /* 必填项逐个校验，给用户明确提示 */
   if(!store){showToast('请选择门店','error');return}
+  if(!shift){showToast('请选择班次（早班/中班/晚班）','error');return}
+  if(!date){showToast('请选择日期','error');return}
+  if(!handover){showToast('请填写交班人姓名','error');return}
+  if(!takeover){showToast('请填写接班人姓名','error');return}
+
+  let checked=0;
+  ALL_ITEMS.forEach(item=>{
+    const itemId='s'+item.sec+'-i'+item.idx;
+    if(document.querySelector('.ci-btn[data-item="'+itemId+'"].selected'))checked++;
+  });
+  if(checked<ALL_ITEMS.length){
+    const remain=ALL_ITEMS.length-checked;
+    showToast('还有 '+remain+' 项检查未完成','error');
+    locateNextIncomplete();
+    return;
+  }
+
+  const missingSectionConfirm=SECTIONS.filter(s=>s.confirm).find(s=>{
+    const cb=document.getElementById('confirm-'+s.id);
+    return cb&&!cb.checked;
+  });
+  if(missingSectionConfirm){showToast('请勾选「'+missingSectionConfirm.title+'」底部的确认项','error');return}
+
+  if(!document.getElementById('confirm-pledge').checked){showToast('请勾选底部「交接班承诺」确认框','error');return}
+
   const dupExists=getRecords().some(r=>r.storeId===store.id&&r.date===date&&r.shift===shift);
   if(dupExists){
     showConfirm('「'+store.name+'」'+date+' '+shift+' 已有一条提交记录，确定要再次提交吗？',()=>{doSubmit()},{title:'重复提交确认'});
@@ -2566,6 +2591,7 @@ async function submitForm(){
     try{renderSidebar();renderHome();populateNameDatalists()}catch(e){console.error('render after submit',e)}
     try{resetForm()}catch(e){console.error('resetForm error',e)}
     isSubmitting=false;
+    submitBtn.disabled=false;
     submitBtn.textContent='提交检查表';
     vibrate([10,30,10]);
     clearDraft();
