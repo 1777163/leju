@@ -3,8 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#C44FE6">
+<meta name="theme-color" content="#7c3aed">
 <title>樂聚娱乐 · 每日交接班检查记录表</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="乐聚交接班">
 <!--
   设计系统：Soft Warm 柔和温暖（v3.1-soft）
   令牌来源：DESIGN-TOKENS.md（Airbnb 暖色人本骨架 × Apple 留白秩序 × 玫瑰酒红品牌基因）
@@ -1041,6 +1046,11 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .photo-cam-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-pill);border:none;background:var(--primary);color:#fff;font-size:var(--fs-small);font-weight:700;cursor:pointer;box-shadow:var(--shadow-sm);font-family:inherit;transition:all .25s cubic-bezier(.4,0,.2,1);margin-left:auto}
 .photo-cam-btn:active{transform:scale(0.96)}
 .photo-cam-btn .icon{width:18px;height:18px}
+.load-more-wrap{text-align:center;padding:16px var(--screen-margin) 80px}
+.load-more-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 28px;border-radius:var(--radius-pill);border:1.5px solid var(--primary);background:var(--primary-soft);color:var(--primary);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .25s cubic-bezier(.4,0,.2,1);-webkit-tap-highlight-color:transparent;user-select:none}
+.load-more-btn:active{transform:scale(0.96)}
+.load-more-btn:disabled{opacity:.6;cursor:default}
+.load-more-done{display:inline-block;padding:8px 20px;color:var(--text-muted);font-size:13px;font-weight:600}
 .photo-action-bar select{padding:7px 12px;border-radius:var(--radius-pill);border:1px solid var(--border);font-size:var(--fs-small);background:var(--surface);color:var(--text);font-family:inherit;cursor:pointer;outline:none;min-width:100px;transition:all .25s ease}
 .photo-tag{display:inline-flex;align-items:center;gap:3px;font-size:var(--fs-micro);font-weight:600;padding:1px 6px;border-radius:var(--radius-pill);background:var(--primary-fade);color:var(--primary);white-space:nowrap}
 .photo-tag .icon{width:11px;height:11px}
@@ -1140,6 +1150,17 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .tc-body{padding:0 var(--card-pad) var(--space-md)}
 .tc-body .day-cards{margin:0}
 .tc-body .day-detail-table{margin:0;background:transparent;box-shadow:none;border-radius:0}
+/* Records list filter bar */
+.records-filter-bar{margin:12px var(--screen-margin) 14px;background:var(--card-bg);border-radius:var(--radius-sm);padding:12px var(--card-pad);box-shadow:var(--shadow-xs);border:1px solid var(--border-soft)}
+.rf-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.rf-row:last-child{margin-bottom:0}
+.rf-row select,.rf-row input[type="date"]{flex:1;height:38px;padding:0 10px;border-radius:var(--radius-pill);border:1.5px solid var(--border);background:var(--surface);color:var(--text);font-size:var(--fs-small);font-family:inherit;outline:none}
+.rf-row input[type="date"]{padding:0 8px}
+.rf-row label{font-size:var(--fs-caption);color:var(--text-muted);font-weight:600;white-space:nowrap;flex-shrink:0}
+.rf-clear{display:inline-flex;align-items:center;gap:4px;height:38px;padding:0 14px;border-radius:var(--radius-pill);border:1.5px solid var(--border);background:var(--surface);color:var(--text-muted);font-size:var(--fs-caption);font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;-webkit-tap-highlight-color:transparent;user-select:none}
+.rf-clear:active{transform:scale(0.96)}
+.rf-clear .icon{width:14px;height:14px}
+.rf-dates{flex-wrap:wrap}
 /* Collapsible store group in records list */
 .store-group-collapse{margin:0 var(--screen-margin) var(--space-xs);background:var(--card-bg);border-radius:var(--radius-sm);overflow:hidden;box-shadow:var(--shadow-xs);border:1px solid var(--border-soft)}
 .sgc-header{display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;padding:10px var(--card-pad);transition:var(--transition-fast)}
@@ -3282,6 +3303,9 @@ function setRecordsViewTab(t){
 /* ===== 实拍照片 — 纯云端存储(Supabase) + 16h自动过期 + 门店班次关联 ===== */
 const PHOTO_TTL=16*60*60*1000; /* 16小时毫秒 */
 let PHOTOS_CACHE=[]; /* 内存缓存，渲染同步读 */
+const PHOTO_PAGE_SIZE=30; /* 每次加载的照片数量 */
+let photoLoadOffset=0; /* 当前已加载的偏移量 */
+let photoHasMore=false; /* 是否还有更多照片可加载 */
 let cameraStream=null;
 const PHOTO_SEL_KEY='lq_photo_sel'; /* 记住选择 */
 
@@ -3297,25 +3321,43 @@ function loadPhotosLocal(){
   /* Photos are cloud-only now — kept for backward compat, returns empty */
   return[];
 }
-async function loadPhotosFromCloud(){
+async function loadPhotosFromCloud(append){
   try{
     const controller=new AbortController();
     const timeoutId=setTimeout(()=>controller.abort(),15000);
-    /* deleted 列已添加：只加载未删除的活跃照片 */
-    const res=await fetch(SB_PHOTOS_API+'?select=id,data_url,ts,store_name,store_id,shift&deleted=is.false&order=ts.desc&limit=30',{headers:SB_HEADERS,signal:controller.signal});
+    const offset=append?photoLoadOffset:0;
+    /* deleted 列已添加：只加载未删除的活跃照片，分页加载 */
+    const res=await fetch(SB_PHOTOS_API+'?select=id,data_url,ts,store_name,store_id,shift&deleted=is.false&order=ts.desc&limit='+PHOTO_PAGE_SIZE+'&offset='+offset,{headers:SB_HEADERS,signal:controller.signal});
     clearTimeout(timeoutId);
     if(res.ok){
       const rows=await res.json();
       const cutoff=Date.now()-PHOTO_TTL;
-      PHOTOS_CACHE=rows.filter(p=>p.ts>cutoff).map(r=>({id:r.id,data:r.data_url,ts:r.ts,store:r.store_name,storeId:r.store_id,shift:r.shift}));
-      console.log('[Photo] Loaded',PHOTOS_CACHE.length,'photos from cloud');
+      const mapped=rows.filter(p=>p.ts>cutoff).map(r=>({id:r.id,data:r.data_url,ts:r.ts,store:r.store_name,storeId:r.store_id,shift:r.shift}));
+      if(append){
+        const existingIds=new Set(PHOTOS_CACHE.map(p=>p.id));
+        mapped.forEach(p=>{if(!existingIds.has(p.id))PHOTOS_CACHE.push(p)});
+        photoLoadOffset+=rows.length;
+      }else{
+        PHOTOS_CACHE=mapped;
+        photoLoadOffset=rows.length;
+      }
+      photoHasMore=rows.length===PHOTO_PAGE_SIZE;
+      console.log('[Photo] Loaded',mapped.length,'photos (total cache:',PHOTOS_CACHE.length,'hasMore:',photoHasMore,')');
       return;
     }
     console.error('[Photo] Cloud load failed:',res.status);
   }catch(e){console.error('[Photo] Cloud load error:',e.message)}
-  PHOTOS_CACHE=[];
+  if(!append)PHOTOS_CACHE=[];
 }
 function getPhotos(){return PHOTOS_CACHE}
+async function loadMorePhotos(){
+  if(!photoHasMore)return;
+  const btn=document.getElementById('load-more-photos-btn');
+  if(btn){btn.disabled=true;btn.textContent='加载中…';}
+  await loadPhotosFromCloud(true);
+  renderPhotoGrid();
+  if(!photoHasMore)showToast('已加载全部照片','info');
+}
 
 async function savePhoto(dataUrl,storeId,storeName,shift){
   const id='ph_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
@@ -3694,6 +3736,13 @@ function renderPhotoGridFiltered(photos){
       (tags.length?'<div class="pi-bar" style="padding-top:0">'+tags.join('')+'</div>':'')+
     '</div>';
   }).join('')+'</div>';
+  if(photoHasMore){
+    var totalShown=photos.length;
+    var totalLoaded=PHOTOS_CACHE.length;
+    el.innerHTML+='<div class="load-more-wrap"><button id="load-more-photos-btn" class="load-more-btn" onclick="loadMorePhotos()">加载更多（已显示'+totalShown+'张 / 共加载'+totalLoaded+'张）</button></div>';
+  }else if(PHOTOS_CACHE.length>10){
+    el.innerHTML+='<div class="load-more-wrap"><span class="load-more-done">已加载全部照片（共'+PHOTOS_CACHE.length+'张）</span></div>';
+  }
   setTimeout(bindRipples,50);
 }
 function viewPhoto(id){
@@ -3808,6 +3857,50 @@ function todaySummaryHtml(stores,todayStr){
     '<div class="tc-body"><div class="day-detail-table"><table>'+rows+'</table></div></div></div>';
 }
 let recordsListMode='today'; /* 'today' or 'history' */
+const RECORDS_FILTER_KEY='lq_records_filter'; /* 记录列表筛选条件 */
+function getRecordsFilter(){
+  try{return JSON.parse(localStorage.getItem(RECORDS_FILTER_KEY)||'{}')}catch{return{}}
+}
+function saveRecordsFilter(f){try{localStorage.setItem(RECORDS_FILTER_KEY,JSON.stringify(f))}catch(e){}}
+function recordsFilterBarHtml(stores){
+  const f=getRecordsFilter();
+  let storeOpts='<option value="">全部门店</option>';
+  storeOpts+=stores.map(s=>'<option value="'+s.id+'"'+(f.storeId===s.id?' selected':'')+'>'+esc(s.name)+'</option>').join('');
+  const todayStr=localDateStr(new Date());
+  const defaultStart=f.dateStart||'';
+  const defaultEnd=f.dateEnd||'';
+  return '<div class="records-filter-bar">'+
+    '<div class="rf-row">'+
+      '<select id="records-filter-store" onchange="onRecordsFilterChange()">'+storeOpts+'</select>'+
+      '<button class="rf-clear" onclick="clearRecordsFilter()">'+ic('x')+'清除</button>'+
+    '</div>'+
+    '<div class="rf-row rf-dates">'+
+      '<label>开始</label><input type="date" id="records-filter-start" value="'+defaultStart+'" onchange="onRecordsFilterChange()">'+
+      '<label>结束</label><input type="date" id="records-filter-end" value="'+defaultEnd+'" onchange="onRecordsFilterChange()">'+
+    '</div>'+
+  '</div>';
+}
+function onRecordsFilterChange(){
+  const storeSel=document.getElementById('records-filter-store');
+  const startEl=document.getElementById('records-filter-start');
+  const endEl=document.getElementById('records-filter-end');
+  const f={storeId:storeSel?storeSel.value:'',dateStart:startEl?startEl.value:'',dateEnd:endEl?endEl.value:''};
+  saveRecordsFilter(f);
+  renderRecordsList();
+}
+function clearRecordsFilter(){
+  saveRecordsFilter({});
+  renderRecordsList();
+}
+function applyRecordsFilter(records){
+  const f=getRecordsFilter();
+  return records.filter(r=>{
+    if(f.storeId&&r.storeId!==f.storeId)return false;
+    if(f.dateStart&&r.date<f.dateStart)return false;
+    if(f.dateEnd&&r.date>f.dateEnd)return false;
+    return true;
+  });
+}
 function renderRecordsList(){
   const todayStr=localDateStr(new Date());
   const allRecords=getRecords();
@@ -3815,14 +3908,20 @@ function renderRecordsList(){
   const el=document.getElementById('list-content');
   if(!el)return;
   let html=todaySummaryHtml(stores,todayStr);
-  /* Filter records based on mode */
-  const records=recordsListMode==='today'
+  /* 记录筛选栏 */
+  html+=recordsFilterBarHtml(stores);
+  /* Filter records based on mode + filters */
+  let records=recordsListMode==='today'
     ?allRecords.filter(r=>r.date===todayStr)
     :allRecords.filter(r=>r.date!==todayStr);
+  records=applyRecordsFilter(records);
   if(records.length===0){
-    const msg=recordsListMode==='today'?'今日暂无提交记录':'暂无历史记录';
+    const f=getRecordsFilter();
+    const hasFilter=f.storeId||f.dateStart||f.dateEnd;
+    const modeMsg=recordsListMode==='today'?'今日暂无提交记录':'暂无历史记录';
+    const msg=hasFilter?'当前筛选无记录<br>请调整筛选条件':modeMsg;
     html+='<div class="empty-state"><div class="es-icon">'+ic('clipboard')+'</div><p>'+msg+'</p></div>';
-    if(recordsListMode==='today'){
+    if(recordsListMode==='today'&&!hasFilter){
       /* Show history button even when no today's records */
       const histCount=allRecords.filter(r=>r.date!==todayStr).length;
       if(histCount>0){
