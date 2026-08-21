@@ -4406,37 +4406,46 @@ function showPwaGuide(title,steps){
   document.getElementById('pwa-guide-modal').classList.add('show');
 }
 function addToHomeScreen(){
+  const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
+  /* 尝试触发系统安装弹窗（部分 Chrome 版本支持） */
   if(deferredInstallPrompt){
-    deferredInstallPrompt.prompt();
-    deferredInstallPrompt.userChoice.then(choice=>{
-      if(choice.outcome==='accepted'){
-        showToast('已添加到桌面','success');
-        const sub=document.getElementById('pwa-install-sub');
-        if(sub)sub.textContent='已添加，像 App 一样打开';
-      }
-      deferredInstallPrompt=null;
-    });
-  }else{
-    /* iOS Safari 不支持 beforeinstallprompt，显示手动操作指引 */
-    const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
-    if(isIOS){
-      showPwaGuide('添加到桌面（iPhone/iPad）',[
-        '点击 Safari 底部的<b>分享按钮</b>（向上箭头图标）',
-        '在弹出菜单中找到<b>「添加到主屏幕」</b>',
-        '点击右上角<b>「添加」</b>即可完成',
-        '桌面会出现「乐聚交接班」图标，点击即可全屏打开'
-      ]);
-    }else{
-      /* Android Chrome 等 */
-      showPwaGuide('添加到桌面',[
-        '点击浏览器右上角<b>菜单按钮</b>（三个点）',
-        '在菜单中找到<b>「添加到主屏幕」</b>或<b>「安装应用」</b>',
-        '点击确认即可完成',
-        '桌面会出现「乐聚交接班」图标，点击即可全屏打开'
-      ]);
+    try{
+      deferredInstallPrompt.prompt();
+      deferredInstallPrompt.userChoice.then(choice=>{
+        if(choice.outcome==='accepted'){
+          showToast('已添加到桌面','success');
+          const sub=document.getElementById('pwa-install-sub');
+          if(sub)sub.textContent='已添加，像 App 一样打开';
+        }
+        deferredInstallPrompt=null;
+      }).catch(()=>{
+        /* prompt 失败，显示手动指引 */
+        showPwaGuide(isIOS?'添加到桌面（iPhone/iPad）':'添加到桌面',isIOS?iosAddSteps:androidAddSteps);
+      });
+      return;
+    }catch(e){
+      /* prompt 异常，继续显示手动指引 */
     }
   }
+  /* 无 beforeinstallprompt 或触发失败 — 显示手动操作指引 */
+  if(isIOS){
+    showPwaGuide('添加到桌面（iPhone/iPad）',iosAddSteps);
+  }else{
+    showPwaGuide('添加到桌面',androidAddSteps);
+  }
 }
+const iosAddSteps=[
+  '点击 Safari 底部的<b>分享按钮</b>（向上箭头图标）',
+  '在弹出菜单中找到<b>「添加到主屏幕」</b>',
+  '点击右上角<b>「添加」</b>即可完成',
+  '桌面会出现「乐聚交接班」图标，点击即可全屏打开'
+];
+const androidAddSteps=[
+  '点击浏览器右上角或右下角<b>菜单按钮</b>（⋮ 三个点）',
+  '在菜单中找到<b>「添加到主屏幕」</b>或<b>「添加到桌面」</b>',
+  '部分浏览器是<b>「安装应用」</b>或<b>「创建快捷方式」</b>',
+  '点击确认即可，桌面会出现「乐聚交接班」图标'
+];
 function removeHomeScreenGuide(){
   const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
   if(isIOS){
