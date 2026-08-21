@@ -1294,6 +1294,17 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .confirm-actions .btn-primary{flex:1}
 .confirm-actions .btn-ghost{flex:1;justify-content:center}
 
+/* PWA Guide Modal */
+.pwa-guide-card{background:var(--card-bg);border-radius:var(--radius-lg);padding:var(--space-xl);max-width:340px;width:100%;animation:popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);box-shadow:var(--shadow-lg)}
+.pg-icon{width:56px;height:56px;border-radius:50%;margin:0 auto var(--space-md);background:var(--primary-fade);color:var(--primary);display:flex;align-items:center;justify-content:center}
+.pg-icon .icon{width:28px;height:28px}
+.pwa-guide-card h3{text-align:center;font-size:var(--fs-subtitle);font-weight:700;margin-bottom:var(--space-md)}
+.pg-steps{font-size:var(--fs-body);color:var(--text-secondary);line-height:1.7}
+.pg-step{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
+.pg-num{width:22px;height:22px;border-radius:50%;background:var(--primary);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.pg-step-text{flex:1}
+.pg-step-text b{color:var(--text)}
+
 /* Scroll Hint */
 .scroll-hint{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:90;background:var(--accent-deep);color:#fff;padding:8px 16px;border-radius:var(--radius-pill);font-size:var(--fs-small);font-weight:600;display:none;align-items:center;gap:6px;cursor:pointer;box-shadow:var(--shadow-md);animation:hintBounce 1.8s ease-in-out infinite}
 .scroll-hint.show{display:flex}
@@ -1662,6 +1673,22 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
             </div>
             <svg class="icon" style="width:18px;height:18px;color:var(--text-muted)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
           </div>
+          <div class="settings-item" onclick="addToHomeScreen()" style="cursor:pointer">
+            <div class="si-icon" style="background:var(--primary-fade);color:var(--primary)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg></div>
+            <div class="si-info">
+              <div class="si-name">添加到桌面</div>
+              <div class="si-sub" id="pwa-install-sub">像 App 一样全屏打开</div>
+            </div>
+            <div class="si-arrow"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></div>
+          </div>
+          <div class="settings-item" onclick="removeHomeScreenGuide()" style="cursor:pointer">
+            <div class="si-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6l-1 14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1L5 6"/></svg></div>
+            <div class="si-info">
+              <div class="si-name">移除桌面图标</div>
+              <div class="si-sub">查看如何删除桌面快捷方式</div>
+            </div>
+            <div class="si-arrow"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></div>
+          </div>
         </div>
       </div>
       <div class="settings-group">
@@ -1890,6 +1917,16 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 
 <!-- ===== Scroll Hint ===== -->
 <div class="scroll-hint" id="scroll-hint" onclick="scrollDownHint()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>下滑查看更多</div>
+
+<!-- ===== PWA Guide Modal ===== -->
+<div class="modal-overlay" id="pwa-guide-modal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="pwa-guide-card">
+    <div class="pg-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg></div>
+    <h3 id="pwa-guide-title">添加到桌面</h3>
+    <div class="pg-steps" id="pwa-guide-steps"></div>
+    <button class="btn-primary" style="width:100%;justify-content:center;margin-top:16px" onclick="document.getElementById('pwa-guide-modal').classList.remove('show')">知道了</button>
+  </div>
+</div>
 
 <!-- ===== Camera Overlay ===== -->
 <div class="cam-overlay" id="cam-overlay">
@@ -4330,6 +4367,71 @@ function initNetworkStatus(){
   updateStatus();
   window.addEventListener('online',updateStatus);
   window.addEventListener('offline',updateStatus);
+}
+
+/* ===== PWA Add to Home Screen ===== */
+let deferredInstallPrompt=null;
+window.addEventListener('beforeinstallprompt',(e)=>{
+  e.preventDefault();
+  deferredInstallPrompt=e;
+  const sub=document.getElementById('pwa-install-sub');
+  if(sub)sub.textContent='点击立即添加到桌面';
+});
+function showPwaGuide(title,steps){
+  document.getElementById('pwa-guide-title').textContent=title;
+  const container=document.getElementById('pwa-guide-steps');
+  container.innerHTML=steps.map((s,i)=>'<div class="pg-step"><span class="pg-num">'+(i+1)+'</span><span class="pg-step-text">'+s+'</span></div>').join('');
+  document.getElementById('pwa-guide-modal').classList.add('show');
+}
+function addToHomeScreen(){
+  if(deferredInstallPrompt){
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.then(choice=>{
+      if(choice.outcome==='accepted'){
+        showToast('已添加到桌面','success');
+        const sub=document.getElementById('pwa-install-sub');
+        if(sub)sub.textContent='已添加，像 App 一样打开';
+      }
+      deferredInstallPrompt=null;
+    });
+  }else{
+    /* iOS Safari 不支持 beforeinstallprompt，显示手动操作指引 */
+    const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
+    if(isIOS){
+      showPwaGuide('添加到桌面（iPhone/iPad）',[
+        '点击 Safari 底部的<b>分享按钮</b>（向上箭头图标）',
+        '在弹出菜单中找到<b>「添加到主屏幕」</b>',
+        '点击右上角<b>「添加」</b>即可完成',
+        '桌面会出现「乐聚交接班」图标，点击即可全屏打开'
+      ]);
+    }else{
+      /* Android Chrome 等 */
+      showPwaGuide('添加到桌面',[
+        '点击浏览器右上角<b>菜单按钮</b>（三个点）',
+        '在菜单中找到<b>「添加到主屏幕」</b>或<b>「安装应用」</b>',
+        '点击确认即可完成',
+        '桌面会出现「乐聚交接班」图标，点击即可全屏打开'
+      ]);
+    }
+  }
+}
+function removeHomeScreenGuide(){
+  const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
+  if(isIOS){
+    showPwaGuide('移除桌面图标（iPhone/iPad）',[
+      '在桌面找到<b>「乐聚交接班」图标</b>',
+      '<b>长按</b>该图标直到图标开始抖动',
+      '点击图标左上角的<b>「×」</b>按钮',
+      '确认删除即可，不影响其他数据和浏览器'
+    ]);
+  }else{
+    showPwaGuide('移除桌面图标',[
+      '在桌面找到<b>「乐聚交接班」图标</b>',
+      '<b>长按</b>该图标',
+      '将图标拖到顶部的<b>「移除」</b>区域',
+      '确认删除即可，不影响其他数据'
+    ]);
+  }
 }
 
 /* ===== Entry Point ===== */
