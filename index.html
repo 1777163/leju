@@ -638,7 +638,7 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 
 /* ===== PWA Standalone 模式安全区域适配 ===== */
 @media all and (display-mode: standalone){
-  .topbar{padding-top:max(var(--space-md),env(safe-area-inset-top,0px))}
+  .topbar{padding-top:max(28px,env(safe-area-inset-top,0px))}
   .net-status-bar{top:0;padding-top:env(safe-area-inset-top,0px)}
   body.net-offline .app{padding-top:calc(44px + env(safe-area-inset-top,0px))}
   .bottom-nav{padding-bottom:max(6px,env(safe-area-inset-bottom,0px))}
@@ -646,10 +646,7 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 }
 
 /* Topbar */
-.topbar{position:sticky;top:0;z-index:var(--z-sticky);display:flex;align-items:center;justify-content:space-between;padding:var(--space-md) var(--screen-margin) var(--space-sm);background:var(--bg);transition:transform .32s cubic-bezier(.4,0,.2,1),opacity .25s ease}
-.topbar::after{content:'';position:absolute;left:0;right:0;bottom:-14px;height:14px;background:linear-gradient(to bottom,var(--bg),transparent);pointer-events:none;transition:opacity .3s ease}
-.topbar.topbar-hidden{transform:translateY(-100%);opacity:0}
-.topbar.topbar-hidden::after{opacity:0}
+.topbar{position:sticky;top:0;z-index:var(--z-sticky);display:flex;align-items:center;justify-content:space-between;padding:var(--space-md) var(--screen-margin) var(--space-sm);background:var(--bg)}
 .topbar-left{display:flex;align-items:center;gap:10px}
 .topbar-logo{width:38px;height:38px;border-radius:var(--radius-sm);background:var(--gradient-hero);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:var(--shadow-primary)}
 .topbar-logo .icon{width:21px;height:21px}
@@ -986,7 +983,6 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 
 /* ===== Detail View ===== */
 .detail-topbar{position:sticky;top:0;z-index:var(--z-sticky);display:flex;align-items:center;gap:10px;padding:var(--space-md) var(--screen-margin) var(--space-sm);background:var(--bg)}
-.detail-topbar::after{content:'';position:absolute;left:0;right:0;bottom:-14px;height:14px;background:linear-gradient(to bottom,var(--bg),transparent);pointer-events:none}
 .detail-back{width:38px;height:38px;border-radius:var(--radius-sm);border:none;background:var(--card-bg);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);cursor:pointer;box-shadow:var(--shadow-xs);flex-shrink:0}
 .detail-back:active{transform:scale(0.92)}
 .detail-back .icon{width:20px;height:20px}
@@ -2293,10 +2289,6 @@ function showView(name){
   closeSidebar();
   closeCamera();
   window.scrollTo(0,0);
-  /* Reset topbar visibility on view switch */
-  var _tb=document.querySelector('.topbar');
-  if(_tb)_tb.classList.remove('topbar-hidden');
-  _lastScrollY=0;
   if(name==='home')renderHome();
   if(name==='records')renderRecordsView();
   if(name==='settings'){
@@ -3131,36 +3123,6 @@ function updateScrollHint(){
 window.addEventListener('scroll',updateScrollHint,{passive:true});
 window.addEventListener('resize',updateScrollHint);
 if(typeof ResizeObserver!=='undefined'){const _ro=new ResizeObserver(()=>updateScrollHint());document.addEventListener('DOMContentLoaded',()=>{_ro.observe(document.body)})}
-
-/* ===== Topbar Auto Hide on Scroll ===== */
-var _lastScrollY=0;
-function _topbarShouldSkip(){
-  return document.querySelector('.modal-overlay.show')||
-    (document.getElementById('theme-popover')&&document.getElementById('theme-popover').classList.contains('show'))||
-    (document.getElementById('sidebar')&&document.getElementById('sidebar').classList.contains('show'));
-}
-function handleTopbarScroll(){
-  if(_topbarShouldSkip())return;
-  var isPseudoFs=document.documentElement.hasAttribute('data-pseudo-fs');
-  var y=isPseudoFs?(document.querySelector('.app')?document.querySelector('.app').scrollTop:0):window.scrollY;
-  var tb=document.querySelector('.topbar');
-  if(!tb)return;
-  var hidden=tb.classList.contains('topbar-hidden');
-  var scrollingDown=y>_lastScrollY+4;
-  var scrollingUp=y<_lastScrollY-4;
-  var pastThreshold=y>100;
-  if(scrollingDown&&pastThreshold&&!hidden){
-    tb.classList.add('topbar-hidden');
-  }else if((scrollingUp||y<10)&&hidden){
-    tb.classList.remove('topbar-hidden');
-  }
-  _lastScrollY=y;
-}
-window.addEventListener('scroll',handleTopbarScroll,{passive:true});
-document.addEventListener('DOMContentLoaded',function(){
-  var app=document.querySelector('.app');
-  if(app)app.addEventListener('scroll',handleTopbarScroll,{passive:true});
-});
 
 /* ===== Success Modal ===== */
 let lastSubmittedId=null;
