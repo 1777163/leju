@@ -566,6 +566,12 @@ html,body,*{transition:background-color 0.3s ease,border-color 0.3s ease,box-sha
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{overflow-x:hidden;max-width:100vw}
 body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-height:var(--lh-base);font-size:var(--fs-body);-webkit-font-smoothing:antialiased}
+/* Network status bar */
+.net-status-bar{position:fixed;top:0;left:0;right:0;z-index:9999;display:none;align-items:center;justify-content:center;gap:8px;padding:10px 16px;background:linear-gradient(135deg,#e8590c,#d9480f);color:#fff;font-size:14px;font-weight:700;font-family:inherit;box-shadow:0 2px 8px rgba(0,0,0,.18);animation:netSlideDown .3s cubic-bezier(.4,0,.2,1)}
+.net-status-bar.show{display:flex}
+.net-status-bar .icon{width:18px;height:18px;flex-shrink:0}
+@keyframes netSlideDown{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
+body.net-offline .app{padding-top:44px}
 /* Icon base */
 .icon{width:var(--icon-size);height:var(--icon-size);display:inline-block;vertical-align:middle;flex-shrink:0;stroke-width:var(--icon-stroke)}
 .icon-sm{width:var(--icon-size-sm);height:var(--icon-size-sm)}
@@ -1353,6 +1359,12 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 </style>
 </head>
 <body>
+
+<!-- ===== Network Status Bar ===== -->
+<div class="net-status-bar" id="net-status-bar">
+  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg>
+  <span>网络已断开，请检查连接</span>
+</div>
 
 <!-- ===== Settings Auth Screen ===== -->
 <div class="login-screen" id="settings-auth-screen" style="display:none">
@@ -4302,11 +4314,31 @@ document.addEventListener('click',e=>{
   }
 });
 
+/* ===== Network Status Monitor ===== */
+function initNetworkStatus(){
+  const bar=document.getElementById('net-status-bar');
+  function updateStatus(){
+    const online=navigator.onLine;
+    if(online){
+      bar.classList.remove('show');
+      document.body.classList.remove('net-offline');
+    }else{
+      bar.classList.add('show');
+      document.body.classList.add('net-offline');
+    }
+  }
+  updateStatus();
+  window.addEventListener('online',updateStatus);
+  window.addEventListener('offline',updateStatus);
+}
+
 /* ===== Entry Point ===== */
 window.addEventListener('DOMContentLoaded',()=>{
   initTheme();
   initDisplaySettings();
   initApp();
+  /* 网络状态监控 */
+  initNetworkStatus();
   cleanupExpiredPhotos().catch(()=>{}).then(()=>loadPhotosFromCloud()); /* 先清理过期照片，再加载活跃照片 */
   document.getElementById('settings-auth-pwd').addEventListener('keydown',e=>{if(e.key==='Enter')verifySettingsAccess()});
   /* 点击浮层遮罩关闭 */
