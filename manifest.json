@@ -1,0 +1,25 @@
+{
+  "name": "乐聚娱乐交接班管理系统",
+  "short_name": "乐聚交接班",
+  "description": "娱乐行业班次交接记录、实拍照片、回收站管理工具",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#7c3aed",
+  "theme_color": "#7c3aed",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "lang": "zh-CN"
+}
