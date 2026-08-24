@@ -3652,7 +3652,7 @@ function openBagDetail(key){
       '<img src="'+p.data+'" onclick="event.stopPropagation();viewPhoto(\''+p.id+'\')" alt="交接班照片">'+
       '<div class="bp-bar">'+
         '<span class="bp-time"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>'+new Date(p.ts).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})+'<span class="lvl" style="color:'+lvlColor+';background:'+lvlBg+'">'+timeRemaining(p.ts)+'</span></span>'+
-        '<button class="bp-del" onclick="event.stopPropagation();deletePhoto(\''+p.id+'\')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>'+
+        '<button class="bp-del" onclick="event.stopPropagation();confirmDeletePhoto(\''+p.id+'\')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>'+
       '</div>'+
       noteHtml+
     '</div>';
@@ -3767,6 +3767,12 @@ async function savePhoto(dataUrl,storeId,storeName,shift,caption){
   return false;
 }
 
+/* 二级确认：删除单张照片前弹确认框，防止误触 */
+function confirmDeletePhoto(id){
+  const p=PHOTOS_CACHE.find(x=>x.id===id);
+  const tip=p&&p.caption?'（含备注「'+p.caption+'」）':'';
+  showConfirm('确定要删除这张照片吗？'+tip+'\n删除后将在 23:00 前移入回收站，之后彻底清除。',()=>{deletePhoto(id);},{title:'删除照片',danger:true,okText:'删除'});
+}
 async function deletePhoto(id){
   /* 云端：软删除（标记 deleted=true，放入回收站，23:00 定时彻底清除） */
   try{
