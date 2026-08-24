@@ -638,13 +638,20 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 
 /* ===== PWA Standalone 模式安全区域适配 ===== */
 @media all and (display-mode: standalone){
-  .topbar{padding-top:max(28px,env(safe-area-inset-top,0px))}
-  .hero-card{margin-top:2px}
+  .topbar{padding-top:env(safe-area-inset-top,0px)}
   .scroll-hint{bottom:calc(110px + env(safe-area-inset-bottom,0px))}
   .net-status-bar{top:0;padding-top:env(safe-area-inset-top,0px)}
   body.net-offline .app{padding-top:calc(44px + env(safe-area-inset-top,0px))}
   .bottom-nav{padding-bottom:max(6px,env(safe-area-inset-bottom,0px))}
   .fab-float{bottom:calc(6px + env(safe-area-inset-bottom,0px))}
+}
+/* iOS PWA 兜底：safe-area 未返回时保证刘海区域不被遮挡 */
+@supports (-webkit-touch-callout: none){
+  @media all and (display-mode: standalone){
+    .topbar{padding-top:max(44px,env(safe-area-inset-top,0px))}
+    .net-status-bar{padding-top:max(44px,env(safe-area-inset-top,0px))}
+    body.net-offline .app{padding-top:calc(44px + max(44px,env(safe-area-inset-top,0px)))}
+  }
 }
 
 /* Topbar */
