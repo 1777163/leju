@@ -8,6 +8,11 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<!-- iOS 启动闪屏（Launch Image）：匹配 6.1" iPhone (1170x2532 @3x) -->
+<link rel="apple-touch-startup-image" href="launch-1170x2532.png" media="(device-width:390px) and (device-height:844px) and (-webkit-device-pixel-ratio:3)">
+<link rel="apple-touch-startup-image" href="launch-1170x2532.png" media="(device-width:428px) and (device-height:926px) and (-webkit-device-pixel-ratio:3)">
+<link rel="apple-touch-startup-image" href="launch-1170x2532.png" media="(device-width:393px) and (device-height:852px) and (-webkit-device-pixel-ratio:3)">
+<link rel="apple-touch-startup-image" href="launch-1170x2532.png" media="(device-width:402px) and (device-height:874px) and (-webkit-device-pixel-ratio:3)">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="乐聚交接班">
 <!--
@@ -1020,6 +1025,8 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 /* Compact mode: hide std text, show on tap */
 .detail-section.compact .di-std{display:none}
 .detail-bottom-bar{position:sticky;bottom:0;padding:var(--space-md) var(--screen-margin);background:var(--card-bg);box-shadow:0 -4px 16px rgba(0,0,0,0.04);border-top:1px solid var(--divider);display:flex;gap:10px;align-items:center}
+/* 详情页左边缘返回手势热区（不可见，仅捕获从屏幕左缘开始的横滑） */
+.edge-swipe-back{position:fixed;top:0;left:0;bottom:0;width:24px;z-index:var(--z-sticky);touch-action:none}
 .detail-back-btn{flex:1;padding:13px;border-radius:var(--radius-pill);border:none;background:var(--primary);color:#fff;font-size:var(--fs-body);font-weight:700;cursor:pointer;box-shadow:var(--shadow-primary);transition:var(--transition-press),var(--transition-tap);font-family:inherit;position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:6px}
 .detail-back-btn:active{transform:scale(var(--press-scale));filter:brightness(0.96)}
 .detail-back-btn .icon{width:18px;height:18px}
@@ -1395,11 +1402,14 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;scroll-behavior:auto !important}
 }
+/* 主题切换过渡遮罩：换肤时短暂淡出，提供"预览即所见"仪式感 */
+.theme-flash{position:fixed;inset:0;z-index:9998;background:var(--gradient-hero);opacity:0;pointer-events:none;transition:opacity 0.18s ease}
+.theme-flash.active{opacity:0.55;transition:opacity 0.12s ease}
 /* ===== PWA Standalone 模式安全区域适配（放在最后确保覆盖基础样式） ===== */
 @media all and (display-mode: standalone){
   .topbar{padding-top:env(safe-area-inset-top,0px)}
   .scroll-hint{bottom:calc(130px + env(safe-area-inset-bottom,0px))}
-  .net-status-bar{top:0;padding-top:env(safe-area-inset-top,0px)}
+  .net-status-bar{top:env(safe-area-inset-top,0px);padding-top:10px}
   body.net-offline .app{padding-top:calc(44px + env(safe-area-inset-top,0px))}
   .bottom-nav{padding-bottom:max(6px,env(safe-area-inset-bottom,0px))}
   .fab-float{bottom:calc(6px + env(safe-area-inset-bottom,0px))}
@@ -1408,7 +1418,7 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 @supports (-webkit-touch-callout: none){
   @media all and (display-mode: standalone){
     .topbar{padding-top:max(44px,env(safe-area-inset-top,0px))}
-    .net-status-bar{padding-top:max(44px,env(safe-area-inset-top,0px))}
+    .net-status-bar{top:max(44px,env(safe-area-inset-top,0px));padding-top:10px}
     body.net-offline .app{padding-top:calc(44px + max(44px,env(safe-area-inset-top,0px)))}
   }
 }
@@ -1421,6 +1431,9 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
   <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg>
   <span>网络已断开，请检查连接</span>
 </div>
+
+<!-- ===== 主题切换过渡遮罩 ===== -->
+<div class="theme-flash" id="theme-flash"></div>
 
 <!-- ===== Settings Auth Screen ===== -->
 <div class="login-screen" id="settings-auth-screen" style="display:none">
@@ -1838,6 +1851,7 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 
   <!-- ===== Detail View ===== -->
   <div class="view" id="view-detail">
+    <div class="edge-swipe-back" id="edge-swipe-back"></div>
     <div class="view-content" style="padding-bottom:96px">
       <div class="detail-topbar">
         <button class="detail-back" onclick="goBack()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg></button>
@@ -2338,6 +2352,31 @@ function goBack(){
   if(target==='detail')return showView('home'); /* 安全兜底 */
   showView(target);
 }
+/* ===== 详情页左边缘滑动返回手势 ===== */
+(function initEdgeSwipeBack(){
+  const zone=document.getElementById('edge-swipe-back');
+  if(!zone)return;
+  let startX=0,startY=0,tracking=false;
+  const EDGE=30, THRESHOLD=60;
+  zone.addEventListener('touchstart',e=>{
+    const t=e.changedTouches[0];
+    if(t.clientX<=EDGE){
+      startX=t.clientX;startY=t.clientY;tracking=true;
+    }
+  },{passive:true});
+  zone.addEventListener('touchmove',e=>{
+    if(!tracking)return;
+    const t=e.changedTouches[0];
+    const dx=t.clientX-startX, dy=t.clientY-startY;
+    if(dx>THRESHOLD && Math.abs(dx)>Math.abs(dy)*1.5){
+      tracking=false;
+      if(document.getElementById('view-detail').classList.contains('active')){
+        goBack();
+      }
+    }
+  },{passive:true});
+  zone.addEventListener('touchend',()=>{tracking=false;},{passive:true});
+})();
 
 /* ===== [新] Confirm 浮层（替代原生 confirm） ===== */
 function showConfirm(message,onConfirm,opts){
@@ -4181,6 +4220,11 @@ const NEON_THEMES=['neon','ocean','sunset','slate','indigo','aurora'];
 function getTheme(){return localStorage.getItem(THEME_KEY)||'neon'}
 function setTheme(name){
   localStorage.setItem(THEME_KEY,name);
+  const flash=document.getElementById('theme-flash');
+  if(flash&&!window.matchMedia('(prefers-reduced-motion:reduce)').matches){
+    flash.classList.add('active');
+    setTimeout(()=>flash.classList.remove('active'),160);
+  }
   document.documentElement.setAttribute('data-theme',name);
   const meta=document.querySelector('meta[name="theme-color"]');
   if(meta)meta.setAttribute('content',THEME_META[name]||'#C44FE6');
