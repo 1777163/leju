@@ -71,7 +71,8 @@
   --space-2xs:2px; --space-xs:4px; --space-sm:8px; --space-md:14px; --space-base:16px; --space-lg:20px; --space-xl:24px; --space-2xl:36px; --space-3xl:48px;
   --screen-margin:20px; --card-pad:20px; --section-gap:24px;  /* 留白加大 */
   /* ===== z-index（保留） ===== */
-  --z-base:0; --z-sticky:100; --z-overlay:200; --z-modal:300; --z-toast:500;
+  /* z 层级：通用 modal/toast 需高于收纳袋详情(9998)、备注(9999)、相机(9999)、看图(10000) 等临时浮层 */
+  --z-base:0; --z-sticky:100; --z-overlay:200; --z-modal:10001; --z-toast:10002;
   /* ===== 动效 · 原有 + iOS 触控层（新增） ===== */
   --transition:all 0.28s cubic-bezier(0.4,0,0.2,1);
   --transition-fast:all 0.18s cubic-bezier(0.4,0,0.2,1);
