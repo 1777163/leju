@@ -717,7 +717,7 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .cta-arrow .icon{width:22px;height:22px}
 
 /* ===== Quick Row ===== */
-.quick-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 var(--screen-margin) var(--space-base)}
+.quick-row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:0 var(--screen-margin) var(--space-base)}
 .quick-card{background:var(--card-bg);border-radius:var(--radius);padding:var(--space-md) var(--space-sm);text-align:center;cursor:pointer;transition:var(--transition-press),var(--transition-tap);box-shadow:var(--shadow-sm);border:1px solid var(--border-soft)}
 .quick-card:active{transform:scale(0.97);box-shadow:var(--shadow-xs)}
 .qc-icon{width:38px;height:38px;border-radius:var(--radius-sm);margin:0 auto var(--space-sm);display:flex;align-items:center;justify-content:center;background:var(--qc-soft,var(--primary-fade));color:var(--qc-color,var(--primary))}
@@ -1055,11 +1055,18 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .photo-item img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;cursor:pointer;animation:photoFadeIn 0.4s ease}
 @keyframes photoFadeIn{from{opacity:0;transform:scale(1.04)}to{opacity:1;transform:scale(1)}}
 .photo-item .pi-bar{padding:6px 8px;display:flex;align-items:center;justify-content:space-between;gap:6px}
-.photo-item .pi-time{font-size:var(--fs-micro);color:var(--text-muted);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.photo-item .pi-time{font-size:var(--fs-small);color:var(--text-secondary);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:4px}
+.photo-item .pi-time .icon{width:12px;height:12px;opacity:0.6;flex-shrink:0}
 .photo-item .pi-del{width:26px;height:26px;border-radius:var(--radius-pill);border:none;background:var(--danger-fade);color:var(--danger);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
 .photo-item .pi-del:active{transform:scale(0.9)}
 .photo-item .pi-del .icon{width:14px;height:14px}
-.photo-item .pi-badge{position:absolute;top:6px;left:6px;background:rgba(0,0,0,0.65);color:#fff;font-size:var(--fs-micro);padding:2px 7px;border-radius:var(--radius-pill);font-weight:700;backdrop-filter:blur(4px)}
+.photo-item .pi-badge{position:absolute;top:6px;left:6px;font-size:var(--fs-small);padding:3px 8px;border-radius:var(--radius-pill);font-weight:800;backdrop-filter:blur(4px);display:flex;align-items:center;gap:3px;box-shadow:0 1px 4px rgba(0,0,0,0.2)}
+.photo-item .pi-badge .icon{width:11px;height:11px}
+.photo-item .pi-badge.normal{background:rgba(61,168,120,0.92);color:#fff}
+.photo-item .pi-badge.warning{background:rgba(224,160,71,0.92);color:#fff}
+.photo-item .pi-badge.urgent{background:rgba(233,69,69,0.92);color:#fff;animation:photoBadgePulse 1.8s ease-in-out infinite}
+.photo-item .pi-badge.expired{background:rgba(120,120,120,0.92);color:#fff}
+@keyframes photoBadgePulse{0%,100%{opacity:1}50%{opacity:0.7}}
 .photo-empty{text-align:center;padding:48px var(--card-pad)}
 .photo-empty .pe-icon{width:56px;height:56px;border-radius:var(--radius-md);background:var(--primary-fade);color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
 .photo-empty .pe-icon .icon{width:28px;height:28px}
@@ -1084,8 +1091,8 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .photo-tag{display:inline-flex;align-items:center;gap:3px;font-size:var(--fs-micro);font-weight:600;padding:1px 6px;border-radius:var(--radius-pill);background:var(--primary-fade);color:var(--primary);white-space:nowrap}
 .photo-tag .icon{width:11px;height:11px}
 /* Recycle Bin */
-.rb-banner{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:var(--radius-md);background:var(--primary-fade);color:var(--primary);font-size:var(--fs-small);font-weight:600;margin-bottom:var(--space-md)}
-.rb-banner .icon{width:18px;height:18px;flex-shrink:0}
+.rb-banner{display:flex;align-items:flex-start;gap:8px;padding:12px 14px;border-radius:var(--radius-md);background:linear-gradient(135deg,var(--primary-fade),rgba(224,160,71,0.12));color:var(--text);font-size:var(--fs-small);font-weight:600;margin-bottom:var(--space-md);line-height:1.5}
+.rb-banner .icon{width:18px;height:18px;flex-shrink:0;margin-top:1px;color:var(--primary)}
 .rb-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-md)}
 .rb-count{font-size:var(--fs-small);color:var(--text-muted);font-weight:600}
 .rb-empty-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-pill);border:none;background:var(--danger);color:#fff;font-size:var(--fs-small);font-weight:700;cursor:pointer;box-shadow:var(--shadow-sm);font-family:inherit;transition:all .25s cubic-bezier(.4,0,.2,1)}
@@ -1094,10 +1101,13 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .rb-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .rb-item{position:relative;border-radius:var(--radius-md);overflow:hidden;background:var(--card-bg);box-shadow:var(--shadow-xs)}
 .rb-item img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;filter:grayscale(0.3) opacity(0.85)}
-.rb-item .rb-badge{position:absolute;top:6px;left:6px;background:rgba(0,0,0,0.65);color:#fff;font-size:var(--fs-micro);padding:2px 7px;border-radius:var(--radius-pill);font-weight:700;backdrop-filter:blur(4px)}
+.rb-item .rb-badge{position:absolute;top:6px;left:6px;background:rgba(233,69,69,0.9);color:#fff;font-size:var(--fs-small);padding:3px 8px;border-radius:var(--radius-pill);font-weight:800;backdrop-filter:blur(4px);display:flex;align-items:center;gap:3px;box-shadow:0 1px 4px rgba(0,0,0,0.2)}
+.rb-item .rb-badge .icon{width:11px;height:11px}
 .rb-item .rb-info{padding:6px 8px}
-.rb-item .rb-info .rb-store{font-size:var(--fs-micro);font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.rb-item .rb-info .rb-time{font-size:var(--fs-micro);color:var(--text-muted);margin-top:1px}
+.rb-item .rb-info .rb-store{font-size:var(--fs-small);font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rb-item .rb-info .rb-time{font-size:var(--fs-small);color:var(--danger);margin-top:2px;font-weight:700;display:flex;align-items:center;gap:3px}
+.rb-item .rb-info .rb-time .icon{width:11px;height:11px;flex-shrink:0}
+.rb-item .rb-info .rb-orig{font-size:var(--fs-micro);color:var(--text-muted);margin-top:1px}
 .rb-restore-btn{display:flex;align-items:center;justify-content:center;gap:4px;width:100%;padding:6px;border:none;border-top:1px solid var(--border);background:var(--card-bg);color:var(--primary);font-size:var(--fs-micro);font-weight:700;cursor:pointer;font-family:inherit;transition:all .25s cubic-bezier(.4,0,.2,1)}
 .rb-restore-btn:active{transform:scale(0.97);background:var(--primary-fade)}
 .rb-restore-btn .icon{width:14px;height:14px}
@@ -1112,7 +1122,9 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .rb-record-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-radius:var(--radius-md);background:var(--card-bg);box-shadow:var(--shadow-xs)}
 .rb-record-item .rb-record-info{flex:1;min-width:0}
 .rb-record-item .rb-store{font-size:var(--fs-small);font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.rb-record-item .rb-time{font-size:var(--fs-micro);color:var(--text-muted);margin-top:2px}
+.rb-record-item .rb-time{font-size:var(--fs-small);color:var(--danger);margin-top:2px;font-weight:700;display:flex;align-items:center;gap:3px}
+.rb-record-item .rb-time .icon{width:11px;height:11px;flex-shrink:0}
+.rb-record-item .rb-orig{font-size:var(--fs-micro);color:var(--text-muted);margin-top:1px}
 .rb-record-item .rb-restore-btn{width:auto;padding:6px 14px;border:none;border-radius:var(--radius-pill);background:var(--primary-fade);color:var(--primary);font-size:var(--fs-micro);font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:4px}
 .rb-record-item .rb-restore-btn:active{transform:scale(0.96)}
 .rb-record-item .rb-restore-btn .icon{width:14px;height:14px}
@@ -1402,9 +1414,13 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;scroll-behavior:auto !important}
 }
-/* 主题切换过渡遮罩：换肤时短暂淡出，提供"预览即所见"仪式感 */
-.theme-flash{position:fixed;inset:0;z-index:9998;background:var(--gradient-hero);opacity:0;pointer-events:none;transition:opacity 0.18s ease}
-.theme-flash.active{opacity:0.55;transition:opacity 0.12s ease}
+/* 主题切换仪式感：圆形扩散覆盖→切换主题→淡出，如"换肤波纹" */
+.theme-ripple{position:fixed;inset:0;z-index:9998;pointer-events:none;opacity:0;clip-path:circle(0% at 50% 50%)}
+.theme-ripple.expanding{animation:themeRippleExpand 0.35s cubic-bezier(0.22,1,0.36,1) forwards}
+.theme-ripple.fading{animation:themeRippleFade 0.35s ease forwards}
+@keyframes themeRippleExpand{0%{opacity:1;clip-path:circle(0% at 50% 50%)}100%{opacity:1;clip-path:circle(150% at 50% 50%)}}
+@keyframes themeRippleFade{0%{opacity:1;clip-path:circle(150% at 50% 50%)}100%{opacity:0;clip-path:circle(150% at 50% 50%)}}
+@media(prefers-reduced-motion:reduce){.theme-ripple{display:none}}
 /* ===== PWA Standalone 模式安全区域适配（放在最后确保覆盖基础样式） ===== */
 @media all and (display-mode: standalone){
   .topbar{padding-top:env(safe-area-inset-top,0px)}
@@ -1432,8 +1448,8 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
   <span>网络已断开，请检查连接</span>
 </div>
 
-<!-- ===== 主题切换过渡遮罩 ===== -->
-<div class="theme-flash" id="theme-flash"></div>
+<!-- ===== 主题切换圆形扩散波纹 ===== -->
+<div class="theme-ripple" id="theme-ripple"></div>
 
 <!-- ===== Settings Auth Screen ===== -->
 <div class="login-screen" id="settings-auth-screen" style="display:none">
@@ -1526,6 +1542,11 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
           <div class="qc-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M8 14h2M14 14h2M8 18h2"/></svg></div>
           <div class="qc-name">提交情况</div>
           <div class="qc-sub">日历统计</div>
+        </div>
+        <div class="quick-card" style="--qc-color:#5B8DEF;--qc-soft:#EAF1FE;--qc-accent:#5B8DEF" onclick="showView('records');setRecordsViewTab('photo')">
+          <div class="qc-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></div>
+          <div class="qc-name">实拍</div>
+          <div class="qc-sub" id="qc-photo-count">现场照片</div>
         </div>
         <div class="quick-card" style="--qc-color:#E0A047;--qc-soft:#FBF4E6;--qc-accent:#E0A047" onclick="openSidebar()">
           <div class="qc-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/></svg></div>
@@ -3130,6 +3151,12 @@ function renderHome(){
     '</div>';
   });
   document.getElementById('hero-shifts').innerHTML=hs;
+  /* 实拍卡片显示当前可用照片数 */
+  const qcPc=document.getElementById('qc-photo-count');
+  if(qcPc){
+    const pc=PHOTOS_CACHE.length;
+    qcPc.textContent=pc>0?pc+' 张可用':'现场照片';
+  }
   let ov='';
   if(stores.length===0){
     ov='<div style="padding:16px;text-align:center;color:var(--text-muted);font-size:13px">暂无门店，请先在设置中添加门店</div>';
@@ -3437,8 +3464,8 @@ function setRecordsViewTab(t){
   renderRecordsView();
 }
 
-/* ===== 实拍照片 — 纯云端存储(Supabase) + 16h自动过期 + 门店班次关联 ===== */
-const PHOTO_TTL=16*60*60*1000; /* 16小时毫秒 */
+/* ===== 实拍照片 — 纯云端存储(Supabase) + 3天自动过期 + 门店班次关联 ===== */
+const PHOTO_TTL=3*24*60*60*1000; /* 3天毫秒 */
 let PHOTOS_CACHE=[]; /* 内存缓存，渲染同步读 */
 const PHOTO_PAGE_SIZE=30; /* 每次加载的照片数量 */
 let photoLoadOffset=0; /* 当前已加载的偏移量 */
@@ -3617,13 +3644,13 @@ function renderRecycleBinContent(){
   const total=photos.length+records.length;
   if(total===0){
     el.innerHTML=
-      '<div class="rb-banner"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>回收站为空。已删除的照片和记录会在每天 23:00 自动清除。</div>'+
+      '<div class="rb-banner"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg><span>回收站为空。<br>照片超过3天自动移入此处，每天 23:00 自动彻底清除。</span></div>'+
       '<div class="rb-empty"><div class="rb-e-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></div><p>回收站是空的</p></div>';
     setTimeout(bindRipples,50);
     return;
   }
   let html=
-    '<div class="rb-banner"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>回收站中的照片和记录将在每天 23:00 自动彻底清除，也可手动一键清空。</div>'+
+    '<div class="rb-banner"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg><span>照片超过3天后自动移入回收站。每天 23:00 自动彻底清除，也可手动一键清空。</span></div>'+
     '<div class="rb-toolbar"><span class="rb-count">共 '+total+' 项（照片 '+photos.length+' · 记录 '+records.length+'）</span>'+
     '<button class="rb-empty-btn" onclick="confirmEmptyRecycleBin()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6M14 11v6"/></svg>一键清空</button></div>';
   /* 照片区 */
@@ -3634,12 +3661,17 @@ function renderRecycleBinContent(){
       if(p.deletedAt){
         try{delStr=new Date(p.deletedAt).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})}catch(e){}
       }
+      let origStr='';
+      if(p.ts){
+        try{origStr=new Date(p.ts).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})}catch(e){}
+      }
       return '<div class="rb-item" data-id="'+p.id+'">'+
         '<img src="'+p.data+'" alt="已删除照片">'+
-        '<div class="rb-badge">已删除</div>'+
+        '<div class="rb-badge"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>已删除</div>'+
         '<div class="rb-info">'+
           '<div class="rb-store">'+esc(p.store||'未知门店')+(p.shift?' · '+esc(p.shift):'')+'</div>'+
-          '<div class="rb-time">'+(delStr?'删除于 '+delStr:'')+'</div>'+
+          (delStr?'<div class="rb-time"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>删除于 '+delStr+'</div>':'')+
+          (origStr?'<div class="rb-orig">拍摄于 '+origStr+'</div>':'')+
         '</div>'+
         '<button class="rb-restore-btn" onclick="restorePhoto(\''+p.id+'\')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 3v6h6"/></svg>恢复</button>'+
       '</div>';
@@ -3661,7 +3693,8 @@ function renderRecycleBinContent(){
       return '<div class="rb-record-item" data-id="'+r.id+'">'+
         '<div class="rb-record-info">'+
           '<div class="rb-store">'+storeName+shiftStr+'</div>'+
-          '<div class="rb-time">'+dateStr+(delStr?' · 删除于 '+delStr:'')+'</div>'+
+          (delStr?'<div class="rb-time"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>删除于 '+delStr+'</div>':'')+
+          (dateStr?'<div class="rb-orig">记录日期 '+dateStr+'</div>':'')+
         '</div>'+
         '<button class="rb-restore-btn" onclick="restoreRecord(\''+r.id+'\')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 3v6h6"/></svg>恢复</button>'+
       '</div>';
@@ -3769,9 +3802,19 @@ function timeRemaining(ts){
   const now=Date.now();
   const remain=PHOTO_TTL-(now-ts);
   if(remain<=0)return'待回收';
-  const h=Math.floor(remain/3600000);
+  const d=Math.floor(remain/86400000);
+  const h=Math.floor((remain%86400000)/3600000);
   const m=Math.floor((remain%3600000)/60000);
-  return h>0?h+'h'+m+'m后回收':m+'m后回收';
+  if(d>0)return d+'天'+h+'h后回收';
+  if(h>0)return h+'h'+m+'m后回收';
+  return m+'m后回收';
+}
+function timeRemainingLevel(ts){
+  const remain=PHOTO_TTL-(Date.now()-ts);
+  if(remain<=0)return'expired';
+  if(remain<6*3600000)return'urgent';  /* <6h 红色 */
+  if(remain<24*3600000)return'warning'; /* <1d 橙色 */
+  return'normal'; /* >1d 绿色 */
 }
 function photoActionBarHtml(){
   const stores=getStores();
@@ -3865,9 +3908,9 @@ function renderPhotoGridFiltered(photos){
     if(p.shift)tags.push('<span class="photo-tag">'+esc(p.shift)+'</span>');
     return '<div class="photo-item" data-id="'+p.id+'">'+
       '<img src="'+p.data+'" onclick="viewPhoto(\''+p.id+'\')" alt="交接班照片">'+
-      '<div class="pi-badge">'+timeRemaining(p.ts)+'</div>'+
+      '<div class="pi-badge '+timeRemainingLevel(p.ts)+'"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>'+timeRemaining(p.ts)+'</div>'+
       '<div class="pi-bar">'+
-        '<span class="pi-time">'+new Date(p.ts).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span>'+
+        '<span class="pi-time"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>'+new Date(p.ts).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span>'+
         '<button class="pi-del" onclick="deletePhoto(\''+p.id+'\')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>'+
       '</div>'+
       (tags.length?'<div class="pi-bar" style="padding-top:0">'+tags.join('')+'</div>':'')+
@@ -3952,7 +3995,7 @@ async function capturePhoto(){
   showToast('正在保存照片...','info');
   const cloudOk=await savePhoto(dataUrl,ctx.storeId,ctx.storeName,ctx.shift);
   if(cloudOk){
-    showToast('照片已保存并同步云端（16小时后自动删除）','success');
+    showToast('照片已保存并同步云端（3天后自动删除）','success');
   }else{
     showToast('照片上传失败，请检查网络后重试','error');
   }
@@ -4219,13 +4262,24 @@ const THEME_META={rose:'#A03A7A',mint:'#2D9D78',ocean:'#3DBFFF',sunset:'#FF6B35'
 const NEON_THEMES=['neon','ocean','sunset','slate','indigo','aurora'];
 function getTheme(){return localStorage.getItem(THEME_KEY)||'neon'}
 function setTheme(name){
-  localStorage.setItem(THEME_KEY,name);
-  const flash=document.getElementById('theme-flash');
-  if(flash&&!window.matchMedia('(prefers-reduced-motion:reduce)').matches){
-    flash.classList.add('active');
-    setTimeout(()=>flash.classList.remove('active'),160);
+  const ripple=document.getElementById('theme-ripple');
+  const prefersReduced=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if(ripple&&!prefersReduced){
+    /* 圆形扩散：用新主题色覆盖全屏，在覆盖瞬间切换主题，再淡出 */
+    ripple.style.background=THEME_META[name]||'#C44FE6';
+    ripple.classList.remove('expanding','fading');
+    void ripple.offsetWidth; /* 强制重排重启动画 */
+    ripple.classList.add('expanding');
+    setTimeout(()=>{
+      document.documentElement.setAttribute('data-theme',name);
+      ripple.classList.remove('expanding');
+      ripple.classList.add('fading');
+      setTimeout(()=>ripple.classList.remove('fading'),350);
+    },350);
+  }else{
+    document.documentElement.setAttribute('data-theme',name);
   }
-  document.documentElement.setAttribute('data-theme',name);
+  localStorage.setItem(THEME_KEY,name);
   const meta=document.querySelector('meta[name="theme-color"]');
   if(meta)meta.setAttribute('content',THEME_META[name]||'#C44FE6');
   document.querySelectorAll('.theme-card').forEach(c=>{
