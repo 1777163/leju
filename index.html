@@ -1088,6 +1088,76 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .load-more-btn:disabled{opacity:.6;cursor:default}
 .load-more-done{display:inline-block;padding:8px 20px;color:var(--text-muted);font-size:13px;font-weight:600}
 .photo-action-bar select{padding:7px 12px;border-radius:var(--radius-pill);border:1px solid var(--border);font-size:var(--fs-small);background:var(--surface);color:var(--text);font-family:inherit;cursor:pointer;outline:none;min-width:100px;transition:all .25s ease}
+/* ===== 实拍收纳袋（按 门店·班次·日期 分组） ===== */
+.bag-list{display:flex;flex-direction:column;gap:12px;padding:0 0 80px}
+.bag-card{background:var(--card-bg);border-radius:var(--radius-md);box-shadow:var(--shadow-sm);overflow:hidden;cursor:pointer;transition:transform .2s cubic-bezier(.4,0,.2,1),box-shadow .2s;border:1px solid var(--border-soft);position:relative}
+.bag-card:active{transform:scale(0.98);box-shadow:var(--shadow-xs)}
+/* 袋口装饰：顶部一条圆弧表现"袋口" */
+.bag-card::before{content:'';position:absolute;top:0;left:0;right:0;height:8px;background:linear-gradient(90deg,var(--primary),var(--primary-soft));opacity:.18}
+.bag-head{display:flex;align-items:center;gap:10px;padding:14px 14px 12px}
+.bag-cover{width:54px;height:54px;border-radius:var(--radius-sm);object-fit:cover;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.12);border:2px solid #fff}
+.bag-info{flex:1;min-width:0}
+.bag-title{font-size:var(--fs-body);font-weight:800;color:var(--text);display:flex;align-items:center;gap:6px}
+.bag-title .bag-shift{font-size:var(--fs-micro);font-weight:700;padding:1px 7px;border-radius:var(--radius-pill);color:#fff}
+.bag-sub{font-size:var(--fs-caption);color:var(--text-muted);margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.bag-sub .bag-note-dot{color:var(--warning);display:inline-flex;align-items:center;gap:2px}
+.bag-sub .bag-note-dot .icon{width:11px;height:11px}
+.bag-count{display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;min-width:42px}
+.bag-count b{font-size:20px;font-weight:800;color:var(--primary);font-variant-numeric:tabular-nums;line-height:1}
+.bag-count small{font-size:9px;color:var(--text-muted);font-weight:700;margin-top:2px}
+.bag-thumbs{display:flex;gap:2px;padding:0 14px}
+.bag-thumbs img{width:33.33%;height:60px;object-fit:cover;opacity:.92}
+.bag-thumbs img:first-child{border-radius:var(--radius-sm) 0 0 var(--radius-sm)}
+.bag-thumbs img:last-child{border-radius:0 var(--radius-sm) var(--radius-sm) 0}
+.bag-foot{display:flex;align-items:center;justify-content:space-between;padding:8px 14px 12px;border-top:1px solid var(--divider);margin-top:2px}
+.bag-foot .bf-left{font-size:var(--fs-caption);color:var(--text-muted);display:flex;align-items:center;gap:4px}
+.bag-foot .bf-left .icon{width:12px;height:12px}
+.bag-foot .bf-go{font-size:var(--fs-caption);font-weight:700;color:var(--primary);display:flex;align-items:center;gap:2px}
+.bag-foot .bf-go .icon{width:14px;height:14px}
+/* 收纳袋展开弹层 */
+.bag-detail{position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.62);display:none;align-items:flex-end;justify-content:center}
+.bag-detail.show{display:flex;animation:bagFade .22s ease}
+@keyframes bagFade{from{opacity:0}to{opacity:1}}
+.bag-sheet{width:100%;max-width:480px;max-height:88vh;background:var(--bg);border-radius:var(--radius-lg) var(--radius-lg) 0 0;display:flex;flex-direction:column;animation:bagSlide .28s cubic-bezier(.22,1,.36,1);box-shadow:0 -8px 30px rgba(0,0,0,.25)}
+@keyframes bagSlide{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.bag-sheet-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--divider);position:sticky;top:0;background:var(--bg);z-index:2;border-radius:var(--radius-lg) var(--radius-lg) 0 0}
+.bag-sheet-head .bsh-title{font-size:var(--fs-h2);font-weight:800;color:var(--text);display:flex;align-items:center;gap:8px}
+.bag-sheet-head .bsh-title .bag-shift{font-size:var(--fs-micro);font-weight:700;padding:1px 8px;border-radius:var(--radius-pill);color:#fff}
+.bag-sheet-head .bsh-close{width:36px;height:36px;border-radius:var(--radius-pill);border:none;background:var(--primary-fade);color:var(--primary);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.bag-sheet-head .bsh-close:active{transform:scale(0.9)}
+.bag-sheet-head .bsh-close .icon{width:18px;height:18px}
+.bag-sheet-body{overflow-y:auto;padding:12px 14px 24px;-webkit-overflow-scrolling:touch}
+.bag-p-count{font-size:var(--fs-caption);color:var(--text-muted);font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:5px}
+.bag-p-count .icon{width:13px;height:13px}
+.bag-photo{background:var(--card-bg);border-radius:var(--radius-md);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow-xs)}
+.bag-photo img{width:100%;max-height:260px;object-fit:cover;display:block;cursor:pointer}
+.bag-photo .bp-bar{display:flex;align-items:flex-start;gap:8px;padding:9px 10px}
+.bag-photo .bp-time{font-size:var(--fs-small);font-weight:700;color:var(--text-secondary);display:flex;align-items:center;gap:4px;flex:1;min-width:0}
+.bag-photo .bp-time .icon{width:12px;height:12px;opacity:.6;flex-shrink:0}
+.bag-photo .bp-del{width:30px;height:30px;border-radius:var(--radius-pill);border:none;background:var(--danger-fade);color:var(--danger);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.bag-photo .bp-del:active{transform:scale(0.9)}
+.bag-photo .bp-del .icon{width:15px;height:15px}
+.bag-photo .bp-note{margin:0 10px 10px;background:var(--primary-fade);border-radius:var(--radius-sm);padding:8px 10px;font-size:var(--fs-small);color:var(--text);line-height:1.5;display:flex;gap:6px;align-items:flex-start}
+.bag-photo .bp-note .icon{width:14px;height:14px;color:var(--primary);flex-shrink:0;margin-top:1px}
+.bag-photo .bp-note-edit{margin:0 10px 10px;display:flex;gap:6px;align-items:center}
+.bag-photo .bp-note-edit input{flex:1;padding:9px 12px;border-radius:var(--radius-sm);border:1.5px solid var(--border);font-size:var(--fs-small);background:var(--surface);color:var(--text);font-family:inherit;outline:none;min-width:0}
+.bag-photo .bp-note-edit input:focus{border-color:var(--primary)}
+.bag-photo .bp-note-edit button{border:none;background:var(--primary);color:#fff;font-size:var(--fs-small);font-weight:700;padding:9px 14px;border-radius:var(--radius-sm);cursor:pointer;font-family:inherit;flex-shrink:0}
+.bag-photo .bp-note-edit button:active{transform:scale(0.96)}
+/* 照片备注弹层 */
+.remark-modal{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.62);display:none;align-items:center;justify-content:center;padding:24px;animation:bagFade .2s ease}
+.remark-modal.show{display:flex}
+.remark-box{width:100%;max-width:360px;background:var(--bg);border-radius:var(--radius-lg);padding:16px;box-shadow:0 12px 40px rgba(0,0,0,.3);animation:bagSlide .26s cubic-bezier(.22,1,.36,1)}
+.remark-img-wrap{width:100%;border-radius:var(--radius-md);overflow:hidden;background:var(--surface);margin-bottom:12px}
+.remark-img-wrap img{width:100%;max-height:200px;object-fit:cover;display:block}
+.remark-title{font-size:var(--fs-body);font-weight:800;color:var(--text);margin-bottom:10px}
+.remark-input{width:100%;padding:11px 12px;border-radius:var(--radius-sm);border:1.5px solid var(--border);font-size:var(--fs-body);background:var(--surface);color:var(--text);font-family:inherit;outline:none;box-sizing:border-box;margin-bottom:14px}
+.remark-input:focus{border-color:var(--primary)}
+.remark-actions{display:flex;gap:10px}
+.remark-actions button{flex:1;padding:11px;border-radius:var(--radius-sm);border:none;font-size:var(--fs-body);font-weight:700;cursor:pointer;font-family:inherit;transition:transform .15s ease}
+.remark-actions .remark-cancel{background:var(--primary-fade);color:var(--primary)}
+.remark-actions .remark-ok{background:var(--primary);color:#fff}
+.remark-actions button:active{transform:scale(0.97)}
 .photo-tag{display:inline-flex;align-items:center;gap:3px;font-size:var(--fs-micro);font-weight:600;padding:1px 6px;border-radius:var(--radius-pill);background:var(--primary-fade);color:var(--primary);white-space:nowrap}
 .photo-tag .icon{width:11px;height:11px}
 /* Recycle Bin */
@@ -2031,6 +2101,30 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 <div class="pv-overlay" id="pv-overlay" onclick="closePhotoViewer()">
   <button class="pv-close" onclick="closePhotoViewer()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
   <img id="pv-img" src="" alt="照片预览">
+</div>
+
+<!-- ===== 实拍收纳袋展开弹层 ===== -->
+<div class="bag-detail" id="bag-detail" onclick="if(event.target===this)closeBagDetail()">
+  <div class="bag-sheet">
+    <div class="bag-sheet-head">
+      <div class="bsh-title" id="bag-sheet-title"></div>
+      <button class="bsh-close" onclick="closeBagDetail()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="bag-sheet-body" id="bag-sheet-body"></div>
+  </div>
+</div>
+
+<!-- ===== 照片备注弹层 ===== -->
+<div class="remark-modal" id="remark-modal">
+  <div class="remark-box">
+    <div class="remark-img-wrap"><img id="remark-img" src="" alt="照片"></div>
+    <div class="remark-title">添加备注</div>
+    <input id="remark-input" class="remark-input" placeholder="如：吧台卫生死角 / 设备异常 / 货架补货" maxlength="120">
+    <div class="remark-actions">
+      <button class="remark-cancel" id="remark-cancel">取消</button>
+      <button class="remark-ok" id="remark-ok">保存</button>
+    </div>
+  </div>
 </div>
 
 <!-- ===== Toast ===== -->
@@ -3496,7 +3590,10 @@ async function loadPhotosFromCloud(append){
     if(res.ok){
       const rows=await res.json();
       const cutoff=Date.now()-PHOTO_TTL;
-      const mapped=rows.filter(p=>p.ts>cutoff).map(r=>({id:r.id,data:r.data_url,ts:r.ts,store:r.store_name,storeId:r.store_id,shift:r.shift}));
+      const mapped=rows.filter(p=>p.ts>cutoff).map(r=>{
+        const decoded=decodePhotoData(r.data_url);
+        return{id:r.id,data:decoded.d,caption:decoded.c,ts:r.ts,store:r.store_name,storeId:r.store_id,shift:r.shift};
+      });
       if(append){
         const existingIds=new Set(PHOTOS_CACHE.map(p=>p.id));
         mapped.forEach(p=>{if(!existingIds.has(p.id))PHOTOS_CACHE.push(p)});
@@ -3514,6 +3611,60 @@ async function loadPhotosFromCloud(append){
   if(!append)PHOTOS_CACHE=[];
 }
 function getPhotos(){return PHOTOS_CACHE}
+/* 按 门店(store_id)·班次(shift)·拍摄日期(localDateStr) 分组成"收纳袋" */
+function buildBags(photos){
+  const groups={};
+  photos.forEach(p=>{
+    const dateStr=localDateStr(new Date(p.ts));
+    const key=(p.storeId||p.store||'?')+'|'+(p.shift||'?')+'|'+dateStr;
+    if(!groups[key])groups[key]={key,store:p.store||'未指定门店',storeId:p.storeId||'',shift:p.shift||'—',date:dateStr,photos:[]};
+    groups[key].photos.push(p);
+  });
+  /* 每个袋内按时间倒序，袋之间按最近拍摄时间倒序 */
+  const arr=Object.values(groups);
+  arr.forEach(b=>b.photos.sort((a,b2)=>b2.ts-a.ts));
+  arr.sort((a,b)=>b.photos[0].ts-a.photos[0].ts);
+  arr.forEach(b=>{b.cover=b.photos[0].data;});
+  return arr;
+}
+/* 展开收纳袋详情弹层 */
+function openBagDetail(key){
+  const bag=buildBags(getPhotos()).find(b=>b.key===key);
+  if(!bag)return;
+  const shiftColor={'早班':'#E0A047','中班':'#3DA878','晚班':'#7A6BA8'}[bag.shift]||'#5B8DEF';
+  document.getElementById('bag-sheet-title').innerHTML=esc(bag.store)+'<span class="bag-shift" style="background:'+shiftColor+'">'+bag.shift+'</span>';
+  let html='<div class="bag-p-count"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>共 '+bag.photos.length+' 张实拍 · '+bag.date+'</div>';
+  html+=bag.photos.map(p=>{
+    const noteHtml=p.caption
+      ? '<div class="bp-note"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>'+esc(p.caption)+'</span></div>'
+      : '<div class="bp-note-edit"><input id="cap-'+p.id+'" placeholder="添加备注，如：吧台卫生死角" value=""><button onclick="saveCaption(\''+p.id+'\')">保存</button></div>';
+    return '<div class="bag-photo">'+
+      '<img src="'+p.data+'" onclick="viewPhoto(\''+p.id+'\')" alt="交接班照片">'+
+      '<div class="bp-bar">'+
+        '<span class="bp-time"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>'+new Date(p.ts).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})+' · '+timeRemaining(p.ts)+'</span>'+
+        '<button class="bp-del" onclick="deletePhoto(\''+p.id+'\')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>'+
+      '</div>'+
+      noteHtml+
+    '</div>';
+  }).join('');
+  document.getElementById('bag-sheet-body').innerHTML=html;
+  document.getElementById('bag-detail').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+function closeBagDetail(){
+  document.getElementById('bag-detail').classList.remove('show');
+  document.body.style.overflow='';
+}
+async function saveCaption(id){
+  const inp=document.getElementById('cap-'+id);
+  if(!inp)return;
+  const val=inp.value.trim();
+  await updatePhotoCaption(id,val);
+  showToast(val?'备注已保存':'备注已清除','success');
+  /* 刷新当前袋详情 */
+  const bagKey=buildBags(getPhotos()).find(b=>b.photos.some(p=>p.id===id));
+  if(bagKey)openBagDetail(bagKey.key);
+}
 async function loadMorePhotos(){
   if(!photoHasMore)return;
   const btn=document.getElementById('load-more-photos-btn');
@@ -3523,15 +3674,54 @@ async function loadMorePhotos(){
   if(!photoHasMore)showToast('已加载全部照片','info');
 }
 
-async function savePhoto(dataUrl,storeId,storeName,shift){
+/* 解析 data_url：支持 {c:caption,d:dataUrl} 的 base64 封装，旧纯图 URL 自动回退 */
+function decodePhotoData(dataUrl){
+  if(!dataUrl)return{d:'',c:''};
+  if(dataUrl.indexOf('data:application/json;base64,')===0){
+    try{
+      const b64=dataUrl.slice('data:application/json;base64,'.length);
+      const json=decodeURIComponent(escape(atob(b64)));
+      const obj=JSON.parse(json);
+      return{d:obj.d||'',c:obj.c||''};
+    }catch(e){
+      return{d:dataUrl,c:''};
+    }
+  }
+  return{d:dataUrl,c:''};
+}
+/* 更新某张照片的备注并同步云端（重写 data_url 封装） */
+async function updatePhotoCaption(id,caption){
+  const p=PHOTOS_CACHE.find(x=>x.id===id);
+  if(!p)return;
+  const storedUrl='data:application/json;base64,'+btoa(unescape(encodeURIComponent(JSON.stringify({c:caption||'',d:p.data}))));
+  p.caption=caption||'';
+  try{
+    const res=await fetch(SB_PHOTOS_API+'?id=eq.'+id,{
+      method:'PATCH',headers:SB_POST_HEADERS,
+      body:JSON.stringify({data_url:storedUrl})
+    });
+    if(!res.ok){
+      const errText=await res.text().catch(()=>'');
+      console.error('[Photo] Update caption failed:',res.status,errText.substring(0,200));
+    }
+  }catch(e){
+    console.error('[Photo] Update caption error:',e.message);
+  }
+  renderPhotoGrid();
+}
+async function savePhoto(dataUrl,storeId,storeName,shift,caption){
   const id='ph_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
   const ts=Date.now();
-  const photo={id,data:dataUrl,ts,store:storeName,storeId,shift};
+  /* 备注随照片一起存储：把 {c:caption, d:dataUrl} 编码进 data_url，兼容后端无 caption 列 */
+  const payload=JSON.stringify({c:caption||'',d:dataUrl});
+  const b64=btoa(unescape(encodeURIComponent(payload)));
+  const storedUrl='data:application/json;base64,'+b64;
+  const photo={id,data:dataUrl,ts,store:storeName,storeId,shift,caption:caption||''};
   /* Cloud only — no local storage to avoid occupying device space */
   try{
     const res=await fetch(SB_PHOTOS_API,{
       method:'POST',headers:SB_POST_HEADERS,
-      body:JSON.stringify({id:id,data_url:dataUrl,ts:ts,store_id:storeId,store_name:storeName,shift:shift})
+      body:JSON.stringify({id:id,data_url:storedUrl,ts:ts,store_id:storeId,store_name:storeName,shift:shift})
     });
     if(res.ok){
       console.log('[Photo] Upload success:',id);
@@ -3610,7 +3800,7 @@ async function loadDeletedItems(){
     RECYCLE_BIN_RECORDS=[];
     if(photoRes.ok){
       const rows=await photoRes.json();
-      RECYCLE_BIN_PHOTOS=rows.map(r=>({id:r.id,data:r.data_url,ts:r.ts,store:r.store_name,storeId:r.store_id,shift:r.shift,deletedAt:r.deleted_at}));
+      RECYCLE_BIN_PHOTOS=rows.map(r=>{const dc=decodePhotoData(r.data_url);return{id:r.id,data:dc.d,caption:dc.c,ts:r.ts,store:r.store_name,storeId:r.store_id,shift:r.shift,deletedAt:r.deleted_at};});
     }
     if(recRes.ok){
       const rows=await recRes.json();
@@ -3902,18 +4092,26 @@ function renderPhotoGridFiltered(photos){
     setTimeout(bindRipples,50);
     return;
   }
-  el.innerHTML=bar+filterInfo+'<div class="photo-grid">'+photos.map(p=>{
-    const tags=[];
-    if(p.store)tags.push('<span class="photo-tag">'+esc(p.store)+'</span>');
-    if(p.shift)tags.push('<span class="photo-tag">'+esc(p.shift)+'</span>');
-    return '<div class="photo-item" data-id="'+p.id+'">'+
-      '<img src="'+p.data+'" onclick="viewPhoto(\''+p.id+'\')" alt="交接班照片">'+
-      '<div class="pi-badge '+timeRemainingLevel(p.ts)+'"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>'+timeRemaining(p.ts)+'</div>'+
-      '<div class="pi-bar">'+
-        '<span class="pi-time"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>'+new Date(p.ts).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span>'+
-        '<button class="pi-del" onclick="deletePhoto(\''+p.id+'\')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>'+
+  el.innerHTML=bar+filterInfo+'<div class="bag-list">'+buildBags(photos).map(bag=>{
+    const shiftColor={'早班':'#E0A047','中班':'#3DA878','晚班':'#7A6BA8'}[bag.shift]||'#5B8DEF';
+    const hasNote=bag.photos.some(p=>p.caption);
+    const thumbs=bag.photos.slice(0,3).map(p=>'<img src="'+p.data+'" alt="封面" loading="lazy">').join('');
+    return '<div class="bag-card" onclick="openBagDetail(\''+bag.key+'\')">'+
+      '<div class="bag-head">'+
+        (bag.cover?'<img class="bag-cover" src="'+bag.cover+'" alt="封面">' : '<div class="bag-cover" style="background:var(--primary-fade);display:flex;align-items:center;justify-content:center"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></div>')+
+        '<div class="bag-info">'+
+          '<div class="bag-title">'+esc(bag.store)+'<span class="bag-shift" style="background:'+shiftColor+'">'+bag.shift+'</span></div>'+
+          '<div class="bag-sub">'+bag.date+
+            (hasNote?'<span class="bag-note-dot"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>有备注</span>':'')+
+          '</div>'+
+        '</div>'+
+        '<div class="bag-count"><b>'+bag.photos.length+'</b><small>张</small></div>'+
       '</div>'+
-      (tags.length?'<div class="pi-bar" style="padding-top:0">'+tags.join('')+'</div>':'')+
+      '<div class="bag-thumbs">'+thumbs+'</div>'+
+      '<div class="bag-foot">'+
+        '<span class="bf-left"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>最早 '+timeRemaining(bag.photos[bag.photos.length-1].ts)+'</span>'+
+        '<span class="bf-go">查看详情<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></span>'+
+      '</div>'+
     '</div>';
   }).join('')+'</div>';
   if(photoHasMore){
@@ -4001,6 +4199,42 @@ async function capturePhoto(){
   }
   if(recordsViewTab!=='photo')setRecordsViewTab('photo');
   renderPhotoGrid();
+  if(cloudOk){
+    /* 拍完即询问备注（可留空） */
+    setTimeout(()=>{
+      const last=PHOTOS_CACHE[0];
+      if(last&&!last.caption){
+        showPhotoRemarkPrompt(last.id);
+      }
+    },400);
+  }
+}
+/* 拍照后/列表内：添加或编辑单张照片备注（内联弹层，可留空） */
+function showPhotoRemarkPrompt(id){
+  const p=PHOTOS_CACHE.find(x=>x.id===id);
+  if(!p)return;
+  const ov=document.getElementById('remark-modal');
+  if(!ov)return;
+  document.getElementById('remark-img').src=p.data;
+  const inp=document.getElementById('remark-input');
+  inp.value=p.caption||'';
+  ov.classList.add('show');
+  document.body.style.overflow='hidden';
+  setTimeout(()=>inp.focus(),150);
+  const ok=document.getElementById('remark-ok');
+  const cancel=document.getElementById('remark-cancel');
+  const save=async()=>{
+    const val=inp.value.trim();
+    ov.classList.remove('show');
+    document.body.style.overflow='';
+    await updatePhotoCaption(id,val);
+    showToast(val?'备注已保存':'备注已清除','success');
+  };
+  const close=()=>{ov.classList.remove('show');document.body.style.overflow='';};
+  ok.onclick=save;
+  cancel.onclick=close;
+  ov.onclick=(e)=>{if(e.target===ov)close();};
+  inp.onkeydown=(e)=>{if(e.key==='Enter')save();};
 }
 
 function todaySummaryHtml(stores,todayStr){
