@@ -1089,23 +1089,23 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .load-more-done{display:inline-block;padding:8px 20px;color:var(--text-muted);font-size:13px;font-weight:600}
 .photo-action-bar select{padding:7px 12px;border-radius:var(--radius-pill);border:1px solid var(--border);font-size:var(--fs-small);background:var(--surface);color:var(--text);font-family:inherit;cursor:pointer;outline:none;min-width:100px;transition:all .25s ease}
 /* ===== 实拍收纳袋（按 门店·班次·日期 分组） ===== */
-.bag-list{display:flex;flex-direction:column;gap:12px;padding:0 0 80px}
-.bag-card{background:var(--card-bg);border-radius:var(--radius-md);box-shadow:var(--shadow-sm);overflow:hidden;cursor:pointer;transition:transform .2s cubic-bezier(.4,0,.2,1),box-shadow .2s;border:1px solid var(--border-soft);position:relative;display:flex;align-items:center;gap:12px;padding:12px 14px}
-.bag-card:active{transform:scale(0.98);box-shadow:var(--shadow-xs)}
+.bag-list{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 14px 80px}
+/* 小长方形竖向收纳袋卡片，类似截图中的 早班 1/6 */
+.bag-card{background:var(--card-bg);border-radius:var(--radius-md);box-shadow:var(--shadow-sm);overflow:hidden;cursor:pointer;transition:transform .2s cubic-bezier(.4,0,.2,1),box-shadow .2s;border:1px solid var(--border-soft);position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:12px 6px 10px;min-height:118px;text-align:center}
+.bag-card:active{transform:scale(0.96);box-shadow:var(--shadow-xs)}
 /* 文件夹层叠封面：像文件夹里插着几张照片 */
-.bag-stack{width:58px;height:58px;position:relative;flex-shrink:0}
-.bag-stack .stack-img{position:absolute;border-radius:var(--radius-sm);object-fit:cover;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.12)}
-.bag-stack .s1{width:48px;height:48px;top:5px;left:5px;z-index:3}
-.bag-stack .s2{width:40px;height:40px;top:10px;left:10px;transform:rotate(-9deg);z-index:2;opacity:.75}
-.bag-stack .s3{width:34px;height:34px;top:14px;left:14px;transform:rotate(9deg);z-index:1;opacity:.55}
-.bag-stack .stack-count{position:absolute;top:-4px;right:-2px;z-index:4;background:var(--primary);color:#fff;font-size:10px;font-weight:800;padding:1px 6px;border-radius:var(--radius-pill);box-shadow:0 1px 3px rgba(0,0,0,.2);line-height:1.4}
-.bag-stack .stack-note{position:absolute;bottom:-4px;right:-2px;z-index:4;width:20px;height:20px;border-radius:50%;background:var(--warning);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.2)}
-.bag-stack .stack-note .icon{width:11px;height:11px}
-.bag-info{flex:1;min-width:0}
-.bag-title{font-size:var(--fs-body);font-weight:800;color:var(--text);display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bag-title .bag-shift{font-size:var(--fs-micro);font-weight:700;padding:1px 7px;border-radius:var(--radius-pill);color:#fff;flex-shrink:0}
-.bag-sub{font-size:var(--fs-caption);color:var(--text-muted);margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.bag-arrow{color:var(--text-muted);opacity:.5;flex-shrink:0}
+.bag-stack{width:40px;height:40px;position:relative;flex-shrink:0;margin-bottom:2px}
+.bag-stack .stack-img{position:absolute;border-radius:var(--radius-sm);object-fit:cover;border:1.5px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.bag-stack .s1{width:34px;height:34px;top:3px;left:3px;z-index:3}
+.bag-stack .s2{width:28px;height:28px;top:7px;left:7px;transform:rotate(-9deg);z-index:2;opacity:.72}
+.bag-stack .s3{width:24px;height:24px;top:10px;left:10px;transform:rotate(9deg);z-index:1;opacity:.52}
+.bag-stack .stack-count{position:absolute;top:-5px;right:-6px;z-index:4;background:var(--primary);color:#fff;font-size:9px;font-weight:800;padding:1px 5px;border-radius:var(--radius-pill);box-shadow:0 1px 3px rgba(0,0,0,.2);line-height:1.4}
+.bag-stack .stack-note{position:absolute;bottom:-5px;right:-6px;z-index:4;width:16px;height:16px;border-radius:50%;background:var(--warning);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.bag-stack .stack-note .icon{width:8px;height:8px}
+.bag-store{font-size:var(--fs-micro);color:var(--text-muted);max-width:90%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bag-shift-tag{font-size:var(--fs-small);font-weight:800;color:var(--text)}
+.bag-date{font-size:var(--fs-micro);color:var(--text-muted)}
+.bag-count{font-size:18px;font-weight:800;color:var(--primary);font-variant-numeric:tabular-nums;line-height:1;margin-top:1px}
 /* 收纳袋展开弹层 */
 .bag-detail{position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.62);display:none;align-items:flex-end;justify-content:center}
 .bag-detail.show{display:flex;animation:bagFade .22s ease}
@@ -4085,7 +4085,6 @@ function renderPhotoGridFiltered(photos){
     return;
   }
   el.innerHTML=bar+filterInfo+'<div class="bag-list">'+buildBags(photos).map(bag=>{
-    const shiftColor={'早班':'#E0A047','中班':'#3DA878','晚班':'#7A6BA8'}[bag.shift]||'#5B8DEF';
     const hasNote=bag.photos.some(p=>p.caption);
     const stackImgs=bag.photos.slice(0,3).map((p,i)=>'<img class="stack-img s'+(i+1)+'" src="'+p.data+'" alt="" loading="lazy">').join('');
     return '<div class="bag-card" onclick="openBagDetail(\''+bag.key+'\')">'+
@@ -4094,11 +4093,10 @@ function renderPhotoGridFiltered(photos){
         '<span class="stack-count">'+bag.photos.length+'</span>'+
         (hasNote?'<span class="stack-note"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>':'')+
       '</div>'+
-      '<div class="bag-info">'+
-        '<div class="bag-title">'+esc(bag.store)+'<span class="bag-shift" style="background:'+shiftColor+'">'+bag.shift+'</span></div>'+
-        '<div class="bag-sub">'+bag.date+' · 最早 '+timeRemaining(bag.photos[bag.photos.length-1].ts)+'</div>'+
-      '</div>'+
-      '<svg class="bag-arrow icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>'+
+      '<div class="bag-store">'+esc(bag.store)+'</div>'+
+      '<div class="bag-shift-tag">'+bag.shift+'</div>'+
+      '<div class="bag-date">'+bag.date+'</div>'+
+      '<div class="bag-count">'+bag.photos.length+'<span style="font-size:10px;font-weight:600;color:var(--text-muted);margin-left:2px">张</span></div>'+
     '</div>';
   }).join('')+'</div>';
   if(photoHasMore){
