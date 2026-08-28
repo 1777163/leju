@@ -83,6 +83,13 @@
   --transition-tap:background-color 80ms cubic-bezier(0.4,0,0.2,1),box-shadow 80ms cubic-bezier(0.4,0,0.2,1); /* 即时点按反馈 */
   --ripple-duration:150ms; --ripple-fade:300ms;        /* 涟漪扩散/淡出 */
   --enter-duration:320ms; --enter-offset:8px; --fab-lift:-6px;  /* 入场/凸起 */
+  /* ===== [v4.0] 按钮立体 + 动效曲线令牌 ===== */
+  --btn-hl:inset 0 1px 0 rgba(255,255,255,0.22);       /* 按钮顶部高光（立体） */
+  --btn-hl-press:inset 0 1px 0 rgba(255,255,255,0.08); /* 按压态高光（压暗由 inset 阴影承担） */
+  --ease-standard:cubic-bezier(0.4,0,0.2,1);
+  --ease-enter:cubic-bezier(0.22,1,0.36,1);
+  --ease-exit:cubic-bezier(0.4,0,0.2,1);
+  --transition-btn:transform 120ms var(--ease-standard),box-shadow 120ms var(--ease-standard),background-color 80ms var(--ease-standard); /* 按钮显式过渡，禁 transition:all */
   /* ===== 图标（保留） ===== */
   --icon-stroke:1.6px; --icon-size-sm:16px; --icon-size:20px; --icon-size-lg:24px;
 }
@@ -489,8 +496,8 @@ html,body,*{transition:background-color 0.3s ease,border-color 0.3s ease,box-sha
 [data-theme="neon"] .hero-title,[data-theme="neon"] h2{text-shadow:0 0 20px rgba(184,82,212,0.35),0 0 40px rgba(184,82,212,0.15)}
 [data-theme="neon"] .progress-ring .pct{text-shadow:0 0 15px rgba(184,82,212,0.4)}
 [data-theme="neon"] .hero-shift .hs-count{text-shadow:0 0 12px rgba(184,82,212,0.3)}
-[data-theme="neon"] .btn-primary{box-shadow:0 4px 12px rgba(184,82,212,0.30),0 0 20px rgba(184,82,212,0.15)}
-[data-theme="neon"] .btn-primary:active{box-shadow:0 2px 6px rgba(184,82,212,0.20)}
+[data-theme="neon"] .btn-primary{box-shadow:var(--btn-hl),0 4px 12px rgba(184,82,212,0.30),0 0 20px rgba(184,82,212,0.15)}
+[data-theme="neon"] .btn-primary:active{box-shadow:var(--btn-hl-press),0 2px 6px rgba(184,82,212,0.20)}
 [data-theme="neon"] .fab-circle{box-shadow:0 0 0 1px rgba(184,82,212,0.22),0 0 24px rgba(184,82,212,0.35),var(--shadow-md)}
 [data-theme="neon"] .seg-control::before{box-shadow:var(--shadow-xs),0 0 12px rgba(184,82,212,0.12)}
 [data-theme="neon"] .toggle-switch.on{box-shadow:0 0 12px rgba(184,82,212,0.25)}
@@ -499,7 +506,7 @@ html,body,*{transition:background-color 0.3s ease,border-color 0.3s ease,box-sha
 [data-theme="aurora"] .hero-title,[data-theme="aurora"] h2{text-shadow:0 0 20px rgba(0,229,160,0.35),0 0 40px rgba(0,229,160,0.15)}
 [data-theme="aurora"] .progress-ring .pct{text-shadow:0 0 15px rgba(0,229,160,0.4)}
 [data-theme="aurora"] .hero-shift .hs-count{text-shadow:0 0 12px rgba(0,229,160,0.3)}
-[data-theme="aurora"] .btn-primary{box-shadow:0 4px 12px rgba(0,229,160,0.30),0 0 20px rgba(0,229,160,0.15)}
+[data-theme="aurora"] .btn-primary{box-shadow:var(--btn-hl),0 4px 12px rgba(0,229,160,0.30),0 0 20px rgba(0,229,160,0.15)}
 [data-theme="aurora"] .fab-circle{box-shadow:0 0 0 1px rgba(0,229,160,0.22),0 0 24px rgba(0,229,160,0.35),var(--shadow-md)}
 [data-theme="aurora"] .toggle-switch.on{box-shadow:0 0 12px rgba(0,229,160,0.25)}
 [data-theme="aurora"] .hero-section::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(0,229,160,0.10) 0%,transparent 60%);pointer-events:none;z-index:0}
@@ -594,7 +601,7 @@ body.net-offline .app{padding-top:44px}
 @keyframes pulseGlow{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.04);opacity:.92}}
 /* ===== §2.3 iOS 触控层新增 keyframes ===== */
 @keyframes ripple-spread{from{transform:scale(0);opacity:0.45}to{transform:scale(2.4);opacity:0}}
-@keyframes view-enter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes view-enter{from{opacity:0}to{opacity:1}}  /* [v4.0] 纯透明度淡入，去掉位移动画（消除点击画面抽动） */
 @keyframes fab-pop{0%{transform:translateY(0) scale(1)}50%{transform:translateY(-6px) scale(1.05)}100%{transform:translateY(-4px) scale(1)}}
 @keyframes success-pop{0%{transform:scale(0.85);opacity:0}60%{transform:scale(1.03);opacity:1}100%{transform:scale(1);opacity:1}}
 
@@ -609,8 +616,8 @@ body.net-offline .app{padding-top:44px}
 .login-card .field-group label{font-size:var(--fs-small);font-weight:600;color:var(--primary);margin-bottom:6px;display:block}
 .login-card .field-group input{width:100%;padding:14px 16px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:15px;outline:none;font-family:inherit;background:var(--surface);transition:var(--transition-fast)}
 .login-card .field-group input:focus{border-color:var(--primary-light);background:var(--card-bg);box-shadow:var(--shadow-focus)}
-.btn-login{width:100%;padding:14px;border:none;border-radius:var(--radius-pill);font-size:15px;font-weight:700;background:var(--gradient-primary);color:#fff;cursor:pointer;box-shadow:var(--shadow-primary);transition:var(--transition-bounce)}
-.btn-login:active{transform:scale(0.97)}
+.btn-login{width:100%;padding:14px;border:none;border-radius:var(--radius-pill);font-size:15px;font-weight:700;background:var(--gradient-primary);color:#fff;cursor:pointer;box-shadow:var(--btn-hl),inset 0 -1px 0 rgba(0,0,0,0.06),var(--shadow-primary);transition:var(--transition-btn)}
+.btn-login:active{transform:translateY(1px) scale(0.97);box-shadow:var(--btn-hl-press),var(--shadow-xs)}
 .login-hint{font-size:var(--fs-caption);text-align:center;color:var(--text-muted);margin-top:var(--space-md)}
 .login-error{color:var(--danger);font-size:var(--fs-small);text-align:center;margin-top:8px;display:none}
 .login-error.show{display:block;animation:fadeInUp 0.3s ease}
@@ -659,7 +666,7 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .spin{animation:spin 0.9s linear infinite}
 
 /* Views */
-.view{display:none;animation:view-enter var(--enter-duration) cubic-bezier(0.22,1,0.36,1)}
+.view{display:none;animation:view-enter 200ms ease}
 .view.active{display:block}
 .view-content{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
 
@@ -708,8 +715,8 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 @media(prefers-reduced-motion:reduce){.tp-dot[data-neon="1"]{animation:none}}
 
 /* ===== CTA ===== */
-.cta-btn{margin:0 auto var(--space-base);padding:var(--space-lg) var(--card-pad);border-radius:var(--radius);border:none;background:var(--card-bg);color:var(--primary);font-size:17px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:var(--transition-press),var(--transition-tap);width:calc(100% - var(--screen-margin)*2);max-width:420px;position:relative;overflow:hidden;box-shadow:var(--shadow-primary)}
-.cta-btn:active{transform:scale(var(--press-scale));filter:brightness(0.96);box-shadow:var(--shadow-xs)}
+.cta-btn{margin:0 auto var(--space-base);padding:var(--space-lg) var(--card-pad);border-radius:var(--radius);border:none;background:var(--card-bg);color:var(--primary);font-size:17px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:var(--transition-btn);width:calc(100% - var(--screen-margin)*2);max-width:420px;position:relative;overflow:hidden;box-shadow:var(--btn-hl),inset 0 -1px 0 rgba(0,0,0,0.06),var(--shadow-primary)}
+.cta-btn:active{transform:translateY(1px) scale(var(--press-scale,0.96));box-shadow:var(--btn-hl-press),var(--shadow-xs)}
 .cta-left{display:flex;align-items:center;gap:12px;position:relative;z-index:1}
 .cta-icon-box{width:44px;height:44px;border-radius:var(--radius-sm);background:var(--primary-fade);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .cta-icon-box .icon{width:24px;height:24px}
@@ -878,15 +885,15 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .pledge-item:last-child{margin-bottom:0}
 .pledge-item .icon{width:16px;height:16px;color:var(--primary);flex-shrink:0;margin-top:2px}
 /* Form Actions */
-.btn-primary{flex:1;padding:14px;border-radius:var(--radius-pill);border:none;background:var(--primary);color:#fff;font-size:var(--fs-body);font-weight:700;cursor:pointer;box-shadow:var(--shadow-primary);transition:var(--transition-press),var(--transition-tap);font-family:inherit;position:relative;overflow:hidden}
-.btn-primary:active{transform:scale(var(--press-scale));filter:brightness(0.96)}
+.btn-primary{flex:1;padding:14px;border-radius:var(--radius-pill);border:none;background:var(--primary);color:#fff;font-size:var(--fs-body);font-weight:700;cursor:pointer;box-shadow:var(--btn-hl),inset 0 -1px 0 rgba(0,0,0,0.06),var(--shadow-primary);transition:var(--transition-btn);font-family:inherit;position:relative;overflow:hidden}
+.btn-primary:active{transform:translateY(1px) scale(var(--press-scale,0.96));box-shadow:var(--btn-hl-press),var(--shadow-xs)}
 .btn-primary:disabled{background:var(--primary-fade);color:rgba(255,255,255,0.7);box-shadow:none;cursor:not-allowed;filter:none}
 .btn-spinner{width:18px;height:18px;animation:spin 0.6s linear infinite;display:inline-flex;align-items:center;justify-content:center}
 .btn-primary.pulse-ready{animation:pulseGlow 1.8s ease-in-out 2}
 .btn-ghost{padding:14px var(--space-lg);border-radius:var(--radius-pill);border:1.5px solid var(--border);background:var(--card-bg);font-size:var(--fs-body);font-weight:600;cursor:pointer;color:var(--text-secondary);transition:var(--transition-fast);font-family:inherit;display:inline-flex;align-items:center;gap:6px}
 .btn-ghost:active{transform:scale(0.95)}
 .btn-ghost .icon{width:18px;height:18px}
-.btn-danger{background:var(--danger);color:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.10),0 8px 20px rgba(216,90,90,0.18)}
+.btn-danger{background:var(--danger);color:#fff;box-shadow:var(--btn-hl),inset 0 -1px 0 rgba(0,0,0,0.06),0 4px 12px rgba(0,0,0,0.10),0 8px 20px rgba(216,90,90,0.18)}
 /* Submit bar */
 .submit-bar{position:sticky;bottom:0;padding:var(--space-md) var(--screen-margin);background:var(--card-bg);box-shadow:0 -4px 16px rgba(0,0,0,0.04);border-top:1px solid var(--divider)}
 .submit-progress{display:flex;align-items:center;gap:8px;margin-bottom:10px}
@@ -1028,8 +1035,8 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .detail-bottom-bar{position:sticky;bottom:0;padding:var(--space-md) var(--screen-margin);background:var(--card-bg);box-shadow:0 -4px 16px rgba(0,0,0,0.04);border-top:1px solid var(--divider);display:flex;gap:10px;align-items:center}
 /* 详情页左边缘返回手势热区（不可见，仅捕获从屏幕左缘开始的横滑） */
 .edge-swipe-back{position:fixed;top:0;left:0;bottom:0;width:24px;z-index:var(--z-sticky);touch-action:none}
-.detail-back-btn{flex:1;padding:13px;border-radius:var(--radius-pill);border:none;background:var(--primary);color:#fff;font-size:var(--fs-body);font-weight:700;cursor:pointer;box-shadow:var(--shadow-primary);transition:var(--transition-press),var(--transition-tap);font-family:inherit;position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:6px}
-.detail-back-btn:active{transform:scale(var(--press-scale));filter:brightness(0.96)}
+.detail-back-btn{flex:1;padding:13px;border-radius:var(--radius-pill);border:none;background:var(--primary);color:#fff;font-size:var(--fs-body);font-weight:700;cursor:pointer;box-shadow:var(--btn-hl),inset 0 -1px 0 rgba(0,0,0,0.06),var(--shadow-primary);transition:var(--transition-btn);font-family:inherit;position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.detail-back-btn:active{transform:translateY(1px) scale(var(--press-scale,0.96));box-shadow:var(--btn-hl-press),var(--shadow-xs)}
 .detail-back-btn .icon{width:18px;height:18px}
 .detail-del-btn{flex-shrink:0;width:46px;height:46px;border-radius:var(--radius-pill);border:none;background:var(--danger-fade);color:var(--danger);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--transition-press);position:relative;overflow:hidden}
 .detail-del-btn:active{transform:scale(0.9);background:var(--danger-soft)}
@@ -1075,20 +1082,20 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .photo-action-bar{display:flex;align-items:center;gap:8px;padding:12px var(--screen-margin) 6px;flex-wrap:wrap}
 .photo-filter-info{padding:6px var(--screen-margin) 10px;font-size:13px;color:var(--text-secondary);font-weight:600;letter-spacing:0.01em}
 .photo-shift-inline{display:flex;gap:6px}
-.photo-shift-btn{min-width:40px;height:36px;padding:0 12px;border-radius:var(--radius-pill);border:1.5px solid var(--border);font-size:14px;font-weight:700;cursor:pointer;background:var(--card-bg);color:var(--text-secondary);transition:all .25s cubic-bezier(.4,0,.2,1);font-family:inherit;display:flex;align-items:center;justify-content:center;position:relative;-webkit-tap-highlight-color:transparent;user-select:none}
+.photo-shift-btn{min-width:40px;height:36px;padding:0 12px;border-radius:var(--radius-pill);border:1.5px solid var(--border);font-size:14px;font-weight:700;cursor:pointer;background:var(--card-bg);color:var(--text-secondary);transition:transform 120ms var(--ease-standard),box-shadow 120ms var(--ease-standard),background-color 80ms var(--ease-standard),color 80ms var(--ease-standard),border-color 80ms var(--ease-standard);font-family:inherit;display:flex;align-items:center;justify-content:center;position:relative;-webkit-tap-highlight-color:transparent;user-select:none}
 .photo-shift-btn:active{transform:scale(0.94);background:var(--primary-soft)}
 .photo-shift-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 3px 10px rgba(var(--primary-rgb),.3)}
 .photo-shift-btn .psb-count{position:absolute;top:-6px;right:-6px;background:var(--danger);color:#fff;font-size:10px;font-weight:800;min-width:18px;height:18px;border-radius:var(--radius-pill);display:flex;align-items:center;justify-content:center;padding:0 5px;box-shadow:0 1px 4px rgba(0,0,0,.15);border:1.5px solid var(--card-bg)}
 .photo-shift-btn.active .psb-count{background:#fff;color:var(--primary);border-color:var(--primary)}
-.photo-cam-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-pill);border:none;background:var(--primary);color:#fff;font-size:var(--fs-small);font-weight:700;cursor:pointer;box-shadow:var(--shadow-sm);font-family:inherit;transition:all .25s cubic-bezier(.4,0,.2,1);margin-left:auto}
-.photo-cam-btn:active{transform:scale(0.96)}
+.photo-cam-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-pill);border:none;background:var(--primary);color:#fff;font-size:var(--fs-small);font-weight:700;cursor:pointer;box-shadow:var(--btn-hl),inset 0 -1px 0 rgba(0,0,0,0.06),var(--shadow-sm);font-family:inherit;transition:var(--transition-btn);margin-left:auto}
+.photo-cam-btn:active{transform:translateY(1px) scale(0.96);box-shadow:var(--btn-hl-press),var(--shadow-xs)}
 .photo-cam-btn .icon{width:18px;height:18px}
 .load-more-wrap{text-align:center;padding:16px var(--screen-margin) 80px}
-.load-more-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 28px;border-radius:var(--radius-pill);border:1.5px solid var(--primary);background:var(--primary-soft);color:var(--primary);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .25s cubic-bezier(.4,0,.2,1);-webkit-tap-highlight-color:transparent;user-select:none}
+.load-more-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 28px;border-radius:var(--radius-pill);border:1.5px solid var(--primary);background:var(--primary-soft);color:var(--primary);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:transform 120ms var(--ease-standard),box-shadow 120ms var(--ease-standard),background-color 80ms var(--ease-standard),border-color 80ms var(--ease-standard);-webkit-tap-highlight-color:transparent;user-select:none}
 .load-more-btn:active{transform:scale(0.96)}
 .load-more-btn:disabled{opacity:.6;cursor:default}
 .load-more-done{display:inline-block;padding:8px 20px;color:var(--text-muted);font-size:13px;font-weight:600}
-.photo-action-bar select{padding:7px 12px;border-radius:var(--radius-pill);border:1px solid var(--border);font-size:var(--fs-small);background:var(--surface);color:var(--text);font-family:inherit;cursor:pointer;outline:none;min-width:100px;transition:all .25s ease}
+.photo-action-bar select{padding:7px 12px;border-radius:var(--radius-pill);border:1px solid var(--border);font-size:var(--fs-small);background:var(--surface);color:var(--text);font-family:inherit;cursor:pointer;outline:none;min-width:100px;transition:border-color 80ms var(--ease-standard),background-color 80ms var(--ease-standard)}
 /* ===== 实拍收纳袋（按 门店·班次·日期 分组） ===== */
 .bag-list{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 14px 80px}
 /* 小长方形竖向收纳袋卡片，类似截图中的 早班 1/6 */
@@ -1107,11 +1114,12 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .bag-shift-tag{font-size:var(--fs-small);font-weight:800;color:var(--text)}
 .bag-date{font-size:var(--fs-micro);color:var(--text-muted)}
 .bag-count{font-size:18px;font-weight:800;color:var(--primary);font-variant-numeric:tabular-nums;line-height:1;margin-top:1px}
-/* 收纳袋展开弹层 */
-.bag-detail{position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.62);display:none;align-items:flex-end;justify-content:center}
-.bag-detail.show{display:flex;animation:bagFade .22s ease}
+/* 收纳袋展开弹层 · [v4.0] 统一进出场动效 */
+.bag-detail{position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.62);display:none;align-items:flex-end;justify-content:center;opacity:0;transition:opacity 200ms var(--ease-exit)}
+.bag-detail.show{opacity:1;transition:opacity 200ms var(--ease-standard)}
 @keyframes bagFade{from{opacity:0}to{opacity:1}}
-.bag-sheet{width:100%;max-width:480px;max-height:88vh;background:var(--bg);border-radius:var(--radius-lg) var(--radius-lg) 0 0;display:flex;flex-direction:column;animation:bagSlide .28s cubic-bezier(.22,1,.36,1);box-shadow:0 -8px 30px rgba(0,0,0,.25)}
+.bag-sheet{width:100%;max-width:480px;max-height:88vh;background:var(--bg);border-radius:var(--radius-lg) var(--radius-lg) 0 0;display:flex;flex-direction:column;transform:translateY(100%);transition:transform 200ms var(--ease-exit);box-shadow:0 -8px 30px rgba(0,0,0,.25)}
+.bag-detail.show .bag-sheet{transform:translateY(0);transition:transform 280ms var(--ease-enter)}
 @keyframes bagSlide{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .bag-sheet-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--divider);position:sticky;top:0;background:var(--bg);z-index:2;border-radius:var(--radius-lg) var(--radius-lg) 0 0}
 .bag-sheet-head .bsh-title{font-size:var(--fs-h2);font-weight:800;color:var(--text);display:flex;align-items:center;gap:8px}
@@ -1146,29 +1154,32 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .bag-photo .bp-note-edit textarea{flex:1;padding:10px 12px;border-radius:var(--radius-sm);border:1.5px solid var(--primary);font-size:var(--fs-body);background:var(--surface);color:var(--text);font-family:inherit;outline:none;min-width:0;resize:none;box-sizing:border-box;line-height:1.5}
 .bag-photo .bp-note-edit .bn-actions{display:flex;gap:8px}
 .bag-photo .bp-note-edit .bn-actions button{flex:1;border:none;font-size:var(--fs-small);font-weight:700;padding:10px 0;border-radius:var(--radius-sm);cursor:pointer;font-family:inherit}
-.bag-photo .bp-note-edit .bn-save{background:var(--primary);color:#fff}
-.bag-photo .bp-note-edit .bn-save:active{transform:scale(0.97)}
-.bag-photo .bp-note-edit .bn-cancel{background:var(--surface);color:var(--text-secondary);border:1.5px solid var(--border)}
-.bag-photo .bp-note-edit .bn-cancel:active{transform:scale(0.97)}
-/* 照片备注弹层 */
-.remark-modal{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.62);display:none;align-items:center;justify-content:center;padding:24px;animation:bagFade .2s ease}
-.remark-modal.show{display:flex}
-.remark-box{width:100%;max-width:360px;background:var(--bg);border-radius:var(--radius-lg);padding:16px;box-shadow:0 12px 40px rgba(0,0,0,.3);animation:bagSlide .26s cubic-bezier(.22,1,.36,1)}
+.bag-photo .bp-note-edit .bn-save{background:var(--primary);color:#fff;box-shadow:var(--btn-hl),inset 0 -1px 0 rgba(0,0,0,0.06),var(--shadow-xs);transition:var(--transition-btn)}
+.bag-photo .bp-note-edit .bn-save:active{transform:translateY(1px) scale(0.97);box-shadow:var(--btn-hl-press),var(--shadow-xs)}
+.bag-photo .bp-note-edit .bn-cancel{background:var(--surface);color:var(--text-secondary);border:1.5px solid var(--border);box-shadow:var(--btn-hl),var(--shadow-xs);transition:var(--transition-btn)}
+.bag-photo .bp-note-edit .bn-cancel:active{transform:scale(0.97);box-shadow:none}
+/* 照片备注弹层 · [v4.0] 居中弹窗：opacity+scale(0.96)→1 入场，退场 scale 回 0.96 淡出 */
+.remark-modal{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.62);display:none;align-items:center;justify-content:center;padding:24px;opacity:0;transition:opacity 200ms var(--ease-exit)}
+.remark-modal.show{opacity:1;transition:opacity 200ms var(--ease-standard)}
+.remark-box{width:100%;max-width:360px;background:var(--bg);border-radius:var(--radius-lg);padding:16px;box-shadow:0 12px 40px rgba(0,0,0,.3);transform:scale(0.96);opacity:0;transition:transform 200ms var(--ease-exit),opacity 200ms var(--ease-exit)}
+.remark-modal.show .remark-box{transform:scale(1);opacity:1;transition:transform 240ms var(--ease-enter),opacity 200ms var(--ease-standard)}
 .remark-img-wrap{width:100%;border-radius:var(--radius-md);overflow:hidden;background:var(--surface);margin-bottom:12px}
 .remark-img-wrap img{width:100%;max-height:200px;object-fit:cover;display:block}
 .remark-title{font-size:var(--fs-body);font-weight:800;color:var(--text);margin-bottom:10px}
 .remark-input{width:100%;padding:11px 12px;border-radius:var(--radius-sm);border:1.5px solid var(--border);font-size:var(--fs-body);background:var(--surface);color:var(--text);font-family:inherit;outline:none;box-sizing:border-box;margin-bottom:14px}
 .remark-input:focus{border-color:var(--primary)}
 .remark-actions{display:flex;gap:10px}
-.remark-actions button{flex:1;padding:11px;border-radius:var(--radius-sm);border:none;font-size:var(--fs-body);font-weight:700;cursor:pointer;font-family:inherit;transition:transform .15s ease}
-.remark-actions .remark-cancel{background:var(--primary-fade);color:var(--primary)}
-.remark-actions .remark-ok{background:var(--primary);color:#fff}
-.remark-actions button:active{transform:scale(0.97)}
-/* [新] 不合格事项总览浮层 */
-.issue-overlay{position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.62);display:none;opacity:0;transition:opacity .25s ease}
-.issue-overlay.show{display:block;opacity:1}
-.issue-sheet{position:fixed;left:0;right:0;bottom:0;top:8vh;z-index:9998;background:var(--bg);border-radius:var(--radius-lg) var(--radius-lg) 0 0;display:none;flex-direction:column;animation:bagSlide .28s cubic-bezier(.22,1,.36,1);box-shadow:0 -8px 30px rgba(0,0,0,.25);max-width:680px;margin:0 auto}
-.issue-sheet.show{display:flex}
+.remark-actions button{flex:1;padding:11px;border-radius:var(--radius-sm);border:none;font-size:var(--fs-body);font-weight:700;cursor:pointer;font-family:inherit;transition:var(--transition-btn)}
+.remark-actions .remark-cancel{background:var(--primary-fade);color:var(--primary);box-shadow:var(--btn-hl),var(--shadow-xs)}
+.remark-actions .remark-ok{background:var(--primary);color:#fff;box-shadow:var(--btn-hl),inset 0 -1px 0 rgba(0,0,0,0.06),var(--shadow-xs)}
+.remark-actions button:active{transform:translateY(1px) scale(0.97)}
+.remark-actions .remark-cancel:active{box-shadow:none}
+.remark-actions .remark-ok:active{box-shadow:var(--btn-hl-press),var(--shadow-xs)}
+/* [新] 不合格事项总览浮层 · [v4.0] 统一进出场：默认态=退场曲线，.show=入场曲线；display 由 JS(openOverlay/closeOverlay) 控制 */
+.issue-overlay{position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.62);display:none;opacity:0;transition:opacity 200ms var(--ease-exit)}
+.issue-overlay.show{opacity:1;transition:opacity 200ms var(--ease-standard)}
+.issue-sheet{position:fixed;left:0;right:0;bottom:0;top:8vh;z-index:9998;background:var(--bg);border-radius:var(--radius-lg) var(--radius-lg) 0 0;display:none;flex-direction:column;transform:translateY(100%);transition:transform 200ms var(--ease-exit);box-shadow:0 -8px 30px rgba(0,0,0,.25);max-width:680px;margin:0 auto}
+.issue-sheet.show{transform:translateY(0);transition:transform 280ms var(--ease-enter)}
 .issue-handle{width:36px;height:4px;border-radius:var(--radius-pill);background:var(--border);margin:8px auto 4px;flex-shrink:0}
 .issue-header{position:relative;padding:8px 16px 12px;border-bottom:1px solid var(--divider);flex-shrink:0}
 .issue-title{display:flex;align-items:center;gap:8px;font-size:var(--fs-h2);font-weight:800;color:var(--text)}
@@ -1225,9 +1236,10 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 /* [v3.9] 总览浮层：日期范围筛选区 */
 .issue-filter{padding:10px 16px 0;flex-shrink:0}
 .issue-quick{display:flex;gap:6px}
-.issue-quick button{flex:none;padding:7px 12px;border-radius:var(--radius-pill);border:none;background:var(--surface);color:var(--text-muted);font-size:var(--fs-small);font-weight:700;cursor:pointer;font-family:inherit;transition:var(--transition-fast)}
-.issue-quick button.active{background:var(--primary);color:#fff}
+.issue-quick button{flex:none;padding:7px 12px;border-radius:var(--radius-pill);border:none;background:var(--surface);color:var(--text-muted);font-size:var(--fs-small);font-weight:700;cursor:pointer;font-family:inherit;transition:var(--transition-btn)}
+.issue-quick button.active{background:var(--primary);color:#fff;box-shadow:var(--btn-hl),inset 0 -1px 0 rgba(0,0,0,0.06),var(--shadow-xs)}
 .issue-quick button:active{transform:scale(0.96)}
+.issue-quick button.active:active{transform:translateY(1px) scale(0.96);box-shadow:var(--btn-hl-press),var(--shadow-xs)}
 .issue-dates{display:flex;align-items:center;gap:8px;margin-top:8px}
 .issue-dates input[type=date]{height:38px;flex:1;min-width:0;border:1.5px solid var(--border);border-radius:var(--radius-pill);background:var(--surface);color:var(--text);font-size:var(--fs-small);font-family:inherit;padding:0 14px;outline:none;box-sizing:border-box}
 .issue-dates input[type=date]:focus{border-color:var(--primary)}
@@ -1279,8 +1291,8 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .rb-banner .icon{width:18px;height:18px;flex-shrink:0;margin-top:1px;color:var(--primary)}
 .rb-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-md)}
 .rb-count{font-size:var(--fs-small);color:var(--text-muted);font-weight:600}
-.rb-empty-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-pill);border:none;background:var(--danger);color:#fff;font-size:var(--fs-small);font-weight:700;cursor:pointer;box-shadow:var(--shadow-sm);font-family:inherit;transition:all .25s cubic-bezier(.4,0,.2,1)}
-.rb-empty-btn:active{transform:scale(0.96)}
+.rb-empty-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-pill);border:none;background:var(--danger);color:#fff;font-size:var(--fs-small);font-weight:700;cursor:pointer;box-shadow:var(--btn-hl),inset 0 -1px 0 rgba(0,0,0,0.06),var(--shadow-sm);font-family:inherit;transition:var(--transition-btn)}
+.rb-empty-btn:active{transform:translateY(1px) scale(0.96);box-shadow:var(--btn-hl-press),var(--shadow-xs)}
 .rb-empty-btn .icon{width:16px;height:16px}
 .rb-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .rb-item{position:relative;border-radius:var(--radius-md);overflow:hidden;background:var(--card-bg);box-shadow:var(--shadow-xs)}
@@ -1292,7 +1304,7 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .rb-item .rb-info .rb-time{font-size:var(--fs-small);color:var(--danger);margin-top:2px;font-weight:700;display:flex;align-items:center;gap:3px}
 .rb-item .rb-info .rb-time .icon{width:11px;height:11px;flex-shrink:0}
 .rb-item .rb-info .rb-orig{font-size:var(--fs-micro);color:var(--text-muted);margin-top:1px}
-.rb-restore-btn{display:flex;align-items:center;justify-content:center;gap:4px;width:100%;padding:6px;border:none;border-top:1px solid var(--border);background:var(--card-bg);color:var(--primary);font-size:var(--fs-micro);font-weight:700;cursor:pointer;font-family:inherit;transition:all .25s cubic-bezier(.4,0,.2,1)}
+.rb-restore-btn{display:flex;align-items:center;justify-content:center;gap:4px;width:100%;padding:6px;border:none;border-top:1px solid var(--border);background:var(--card-bg);color:var(--primary);font-size:var(--fs-micro);font-weight:700;cursor:pointer;font-family:inherit;transition:transform 120ms var(--ease-standard),background-color 80ms var(--ease-standard)}
 .rb-restore-btn:active{transform:scale(0.97);background:var(--primary-fade)}
 .rb-restore-btn .icon{width:14px;height:14px}
 .rb-empty{text-align:center;padding:60px var(--card-pad)}
@@ -1496,17 +1508,19 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 @keyframes shimmerMove{0%{background-position:-200% 0}100%{background-position:200% 0}}
 .sk{background:linear-gradient(90deg,var(--border-soft) 25%,var(--primary-fade) 50%,var(--border-soft) 75%);background-size:200% 100%;animation:shimmerMove 1.4s infinite}
 
-/* ===== Modal ===== */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:var(--z-modal);display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px);padding:24px}
-.modal-overlay.show{display:flex;animation:fadeInUp 0.2s ease}
-.success-modal{background:var(--card-bg);border-radius:var(--radius-2xl);padding:var(--space-2xl) var(--space-xl) var(--space-xl);max-width:320px;width:100%;text-align:center;animation:success-pop var(--enter-duration) cubic-bezier(0.34,1.56,0.64,1);box-shadow:var(--shadow-lg)}
+/* ===== Modal ===== · [v4.0] 居中弹窗统一 opacity+scale 进出场 */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:var(--z-modal);display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px);padding:24px;opacity:0;transition:opacity 200ms var(--ease-exit)}
+.modal-overlay.show{display:flex;opacity:1;transition:opacity 200ms var(--ease-standard)}
+.success-modal{background:var(--card-bg);border-radius:var(--radius-2xl);padding:var(--space-2xl) var(--space-xl) var(--space-xl);max-width:320px;width:100%;text-align:center;transform:scale(0.96);opacity:0;transition:transform 200ms var(--ease-exit),opacity 200ms var(--ease-exit);box-shadow:var(--shadow-lg)}
+.modal-overlay.show .success-modal{transform:scale(1);opacity:1;transition:transform 240ms var(--ease-enter),opacity 200ms var(--ease-standard)}
 .success-icon{width:68px;height:68px;border-radius:50%;margin:0 auto var(--space-base);background:var(--gradient-success);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.10),0 8px 20px rgba(61,168,120,0.22)}
 .success-icon .icon{width:34px;height:34px}
 .success-modal h3{font-size:var(--fs-title);font-weight:700;letter-spacing:var(--tracking-tight);line-height:var(--lh-tight)}
 .success-modal p{font-size:var(--fs-body);color:var(--text-secondary);margin-top:6px;line-height:var(--lh-base)}
 .success-actions{display:flex;flex-direction:column;gap:8px;margin-top:var(--space-lg)}
 /* Confirm Modal */
-.confirm-modal{background:var(--card-bg);border-radius:var(--radius-lg);padding:var(--space-xl) var(--space-xl) var(--space-lg);max-width:320px;width:100%;text-align:center;animation:popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);box-shadow:var(--shadow-lg)}
+.confirm-modal{background:var(--card-bg);border-radius:var(--radius-lg);padding:var(--space-xl) var(--space-xl) var(--space-lg);max-width:320px;width:100%;text-align:center;transform:scale(0.96);opacity:0;transition:transform 200ms var(--ease-exit),opacity 200ms var(--ease-exit);box-shadow:var(--shadow-lg)}
+.modal-overlay.show .confirm-modal{transform:scale(1);opacity:1;transition:transform 240ms var(--ease-enter),opacity 200ms var(--ease-standard)}
 .confirm-icon{width:56px;height:56px;border-radius:50%;margin:0 auto var(--space-md);background:var(--warning-soft);color:var(--warning);display:flex;align-items:center;justify-content:center}
 .confirm-icon.danger{background:var(--danger-soft);color:var(--danger)}
 .confirm-icon .icon{width:28px;height:28px}
@@ -1532,8 +1546,8 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .pg-num{width:26px;height:26px;border-radius:50%;background:var(--gradient-primary);color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;box-shadow:0 2px 6px rgba(var(--primary-rgb),.25)}
 .pg-step-text{flex:1;font-size:var(--fs-body);color:var(--text-secondary);line-height:1.65;padding-top:2px}
 .pg-step-text b{color:var(--text);font-weight:700}
-.pg-close-btn{width:100%;padding:14px;border:none;border-radius:var(--radius-pill);background:var(--gradient-primary);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px;box-shadow:0 3px 12px rgba(var(--primary-rgb),.25);transition:var(--transition-press);-webkit-tap-highlight-color:transparent}
-.pg-close-btn:active{transform:scale(.97)}
+.pg-close-btn{width:100%;padding:14px;border:none;border-radius:var(--radius-pill);background:var(--gradient-primary);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px;box-shadow:var(--btn-hl),inset 0 -1px 0 rgba(0,0,0,0.06),0 3px 12px rgba(var(--primary-rgb),.25);transition:var(--transition-btn);-webkit-tap-highlight-color:transparent}
+.pg-close-btn:active{transform:translateY(1px) scale(.97);box-shadow:var(--btn-hl-press),var(--shadow-xs)}
 @keyframes catSlideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 
 /* Scroll Hint */
@@ -1548,10 +1562,10 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .bn-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px 4px;cursor:pointer;color:var(--text-muted);position:relative;border-radius:var(--radius-sm);transition:var(--transition-press);-webkit-tap-highlight-color:transparent}
 .bn-icon{display:flex;align-items:center;justify-content:center;height:26px}
 .bn-icon .icon{width:23px;height:23px;transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1)}
-.bn-label{font-size:10px;font-weight:600;letter-spacing:0.01em;transition:all .2s}
+.bn-label{font-size:10px;font-weight:600;letter-spacing:0.01em;transition:color .2s var(--ease-standard)}
 /* Active state — pill background + spring pop */
 .bn-item.active{color:var(--primary)}
-.bn-item.active::before{content:'';position:absolute;inset:2px 6px;border-radius:var(--radius-sm);background:var(--primary-fade);z-index:-1;transition:all .25s ease}
+.bn-item.active::before{content:'';position:absolute;inset:2px 6px;border-radius:var(--radius-sm);background:var(--primary-fade);z-index:-1;transition:background-color .25s var(--ease-standard)}
 .bn-item.active .bn-label{font-weight:700}
 .bn-item.active .bn-icon .icon{animation:fab-pop 320ms cubic-bezier(0.34,1.56,0.64,1)}
 .bn-item:active{transform:scale(var(--press-scale))}
@@ -1571,9 +1585,9 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 [data-theme="neon"] .fab-float.active .fab-circle,[data-theme="ocean"] .fab-float.active .fab-circle,[data-theme="sunset"] .fab-float.active .fab-circle,[data-theme="aurora"] .fab-float.active .fab-circle{box-shadow:0 0 0 2px var(--card-bg),0 0 0 4px var(--primary),var(--shadow-md)}
 
 /* Toast */
-.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);z-index:var(--z-toast);background:var(--accent-deep);color:#fff;padding:10px 20px;border-radius:var(--radius-pill);font-size:var(--fs-body);font-weight:600;opacity:0;transition:opacity 0.25s ease,transform 0.4s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;max-width:90vw;text-align:center;display:flex;align-items:center;gap:6px}
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);z-index:var(--z-toast);background:var(--accent-deep);color:#fff;padding:10px 20px;border-radius:var(--radius-pill);font-size:var(--fs-body);font-weight:600;opacity:0;transition:opacity 200ms var(--ease-exit),transform 200ms var(--ease-exit);pointer-events:none;max-width:90vw;text-align:center;display:flex;align-items:center;gap:6px}
 .toast .icon{width:16px;height:16px}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);transition:opacity 250ms var(--ease-standard),transform 400ms cubic-bezier(0.34,1.56,0.64,1)}  /* [v4.0] 补 200ms 退场 */
 .toast.success{background:var(--success)}
 .toast.error{background:var(--danger)}
 .toast.info{background:var(--accent)}
@@ -1592,8 +1606,11 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .tappable{transition:var(--transition-press)}
 .tappable:active{transform:scale(var(--press-scale))}
 /* 主按钮：按压回弹 + 即时亮度反馈 + 涟漪锚点（T1+T2+T5） */
-.cta-btn,.btn-primary{transition:var(--transition-press),var(--transition-tap);position:relative;overflow:hidden}
-.cta-btn:active,.btn-primary:active{transform:scale(var(--press-scale));filter:brightness(0.96)}  /* 即时反馈，无延迟 */
+.cta-btn,.btn-primary{transition:var(--transition-btn);position:relative;overflow:hidden}
+.cta-btn:active,.btn-primary:active{transform:translateY(1px) scale(var(--press-scale,0.96));box-shadow:var(--btn-hl-press),var(--shadow-xs)}  /* [v4.0] 压暗由 inset 阴影承担，去 filter 重绘 */
+/* ===== [v4.0] 次按钮/图标按钮：浅立体（顶部高光 + shadow-xs），:active 阴影降为 none ===== */
+.btn-ghost,.icon-btn,.detail-back,.filter-toggle,.sidebar-footer button,.cal-nav button,.history-btn,.issue-close,.issue-refresh,.idr-back,.bsh-close,.rf-clear,.load-more-btn{box-shadow:var(--btn-hl),var(--shadow-xs);transition:transform 120ms var(--ease-standard),box-shadow 120ms var(--ease-standard),background-color 80ms var(--ease-standard),color 80ms var(--ease-standard),border-color 80ms var(--ease-standard)}
+.btn-ghost:active,.icon-btn:active,.detail-back:active,.filter-toggle:active,.sidebar-footer button:active,.cal-nav button:active,.history-btn:active,.issue-close:active,.issue-refresh:active,.idr-back:active,.bsh-close:active,.rf-clear:active,.load-more-btn:active{box-shadow:none}
 /* 减弱动画无障碍降级（§2.4） */
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;scroll-behavior:auto !important}
@@ -1994,6 +2011,17 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
           </div>
         </div>
       </div>
+      <div class="settings-group" id="admin-people-group" style="display:none">
+        <div class="sg-title"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>人员管理</div>
+        <div class="settings-card">
+          <div class="store-mgmt-list" id="people-mgmt-list"></div>
+          <div class="add-store-row">
+            <div class="si-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></div>
+            <input type="text" class="add-store-input" id="new-person-name" placeholder="输入人员姓名" onkeydown="if(event.key==='Enter')addPerson()">
+            <button class="btn-primary" style="padding:10px 18px;font-size:var(--fs-small);flex:none" onclick="addPerson()">添加</button>
+          </div>
+        </div>
+      </div>
       <div class="settings-group" id="admin-security-group" style="display:none">
         <div class="sg-title"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>安全设置</div>
         <div class="settings-card">
@@ -2291,6 +2319,7 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 const STORAGE_KEY='lq_shift_records';
 const AUTH_KEY='lq_shift_auth';
 const STORES_KEY='lq_shift_stores';
+const PEOPLE_KEY='lq_shift_people';           /* [v4.0] 人员名单本地键（镜像门店范式） */
 const DRAFT_KEY='lq_shift_draft';            /* [新] 草稿自动保存键 */
 const LAST_STORE_KEY='lq_shift_last_store';  /* [新] 记住上次门店 */
 let currentDetailId=null, openSectionId=null, settingsAuthed=false, isSubmitting=false;
@@ -2443,8 +2472,10 @@ function executeAdminAction(action){
     case 'storeMgmt':
       showView('settings');
       document.getElementById('admin-store-group').style.display='';
+      document.getElementById('admin-people-group').style.display='';
       document.getElementById('admin-security-group').style.display='';
       renderStoreMgmt();
+      renderPeopleMgmt();
       setTimeout(()=>document.getElementById('admin-store-group').scrollIntoView({behavior:'smooth',block:'start'}),100);
       break;
     case 'exportCSV':
@@ -2460,6 +2491,7 @@ function executeAdminAction(action){
     case 'changePwd':
       showView('settings');
       document.getElementById('admin-store-group').style.display='';
+      document.getElementById('admin-people-group').style.display='';
       document.getElementById('admin-security-group').style.display='';
       setTimeout(()=>{toggleAuthCollapse();document.getElementById('auth-collapse-body').scrollIntoView({behavior:'smooth',block:'start'})},100);
       break;
@@ -2484,6 +2516,7 @@ async function verifySettingsAccess(){
     updateAuthStatus();
     updateAdminLocks();
     renderStoreMgmt();
+    renderPeopleMgmt();
     showToast('验证成功','success');
     loadAdminPwdFromCloud();
     if(pendingAdminAction){
@@ -2575,6 +2608,9 @@ function bindRipples(){
 
 /* ===== View Switching ===== */
 let viewHistory=[];
+/* [v4.0] 数据脏标记：数据变动才重渲，避免视图切换时无意义的整页 innerHTML 重建（消除点击抽动） */
+let homeDirty=true, recordsViewDirty=true;
+function markDataDirty(){homeDirty=true;recordsViewDirty=true}
 function showView(name){
   /* 设置页公开访问，管理员功能移至「更多」侧边栏 */
   /* 记录导航历史（避免重复推入相同视图） */
@@ -2592,12 +2628,13 @@ function showView(name){
   closeSidebar();
   closeCamera();
   window.scrollTo(0,0);
-  if(name==='home')renderHome();
-  if(name==='records')renderRecordsView();
+  if(name==='home'&&homeDirty)renderHome();
+  if(name==='records'&&recordsViewDirty)renderRecordsView();
   if(name==='settings'){
     if(!settingsAuthed){
       const g1=document.getElementById('admin-store-group');if(g1)g1.style.display='none';
       const g2=document.getElementById('admin-security-group');if(g2)g2.style.display='none';
+      const g3=document.getElementById('admin-people-group');if(g3)g3.style.display='none';
     }
     initTheme();
     updateAboutInfo();
@@ -2640,6 +2677,41 @@ function goBack(){
   zone.addEventListener('touchend',()=>{tracking=false;},{passive:true});
 })();
 
+/* ===== [v4.0] 通用浮层打开/关闭（统一进出场动效） ===== */
+/* 打开：先 display:flex，双 requestAnimationFrame 后加 .show，保证过渡生效 */
+function openOverlay(overlayEl,panelEl){
+  if(!overlayEl)return;
+  overlayEl.style.display='flex';
+  if(panelEl)panelEl.style.display='flex';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    overlayEl.classList.add('show');
+    if(panelEl)panelEl.classList.add('show');
+  }));
+}
+/* 关闭：移除 .show → 面板播退场（200ms var(--ease-exit)）→ transitionend（兜底 300ms）后 display:none */
+function closeOverlay(overlayEl,panelEl,onDone){
+  if(!overlayEl){if(onDone)onDone();return}
+  overlayEl.classList.remove('show');
+  if(panelEl)panelEl.classList.remove('show');
+  let done=false;
+  const finish=()=>{
+    if(done)return;done=true;
+    /* 关闭动画期间被重新打开：放弃隐藏，避免闪烁 */
+    if(overlayEl.classList.contains('show')||(panelEl&&panelEl.classList.contains('show')))return;
+    overlayEl.style.display='none';
+    if(panelEl)panelEl.style.display='none';
+    if(onDone)onDone();
+  };
+  const target=panelEl||overlayEl;
+  const onEnd=e=>{
+    if(e.target!==target)return;
+    target.removeEventListener('transitionend',onEnd);
+    finish();
+  };
+  target.addEventListener('transitionend',onEnd);
+  setTimeout(finish,300);
+}
+
 /* ===== [新] Confirm 浮层（替代原生 confirm） ===== */
 function showConfirm(message,onConfirm,opts){
   opts=opts||{};
@@ -2655,9 +2727,9 @@ function showConfirm(message,onConfirm,opts){
   okBtn.parentNode.replaceChild(newOk,okBtn);
   newOk.id='confirm-ok';
   newOk.addEventListener('click',()=>{closeConfirm();if(onConfirm)onConfirm()});
-  overlay.classList.add('show');
+  openOverlay(overlay);
 }
-function closeConfirm(){document.getElementById('confirm-modal').classList.remove('show')}
+function closeConfirm(){closeOverlay(document.getElementById('confirm-modal'))}
 
 /* ===== Init ===== */
 async function initApp(){
@@ -2670,8 +2742,11 @@ async function initApp(){
   bindRipples();
   loadAdminPwdFromCloud();
   await loadStoresFromCloud();
-  populateStoreSelect();populateFilterStores();renderStoreMgmt();
+  await loadPeopleFromCloud();               /* [v4.0] 人员名单云端同步 */
+  populateStoreSelect();populateFilterStores();renderStoreMgmt();renderPeopleMgmt();
   await syncRecordsFromCloud();
+  await migratePeopleFromHistory();          /* [v4.0] 一次性迁移：云端未初始化时从历史记录导入名单 */
+  renderPeopleMgmt();
   renderSidebar();
   populateFilterStores();
   /* [新] 草稿恢复 / 智能预填 */
@@ -2926,13 +3001,19 @@ function suggestShift(){
   if(h>=6&&h<14)s='早班';else if(h>=14&&h<22)s='中班';
   sel.value=s;
 }
-/* [新] 交班人/接班人从历史记录提取做下拉快速选择 */
+/* [v4.0] 交班人/接班人下拉快速选择：优先取人员名单（getPeople），名单为空时回退历史记录提取（防空） */
 function populateNameDatalists(){
-  const records=getRecords();
-  const names=new Set();
-  records.forEach(r=>{if(r.handover)names.add(r.handover);if(r.takeover)names.add(r.takeover)});
+  const people=getPeople();
+  let names;
+  if(people.length>0){
+    names=people.map(p=>p.name);
+  }else{
+    const set=new Set();
+    getRecords().forEach(r=>{const h=(r.handover||'').trim();const t=(r.takeover||'').trim();if(h)set.add(h);if(t)set.add(t)});
+    names=Array.from(set);
+  }
   const dl=document.getElementById('name-options');
-  if(dl)dl.innerHTML=Array.from(names).slice(0,40).map(n=>'<option value="'+esc(n)+'">').join('');
+  if(dl)dl.innerHTML=names.slice(0,40).map(n=>'<option value="'+esc(n)+'">').join('');
 }
 
 /* ===== Submit（保留逻辑，confirm 替换为浮层） ===== */
@@ -3018,6 +3099,7 @@ async function submitForm(){
       try{localStorage.setItem(STORAGE_KEY,JSON.stringify(records))}catch(e){console.error('[Storage] Quota exceeded, skipping local save:',e.message)}
     }
     try{renderSidebar();renderHome();populateNameDatalists()}catch(e){console.error('render after submit',e)}
+    try{ensurePeopleExist([handover,takeover])}catch(e){console.error('people auto-add',e)} /* [v4.0] 新姓名静默补录名单并推送云端 */
     try{resetForm()}catch(e){console.error('resetForm error',e)}
     isSubmitting=false;
     submitBtn.disabled=false;
@@ -3088,10 +3170,12 @@ async function syncRecordsFromCloud(){
       else{try{localStorage.removeItem(STORAGE_KEY)}catch(e){}}
     }
     lastSyncTime=Date.now();
+    markDataDirty(); /* [v4.0] 云端数据已更新，标记待重渲 */
     return true; /* [v3.9] 返回同步结果供总览浮层判断 */
   }catch(e){
     console.error('Cloud sync failed:',e);
     try{RECORDS_CACHE=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')}catch{RECORDS_CACHE=[]}
+    markDataDirty();
     return false; /* [v3.9] 失败时降级为本地缓存 */
   }finally{
     /* [v3.9 P0修复] 复位移入 finally，保证 return/异常路径都执行，isSyncing 不再永久卡 true */
@@ -3237,27 +3321,23 @@ function issueRangeRecords(){
   const d=issueRangeDates();
   return getRecords().filter(r=>!r.deleted&&r.date&&r.date>=d.start&&r.date<=d.end);
 }
-/* 同一人（trim 后）合并交班/接班；不合格数 = 其参与记录中 result==='fail' 的条目总数 */
+/* [v4.0] 口径变更：仅按交班人（r.handover，trim 后）统计；不合格数 = 其交班记录中 result==='fail' 的条目总数。
+   排序：不合格数降序，次按交班次数降序。 */
 function issuePeopleAgg(range){
   const map={};
-  const getP=n=>{const k=(n||'').trim();if(!k)return null;if(!map[k])map[k]={name:k,hand:0,take:0,fail:0,pass:0,recs:0};return map[k]};
   range.forEach(r=>{
+    const k=(r.handover||'').trim();
+    if(!k)return;
+    if(!map[k])map[k]={name:k,hand:0,fail:0,pass:0,recs:0};
+    const p=map[k];
     const fc=failCountOf(r);
     let pc=0;
     Object.values(r.sections||{}).forEach(s=>(s.items||[]).forEach(it=>{if(it.result==='pass')pc++}));
-    const h=getP(r.handover),t=getP(r.takeover);
-    if(h)h.hand++;
-    if(t)t.take++;
-    const seen=new Set();
-    [r.handover,r.takeover].forEach(n=>{
-      const p=getP(n);
-      if(!p||seen.has(p.name))return;
-      seen.add(p.name);
-      p.fail+=fc;p.pass+=pc;
-      if(fc>0)p.recs++;
-    });
+    p.hand++;
+    p.fail+=fc;p.pass+=pc;
+    if(fc>0)p.recs++;
   });
-  return Object.values(map).sort((a,b)=>b.fail-a.fail||b.recs-a.recs||(b.hand+b.take)-(a.hand+a.take));
+  return Object.values(map).sort((a,b)=>b.fail-a.fail||b.hand-a.hand);
 }
 /* 单条不合格记录卡（总览明细 / 下钻明细共用，复用 .issue-item 结构） */
 function issueRecordItemHtml(r){
@@ -3321,11 +3401,11 @@ function renderIssueOverview(){
       '<div class="issue-card"><div class="ic-num" style="color:var(--danger)">'+failRate+'%</div><div class="ic-label">不合格率</div></div>'+
     '</div>'+
     '<div class="issue-note">口径：不合格率 = 不合格项 ÷（合格项 + 不合格项），不含未检项</div>'+
-    '<div class="issue-section-title">'+ic('user')+'人员统计<span class="issue-hint">按不合格数降序 · 点击下钻</span></div>'+
+    '<div class="issue-section-title">'+ic('user')+'交班人统计<span class="issue-hint">按不合格数降序 · 点击下钻</span></div>'+
     '<div class="issue-ptable" id="issue-people"></div>'+
     '<div class="issue-section-title">'+ic('clipboard')+'不合格事项明细<span class="issue-hint" id="issue-list-count">0 条</span></div>'+
     '<div class="issue-list" id="issue-list"></div>';
-  /* 人员统计表：同一人交班/接班合并为一行 */
+  /* [v4.0] 交班人统计表：仅按交班人聚合（姓名 + 交班次数 + 不合格数/率） */
   const people=issuePeopleAgg(records);
   issuePeopleList=people;
   const ptableEl=document.getElementById('issue-people');
@@ -3333,14 +3413,15 @@ function renderIssueOverview(){
     if(people.length===0){
       ptableEl.innerHTML='<div class="issue-empty">'+ic('checkCircle')+'所选周期内无交接记录</div>';
     }else{
-      ptableEl.innerHTML='<div class="ipt-head"><span>人员</span><span>交 / 接分布</span><span>不合格</span><span></span></div>'+
+      ptableEl.innerHTML='<div class="ipt-head"><span>交班人</span><span>交班次数</span><span>不合格</span><span></span></div>'+
         people.map((p,i)=>{
           const initial=p.name.slice(0,1).toUpperCase();
+          const rate=(p.fail+p.pass)>0?Math.round(p.fail*100/(p.fail+p.pass)):0;
           return '<div class="issue-person ipt-row" onclick="openIssueDrill('+i+')">'+
             '<div class="ip-avatar">'+esc(initial)+'</div>'+
             '<div class="ip-body">'+
               '<div class="ip-name">'+esc(p.name)+'</div>'+
-              '<div class="ipt-dist"><span class="hand">交班 '+p.hand+'</span> · <span class="take">接班 '+p.take+'</span></div>'+
+              '<div class="ipt-dist"><span class="hand">交班 '+p.hand+' 次</span> · 不合格率 '+rate+'%</div>'+
             '</div>'+
             '<div class="ipt-fail">'+p.fail+'</div>'+
             ic('chevronRight','ipt-arrow')+
@@ -3370,7 +3451,7 @@ function renderIssueDrillBody(bodyEl){
   issuePeopleList=people;
   const p=people.find(x=>x.name===issueDrillName);
   if(!p){issueDrillName='';renderIssueOverview();return}
-  const rel=records.filter(r=>failCountOf(r)>0&&((r.handover||'').trim()===p.name||(r.takeover||'').trim()===p.name))
+  const rel=records.filter(r=>failCountOf(r)>0&&(r.handover||'').trim()===p.name) /* [v4.0] 下钻只到该交班人的记录 */
     .sort((a,b)=>(b.timestamp||'').localeCompare(a.timestamp||''));
   const rate=(p.fail+p.pass)>0?Math.round(p.fail*100/(p.fail+p.pass)):0;
   const initial=p.name.slice(0,1).toUpperCase();
@@ -3383,7 +3464,7 @@ function renderIssueDrillBody(bodyEl){
       '<div class="ip-avatar">'+esc(initial)+'</div>'+
       '<div class="ip-body">'+
         '<div class="ip-name">'+esc(p.name)+'</div>'+
-        '<div class="ip-stats"><span class="ip-role hand">交班 '+p.hand+'</span><span class="ip-role take">接班 '+p.take+'</span></div>'+
+        '<div class="ip-stats"><span class="ip-role hand">交班 '+p.hand+' 次</span></div>'+
       '</div>'+
       '<div class="idr-nums">'+
         '<div class="idr-fail">'+p.fail+' 项不合格</div>'+
@@ -3433,8 +3514,7 @@ async function syncIssueData(){
   renderIssueOverview();
 }
 async function openIssueOverview(){
-  document.getElementById('issue-overlay').classList.add('show');
-  document.getElementById('issue-sheet').classList.add('show');
+  openOverlay(document.getElementById('issue-overlay'),document.getElementById('issue-sheet'));
   document.body.style.overflow='hidden';
   await syncIssueData(); /* 打开浮层 = 云端刷新 */
 }
@@ -3445,8 +3525,7 @@ function toggleIssueItem(id,forceOpen){
   else el.classList.toggle('open');
 }
 function closeIssueOverview(){
-  document.getElementById('issue-overlay').classList.remove('show');
-  document.getElementById('issue-sheet').classList.remove('show');
+  closeOverlay(document.getElementById('issue-overlay'),document.getElementById('issue-sheet'));
   document.body.style.overflow='';
   /* [v3.9] 重置下钻态与日期选择态到默认（近30天） */
   issueDrillName='';
@@ -3598,6 +3677,7 @@ async function deleteRecord(){
   showConfirm('确定要删除此条交接班记录吗？记录将移入回收站，可在回收站中恢复。',async()=>{
     try{await deleteRecordFromCloud(currentDetailId)}catch(e){showToast('网络异常，删除失败','error');return}
     RECORDS_CACHE=RECORDS_CACHE.filter(r=>r.id!==currentDetailId);
+    markDataDirty();
     renderSidebar();populateNameDatalists();goBack();showToast('记录已移入回收站','success');
   },{danger:true,okText:'删除',title:'删除记录'});
 }
@@ -3681,6 +3761,7 @@ function renderHome(){
   document.getElementById('home-recent').innerHTML=rh;
   updateScrollHint();
   setTimeout(bindRipples,50);
+  homeDirty=false; /* [v4.0] 渲染完成，清除脏标记 */
 }
 
 /* ===== Scroll Hint ===== */
@@ -3713,15 +3794,15 @@ function openSuccessModal(id,cloudOk){
   document.getElementById('success-sub').textContent=(cloudOk===false)?
     '网络异常，记录已保存到本机，联网后会自动同步到云端':
     '交接班记录已保存到云端，所有设备可见';
-  document.getElementById('success-modal').classList.add('show');
+  openOverlay(document.getElementById('success-modal'));
   setTimeout(bindRipples,50);
 }
 function closeSuccessModal(){
-  document.getElementById('success-modal').classList.remove('show');
+  closeOverlay(document.getElementById('success-modal'));
   showView('home');
 }
 function viewSubmittedRecord(){
-  document.getElementById('success-modal').classList.remove('show');
+  closeOverlay(document.getElementById('success-modal'));
   if(lastSubmittedId)viewRecord(lastSubmittedId);
 }
 
@@ -3732,12 +3813,13 @@ async function refreshData(silent){
   if(!silent)showToast('正在同步云端数据...','info');
   try{
     await loadStoresFromCloud().catch(e=>console.error('stores sync err:',e));
+    await loadPeopleFromCloud().catch(e=>console.error('people sync err:',e));
     await syncRecordsFromCloud().catch(e=>console.error('records sync err:',e));
     await cleanupExpiredPhotos().catch(e=>console.error('cleanup err:',e));
     await loadPhotosFromCloud().catch(e=>console.error('photos sync err:',e));
   }catch(e){console.error('refresh failed',e)}
   lastSyncTime=Date.now();
-  populateStoreSelect();populateFilterStores();renderStoreMgmt();renderSidebar();renderHome();populateNameDatalists();
+  populateStoreSelect();populateFilterStores();renderStoreMgmt();renderPeopleMgmt();renderSidebar();renderHome();populateNameDatalists();
   if(document.getElementById('view-records').classList.contains('active'))renderRecordsView();
   if(svg)svg.classList.remove('spin');
   updateSyncStatus();
@@ -3944,6 +4026,7 @@ function renderRecordsView(){
     if(paneCal)paneCal.classList.add('active');
     renderDailyTrack();
   }
+  recordsViewDirty=false; /* [v4.0] 渲染完成，清除脏标记 */
 }
 function setRecordsViewTab(t){
   recordsViewTab=t;
@@ -4048,11 +4131,11 @@ function openBagDetail(key){
     '</div>';
   }).join('');
   document.getElementById('bag-sheet-body').innerHTML=html;
-  document.getElementById('bag-detail').classList.add('show');
+  openOverlay(document.getElementById('bag-detail'));
   document.body.style.overflow='hidden';
 }
 function closeBagDetail(){
-  document.getElementById('bag-detail').classList.remove('show');
+  closeOverlay(document.getElementById('bag-detail'));
   document.body.style.overflow='';
 }
 /* 进入备注编辑态：把对应卡片的备注区替换为 textarea + 保存/取消 */
@@ -4644,19 +4727,19 @@ function showPhotoRemarkPrompt(id){
   document.getElementById('remark-img').src=p.data;
   const inp=document.getElementById('remark-input');
   inp.value=p.caption||'';
-  ov.classList.add('show');
+  openOverlay(ov);
   document.body.style.overflow='hidden';
   setTimeout(()=>inp.focus(),150);
   const ok=document.getElementById('remark-ok');
   const cancel=document.getElementById('remark-cancel');
   const save=async()=>{
     const val=inp.value.trim();
-    ov.classList.remove('show');
+    closeOverlay(ov);
     document.body.style.overflow='';
     await updatePhotoCaption(id,val);
     showToast(val?'备注已保存':'备注已清除','success');
   };
-  const close=()=>{ov.classList.remove('show');document.body.style.overflow='';};
+  const close=()=>{closeOverlay(ov);document.body.style.overflow='';};
   ok.onclick=save;
   cancel.onclick=close;
   ov.onclick=(e)=>{if(e.target===ov)close();};
@@ -4843,6 +4926,116 @@ async function pushStoresToCloud(stores){
   }catch(e){console.error('stores push failed:',e)}
 }
 
+/* ===== [v4.0] 人员管理（镜像门店管理范式，数据结构 [{id,name}]） ===== */
+const PEOPLE_CONFIG_ID='__config_people__';
+let PEOPLE_CLOUD_MISSING=false; /* 云端无 __config_people__ 行 = 未初始化（用于一次性迁移判断） */
+function getPeople(){try{return JSON.parse(localStorage.getItem(PEOPLE_KEY)||'[]')}catch{return[]}}
+function savePeople(people){try{localStorage.setItem(PEOPLE_KEY,JSON.stringify(people))}catch(e){console.error('[Storage] People save failed:',e.message)}}
+async function loadPeopleFromCloud(){
+  try{
+    const res=await fetch(SB_API+'?id=eq.'+PEOPLE_CONFIG_ID+'&select=data',{headers:SB_HEADERS});
+    if(!res.ok)return;
+    const rows=await res.json();
+    const cloudPeople=(rows.length&&Array.isArray(rows[0].data?.people))?rows[0].data.people:null;
+    if(cloudPeople){
+      savePeople(cloudPeople);
+    }else{
+      PEOPLE_CLOUD_MISSING=true; /* 云端无行 = 未初始化 */
+      const local=getPeople();
+      if(local.length>0)await pushPeopleToCloud(local);
+    }
+  }catch(e){console.error('people sync failed:',e)}
+}
+async function pushPeopleToCloud(people){
+  people=people||getPeople();
+  try{
+    await fetch(SB_API+'?id=eq.'+PEOPLE_CONFIG_ID,{method:'DELETE',headers:SB_HEADERS});
+    const res=await fetch(SB_API,{method:'POST',headers:SB_HEADERS,body:JSON.stringify({id:PEOPLE_CONFIG_ID,record_date:null,store_name:null,data:{people}})});
+    if(!res.ok)throw new Error('upsert failed');
+  }catch(e){console.error('people push failed:',e)}
+}
+/* 一次性迁移：云端未初始化且本地名单为空时，从历史记录导入姓名（handover+takeover，trim 去重）。
+   导入后保存并推送云端（云端生成配置行），即使名单为空也推送空数组占位，保证只导一次。 */
+async function migratePeopleFromHistory(){
+  if(!PEOPLE_CLOUD_MISSING)return;
+  if(getPeople().length>0){PEOPLE_CLOUD_MISSING=false;return}
+  const names=[];const seen=new Set();
+  getRecords().forEach(r=>{
+    [r.handover,r.takeover].forEach(n=>{
+      const k=(n||'').trim();
+      if(k&&!seen.has(k)){seen.add(k);names.push({id:'p_'+Date.now()+'_'+names.length,name:k})}
+    });
+  });
+  savePeople(names);
+  PEOPLE_CLOUD_MISSING=false;
+  await pushPeopleToCloud(names);
+}
+/* 提交成功后静默补录：交班人/接班人姓名若不在名单则自动加入并推送云端（不打断流程） */
+function ensurePeopleExist(names){
+  try{
+    const people=getPeople();
+    const seen=new Set(people.map(p=>p.name));
+    let changed=false;
+    (names||[]).forEach(n=>{
+      const k=(n||'').trim();
+      if(k&&!seen.has(k)){seen.add(k);people.push({id:'p_'+Date.now()+'_'+people.length,name:k});changed=true}
+    });
+    if(changed){savePeople(people);pushPeopleToCloud(people);renderPeopleMgmt();populateNameDatalists()}
+  }catch(e){console.error('people auto-add failed:',e)}
+}
+function renderPeopleMgmt(){
+  const people=getPeople();
+  const list=document.getElementById('people-mgmt-list');
+  if(!list)return;
+  if(people.length===0){list.innerHTML='<div style="font-size:12px;color:var(--text-muted);padding:8px 0">暂无人员，请在下方添加</div>';return}
+  list.innerHTML=people.map(p=>'<span class="store-tag">'+ic('user')+esc(p.name)+'<span class="st-del" onclick="deletePerson(\''+esc(p.id)+'\')">'+ic('close')+'</span></span>').join('');
+}
+function addPerson(){
+  const name=document.getElementById('new-person-name').value.trim();
+  if(!name){showToast('请输入人员姓名','error');return}
+  const people=getPeople();
+  if(people.some(p=>p.name===name)){showToast('已存在同名人员','error');return}
+  showConfirm('确定要添加人员「'+esc(name)+'」吗？',()=>{
+    people.push({id:'p_'+Date.now(),name});
+    savePeople(people);
+    document.getElementById('new-person-name').value='';
+    renderPeopleMgmt();populateNameDatalists();
+    showToast('人员已添加，并同步到所有设备','success');
+    pushPeopleToCloud(people);
+  },{okText:'添加',title:'添加人员'});
+}
+async function deletePerson(id){
+  const person=getPeople().find(p=>p.id===id);
+  if(!person)return;
+  /* 口径：仅删除该人作为交班人（handover）的记录；仅作为接班人出现的记录保留 */
+  const recCount=getRecords().filter(r=>(r.handover||'').trim()===person.name).length;
+  const msg=recCount>0
+    ? '确定要删除人员「'+esc(person.name)+'」吗？\n将删除其作为交班人的 '+recCount+' 条记录（不可恢复）；TA 仅作为接班人出现的记录保留。'
+    : '确定要删除人员「'+esc(person.name)+'」吗？\n该人员暂无作为交班人的记录。';
+  showConfirm(msg,async()=>{
+    /* 1) 先级联软删除其作为交班人的云端记录 */
+    const recs=getRecords().filter(r=>(r.handover||'').trim()===person.name);
+    if(recs.length>0){
+      showToast('正在清理 '+recs.length+' 条记录...','info');
+      for(const r of recs){
+        try{await deleteRecordFromCloud(r.id)}catch(e){console.error('云端删除失败',r.id,e)}
+      }
+    }
+    /* 2) 同步清 RECORDS_CACHE/localStorage */
+    const delIds=new Set(recs.map(r=>r.id));
+    const remainRecs=getRecords().filter(r=>!delIds.has(r.id));
+    RECORDS_CACHE=remainRecs;
+    try{localStorage.setItem(STORAGE_KEY,JSON.stringify(remainRecs))}catch(e){console.error('localStorage write failed',e)}
+    markDataDirty();
+    /* 3) 移除人员并推送云端 */
+    const people=getPeople().filter(p=>p.id!==id);
+    savePeople(people);
+    renderPeopleMgmt();populateNameDatalists();renderSidebar();
+    showToast(recCount>0?('人员及其交班 '+recCount+' 条记录已删除'):'人员已删除','success');
+    pushPeopleToCloud(people);
+  },{danger:true,okText:'删除',title:'删除人员'});
+}
+
 function populateStoreSelect(){
   const stores=getStores();
   const sel=document.getElementById('f-store');
@@ -4896,6 +5089,7 @@ async function deleteStore(id){
     /* 3) 删除门店 */
     const stores=getStores().filter(s=>s.id!==id);
     saveStores(stores);
+    markDataDirty();
     renderStoreMgmt();populateStoreSelect();populateFilterStores();renderSidebar();
     showToast('门店及 '+recCount+' 条记录已删除','success');
     pushStoresToCloud(stores);
@@ -5055,6 +5249,7 @@ function clearLocalCache(){
   showConfirm('确定清除本地缓存？','本地缓存的离线记录将被清除，云端数据不受影响。下次联网时将重新拉取。',()=>{
     localStorage.removeItem(STORAGE_KEY);
     RECORDS_CACHE=[];
+    markDataDirty();
     let sizeKB=0;
     for(let i=0;i<localStorage.length;i++){
       const k=localStorage.key(i);
@@ -5282,15 +5477,16 @@ window.addEventListener('DOMContentLoaded',()=>{
   initNetworkStatus();
   cleanupExpiredPhotos().catch(()=>{}).then(()=>loadPhotosFromCloud()); /* 先清理过期照片，再加载活跃照片 */
   document.getElementById('settings-auth-pwd').addEventListener('keydown',e=>{if(e.key==='Enter')verifySettingsAccess()});
-  /* 点击浮层遮罩关闭 */
+  /* 点击浮层遮罩关闭（[v4.0] 走 closeOverlay 播退场动画；pwa-guide 保留自身 inline 关闭逻辑） */
   document.querySelectorAll('.modal-overlay').forEach(ov=>{
-    ov.addEventListener('click',e=>{if(e.target===ov)ov.classList.remove('show')});
+    if(ov.id==='pwa-guide-modal')return;
+    ov.addEventListener('click',e=>{if(e.target===ov)closeOverlay(ov)});
   });
   /* Escape 关闭抽屉/浮层 */
   document.addEventListener('keydown',e=>{
     if(e.key==='Escape'){
       closeSidebar();closeConfirm();
-      document.getElementById('success-modal').classList.remove('show');
+      closeOverlay(document.getElementById('success-modal'));
     }
   });
 });
