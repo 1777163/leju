@@ -1177,7 +1177,10 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .issue-close{position:absolute;top:6px;right:10px;width:34px;height:34px;border-radius:var(--radius-pill);border:none;background:var(--primary-fade);color:var(--primary);display:flex;align-items:center;justify-content:center;cursor:pointer}
 .issue-close:active{transform:scale(0.9)}
 .issue-close .icon{width:16px;height:16px}
-.issue-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:14px 16px 6px;flex-shrink:0}
+.issue-refresh{position:absolute;top:6px;right:50px;width:34px;height:34px;border-radius:var(--radius-pill);border:none;background:var(--surface);color:var(--text-secondary);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.issue-refresh:active{transform:scale(0.9)}
+.issue-refresh .icon{width:16px;height:16px}
+.issue-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:14px 16px 6px;flex-shrink:0}
 .issue-card{background:var(--card-bg);border-radius:var(--radius-md);padding:10px 8px;text-align:center;border:1.5px solid var(--divider)}
 .issue-card.fail{border-color:var(--danger);background:var(--danger-fade)}
 .issue-card .ic-num{font-size:var(--fs-h2);font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
@@ -1219,8 +1222,52 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .issue-item .ii-fail .name{font-weight:700;color:var(--text-secondary);margin-right:4px}
 .issue-empty{padding:32px 16px;text-align:center;color:var(--text-muted);font-size:var(--fs-small);font-weight:600}
 .issue-empty .icon{width:32px;height:32px;display:block;margin:0 auto 8px;color:var(--success)}
+/* [v3.9] 总览浮层：日期范围筛选区 */
+.issue-filter{padding:10px 16px 0;flex-shrink:0}
+.issue-quick{display:flex;gap:6px}
+.issue-quick button{flex:none;padding:7px 12px;border-radius:var(--radius-pill);border:none;background:var(--surface);color:var(--text-muted);font-size:var(--fs-small);font-weight:700;cursor:pointer;font-family:inherit;transition:var(--transition-fast)}
+.issue-quick button.active{background:var(--primary);color:#fff}
+.issue-quick button:active{transform:scale(0.96)}
+.issue-dates{display:flex;align-items:center;gap:8px;margin-top:8px}
+.issue-dates input[type=date]{height:38px;flex:1;min-width:0;border:1.5px solid var(--border);border-radius:var(--radius-pill);background:var(--surface);color:var(--text);font-size:var(--fs-small);font-family:inherit;padding:0 14px;outline:none;box-sizing:border-box}
+.issue-dates input[type=date]:focus{border-color:var(--primary)}
+.issue-dates .sep{font-size:var(--fs-caption);color:var(--text-muted);font-weight:600;flex:none}
+/* [v3.9] 同步失败提示条 */
+.issue-error{display:flex;align-items:center;gap:8px;margin:10px 16px 0;padding:10px 14px;border-radius:var(--radius);background:var(--danger-fade);flex-shrink:0}
+.issue-error .icon{width:18px;height:18px;color:var(--danger);flex-shrink:0}
+.issue-error .ie-text{flex:1;font-size:var(--fs-small);font-weight:600;color:var(--danger)}
+.issue-error .ie-retry{border:none;background:none;color:var(--danger);font-weight:700;font-size:var(--fs-small);cursor:pointer;font-family:inherit;padding:4px 6px}
+.issue-error .ie-retry:active{transform:scale(0.96)}
+/* [v3.9] 滚动主体 + 加载态 */
+.issue-scroll{flex:1;overflow-y:auto;min-height:0;display:flex;flex-direction:column}
+.issue-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:48px 16px;flex:1}
+.issue-loading .spinner{width:32px;height:32px;border-radius:var(--radius-pill);border:2.5px solid var(--border);border-top-color:var(--primary);animation:spin .8s linear infinite}
+.issue-loading p{font-size:var(--fs-small);color:var(--text-muted);font-weight:600;margin:0}
+/* [v3.9] 统计口径注释 */
+.issue-note{padding:2px 16px 0;font-size:var(--fs-micro);color:var(--text-muted);font-weight:600}
+/* [v3.9] 人员统计表（ipt-*） */
+.issue-ptable{padding:0 16px 8px;display:flex;flex-direction:column;gap:6px}
+.ipt-head{display:grid;grid-template-columns:auto 1fr auto auto;gap:10px;align-items:center;font-size:var(--fs-caption);color:var(--text-muted);font-weight:700;background:var(--surface);border-radius:var(--radius-sm);padding:6px 12px}
+.ipt-row{display:grid;grid-template-columns:auto 1fr auto auto;gap:10px;align-items:center;cursor:pointer;transition:var(--transition-fast)}
+.ipt-row:active{transform:scale(0.97);background:var(--primary-fade)}
+.ipt-row .ipt-dist{font-size:var(--fs-caption);color:var(--text-muted);font-weight:600;margin-top:2px}
+.ipt-row .ipt-dist .hand{color:var(--primary)}
+.ipt-row .ipt-dist .take{color:var(--success)}
+.ipt-row .ipt-fail{font-size:var(--fs-small);font-weight:800;color:var(--danger);font-variant-numeric:tabular-nums}
+.ipt-row .ipt-arrow{width:16px;height:16px;color:var(--text-muted);flex-shrink:0}
+/* [v3.9] 下钻视图（idr-*） */
+.idr-back-row{display:flex;align-items:center;gap:8px;padding:12px 16px 0}
+.idr-back{width:34px;height:34px;border-radius:var(--radius-pill);border:none;background:var(--primary-fade);color:var(--primary);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.idr-back:active{transform:scale(0.9)}
+.idr-back .icon{width:16px;height:16px}
+.idr-back-label{font-size:var(--fs-small);font-weight:700;color:var(--primary)}
+.idr-card{margin:10px 16px 0;padding:14px}
+.idr-card .ip-avatar{width:44px;height:44px;font-size:18px}
+.idr-card .idr-nums{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0}
+.idr-card .idr-fail{font-size:var(--fs-h2);font-weight:800;color:var(--danger);font-variant-numeric:tabular-nums;line-height:1}
+.idr-card .idr-rate{font-size:var(--fs-caption);color:var(--text-muted);font-weight:600}
 @media (min-width:540px){
-  .issue-cards{grid-template-columns:repeat(4,1fr)}
+  .issue-cards{grid-template-columns:repeat(2,1fr)}
 }
 @media (max-width:380px){
   .issue-cards{grid-template-columns:repeat(2,1fr)}
@@ -2072,31 +2119,38 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
   <div class="sidebar-list" id="record-list">
     <div class="empty-state"><div class="es-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4a3 3 0 0 1 6 0"/></svg></div><p>暂无记录</p></div>
   </div>
-  <!-- [新] 不合格事项总览浮层 -->
+  <!-- [v3.9] 不合格事项总览浮层（改造：云端刷新 + 日期范围 + 人员统计 + 下钻） -->
   <div class="issue-overlay" id="issue-overlay" onclick="if(event.target===this)closeIssueOverview()"></div>
   <div class="issue-sheet" id="issue-sheet">
     <div class="issue-handle"></div>
     <div class="issue-header">
       <div class="issue-title">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
-        <span>近30天不合格事项总览</span>
+        <span>不合格事项总览</span>
       </div>
       <div class="issue-sub" id="issue-sub">统计周期：<span id="issue-range"></span></div>
-      <button class="issue-close" onclick="closeIssueOverview()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      <button class="issue-close" onclick="closeIssueOverview()" title="关闭"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      <button class="issue-refresh" onclick="syncIssueData()" title="重新拉取云端数据"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
     </div>
-    <div class="issue-cards" id="issue-cards"></div>
-    <div class="issue-section-title">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      交接人统计
-      <span class="issue-hint">按不合格次数降序</span>
+    <div class="issue-filter" id="issue-filter">
+      <div class="issue-quick">
+        <button type="button" id="iq-7" onclick="setIssueRange('7')">近7天</button>
+        <button type="button" id="iq-30" onclick="setIssueRange('30')">近30天</button>
+        <button type="button" id="iq-month" onclick="setIssueRange('month')">本月</button>
+        <button type="button" id="iq-custom" onclick="setIssueRange('custom')">自定义</button>
+      </div>
+      <div class="issue-dates" id="issue-dates" style="display:none">
+        <input type="date" id="iq-start" onchange="applyIssueCustom()" aria-label="开始日期">
+        <span class="sep">至</span>
+        <input type="date" id="iq-end" onchange="applyIssueCustom()" aria-label="结束日期">
+      </div>
     </div>
-    <div class="issue-people" id="issue-people"></div>
-    <div class="issue-section-title">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
-      不合格事项明细
-      <span class="issue-hint" id="issue-list-count">0 条</span>
+    <div class="issue-error" id="issue-error" style="display:none">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20L12 3Z"/><path d="M12 9v4M12 17h.01"/></svg>
+      <span class="ie-text">云端数据拉取失败，当前为本地缓存</span>
+      <button type="button" class="ie-retry" onclick="syncIssueData()">重试</button>
     </div>
-    <div class="issue-list" id="issue-list"></div>
+    <div class="issue-scroll" id="issue-body"></div>
   </div>
   <div class="sidebar-admin collapsed" id="sidebar-admin-section">
     <div class="sa-header" onclick="toggleAdminSection()">
@@ -2999,7 +3053,7 @@ function getRecords(){return RECORDS_CACHE}
 
 /* ===== Cloud Sync（原样保留 + 同步状态） ===== */
 async function syncRecordsFromCloud(){
-  if(isSyncing)return;
+  if(isSyncing)return true;
   isSyncing=true;
   try{
     const res=await fetch(SB_API+'?select=data&deleted=is.false&order=created_at.desc',{headers:SB_HEADERS});
@@ -3034,12 +3088,16 @@ async function syncRecordsFromCloud(){
       else{try{localStorage.removeItem(STORAGE_KEY)}catch(e){}}
     }
     lastSyncTime=Date.now();
+    return true; /* [v3.9] 返回同步结果供总览浮层判断 */
   }catch(e){
     console.error('Cloud sync failed:',e);
     try{RECORDS_CACHE=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')}catch{RECORDS_CACHE=[]}
+    return false; /* [v3.9] 失败时降级为本地缓存 */
+  }finally{
+    /* [v3.9 P0修复] 复位移入 finally，保证 return/异常路径都执行，isSyncing 不再永久卡 true */
+    isSyncing=false;
+    updateSyncStatus();
   }
-  isSyncing=false;
-  updateSyncStatus();
 }
 
 async function insertRecordToCloud(record){
@@ -3157,108 +3215,228 @@ function filterBy(mode){
 }
 
 /* [新] 不合格事项总览（过去30天） */
-function openIssueOverview(){
-  const records=getRecords().filter(r=>!r.deleted);
-  const now=Date.now();
-  const cutoff=now-30*24*60*60*1000;
-  const range=records.filter(r=>r.timestamp>=cutoff);
-  /* 顶部 4 卡片 */
-  let totalPass=0,totalFail=0,totalItems=0;
+/* ===== [v3.9] 不合格事项总览（改造：打开即拉云端 + 自定义日期范围 + 人员统计表 + 下钻） ===== */
+let issueRangeMode='30'; /* '7' | '30' | 'month' | 'custom' */
+let issueCustomStart='',issueCustomEnd='';
+let issueDrillName=''; /* '' = 总览视图；否则为下钻人员姓名（trim 后） */
+let issuePeopleList=[]; /* 当前渲染的人员统计行，供 openIssueDrill(i) 按索引取姓名 */
+
+function issueRangeDates(){
+  const today=new Date();
+  const end=localDateStr(today);
+  let start;
+  if(issueRangeMode==='7')start=localDateStr(new Date(Date.now()-6*86400000));
+  else if(issueRangeMode==='month')start=localDateStr(new Date(today.getFullYear(),today.getMonth(),1));
+  else if(issueRangeMode==='custom'){
+    if(issueCustomStart&&issueCustomEnd&&issueCustomStart<=issueCustomEnd)return{start:issueCustomStart,end:issueCustomEnd};
+    start=localDateStr(new Date(Date.now()-29*86400000));
+  }else start=localDateStr(new Date(Date.now()-29*86400000));
+  return{start,end};
+}
+function issueRangeRecords(){
+  const d=issueRangeDates();
+  return getRecords().filter(r=>!r.deleted&&r.date&&r.date>=d.start&&r.date<=d.end);
+}
+/* 同一人（trim 后）合并交班/接班；不合格数 = 其参与记录中 result==='fail' 的条目总数 */
+function issuePeopleAgg(range){
+  const map={};
+  const getP=n=>{const k=(n||'').trim();if(!k)return null;if(!map[k])map[k]={name:k,hand:0,take:0,fail:0,pass:0,recs:0};return map[k]};
   range.forEach(r=>{
+    const fc=failCountOf(r);
+    let pc=0;
+    Object.values(r.sections||{}).forEach(s=>(s.items||[]).forEach(it=>{if(it.result==='pass')pc++}));
+    const h=getP(r.handover),t=getP(r.takeover);
+    if(h)h.hand++;
+    if(t)t.take++;
+    const seen=new Set();
+    [r.handover,r.takeover].forEach(n=>{
+      const p=getP(n);
+      if(!p||seen.has(p.name))return;
+      seen.add(p.name);
+      p.fail+=fc;p.pass+=pc;
+      if(fc>0)p.recs++;
+    });
+  });
+  return Object.values(map).sort((a,b)=>b.fail-a.fail||b.recs-a.recs||(b.hand+b.take)-(a.hand+a.take));
+}
+/* 单条不合格记录卡（总览明细 / 下钻明细共用，复用 .issue-item 结构） */
+function issueRecordItemHtml(r){
+  const fc=failCountOf(r);
+  const shiftColor={'早班':'#E0A047','中班':'#3DA878','晚班':'#7A6BA8'}[r.shift]||'#5B8DEF';
+  const failItems=[];
+  Object.values(r.sections||{}).forEach(sec=>{
+    (sec.items||[]).forEach(it=>{
+      if(it.result==='fail')failItems.push({name:it.name,problem:it.problem||''});
+    });
+  });
+  return '<div class="issue-item" id="issue-item-'+r.id+'">'+
+    '<div class="ii-head" onclick="toggleIssueItem(\''+r.id+'\')">'+
+      '<div class="ii-store">'+esc(r.storeName||'未分类')+'<span class="pill" style="background:'+shiftColor+'">'+esc(r.shift)+'</span>· '+esc(r.date)+'</div>'+
+      '<div class="ii-count">'+ic('alert')+fc+' 项</div>'+
+      '<svg class="ii-chev icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>'+
+    '</div>'+
+    '<div class="ii-body">'+
+      '<div class="ii-people">交 <span class="hand">'+esc(r.handover||'-')+'</span> · 接 <span class="take">'+esc(r.takeover||'-')+'</span></div>'+
+      failItems.map(it=>'<div class="ii-fail"><span class="dot"></span><span><span class="name">'+esc(it.name)+'</span>'+(it.problem?'：'+esc(it.problem):'')+'</span></div>').join('')+
+      '<div style="margin-top:8px;text-align:right"><button class="bag-photo" style="all:unset;color:var(--primary);font-size:var(--fs-caption);font-weight:700;cursor:pointer;padding:4px 8px" onclick="closeIssueOverview();viewRecord(\''+r.id+'\')">查看完整记录 →</button></div>'+
+    '</div>'+
+  '</div>';
+}
+function updateIssueRangeUI(){
+  ['7','30','month','custom'].forEach(m=>{
+    const b=document.getElementById('iq-'+m);
+    if(b)b.classList.toggle('active',issueRangeMode===m);
+  });
+  const datesEl=document.getElementById('issue-dates');
+  if(datesEl)datesEl.style.display=issueRangeMode==='custom'?'flex':'none';
+  const s=document.getElementById('iq-start'),e=document.getElementById('iq-end');
+  if(s&&document.activeElement!==s)s.value=issueCustomStart||'';
+  if(e&&document.activeElement!==e)e.value=issueCustomEnd||'';
+}
+function renderIssueOverview(){
+  const bodyEl=document.getElementById('issue-body');
+  if(!bodyEl)return;
+  updateIssueRangeUI();
+  const dates=issueRangeDates();
+  const rangeEl=document.getElementById('issue-range');
+  if(rangeEl)rangeEl.textContent=dates.start+' ~ '+dates.end;
+  if(issueDrillName){renderIssueDrillBody(bodyEl);return}
+  const filterEl=document.getElementById('issue-filter');
+  if(filterEl)filterEl.style.display='';
+  const records=issueRangeRecords();
+  /* 顶部统计卡：仅保留 不合格项数 / 不合格率（口径：不合格 ÷（合格+不合格），不含未检项） */
+  let totalFail=0,totalJudged=0;
+  records.forEach(r=>{
     Object.values(r.sections||{}).forEach(s=>{
       (s.items||[]).forEach(it=>{
-        if(it.result==='pass')totalPass++;
-        else if(it.result==='fail')totalFail++;
-        totalItems++;
+        if(it.result==='fail')totalFail++;
+        if(it.result==='pass'||it.result==='fail')totalJudged++;
       });
     });
   });
-  const failRate=totalItems>0?Math.round(totalFail*100/totalItems):0;
-  document.getElementById('issue-cards').innerHTML=
-    '<div class="issue-card"><div class="ic-num">'+range.length+'</div><div class="ic-label">记录</div></div>'+
-    '<div class="issue-card"><div class="ic-num" style="color:var(--success)">'+totalPass+'</div><div class="ic-label">合格项</div></div>'+
-    '<div class="issue-card fail"><div class="ic-num">'+totalFail+'</div><div class="ic-label">不合格项</div></div>'+
-    '<div class="issue-card"><div class="ic-num" style="color:var(--danger)">'+failRate+'%</div><div class="ic-label">不合格率</div></div>';
-  /* 周期文字 */
-  const endD=new Date(now);
-  const startD=new Date(cutoff);
-  const fmt=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-  document.getElementById('issue-range').textContent=fmt(startD)+' ~ '+fmt(endD);
-  /* 交接人统计（按 交班人+接班人 聚合） */
-  const peopleMap={};
-  range.forEach(r=>{
-    [r.handover,r.takeover].forEach((name,i)=>{
-      if(!name)return;
-      const role=i===0?'hand':'take';
-      const key=name+'|'+role;
-      if(!peopleMap[key])peopleMap[key]={name,role,total:0,fail:0,pass:0};
-      peopleMap[key].total++;
-      Object.values(r.sections||{}).forEach(s=>{
-        (s.items||[]).forEach(it=>{
-          if(it.result==='fail')peopleMap[key].fail++;
-          else if(it.result==='pass')peopleMap[key].pass++;
-        });
-      });
-    });
-  });
-  const people=Object.values(peopleMap).sort((a,b)=>b.fail-a.fail||b.total-a.total);
-  if(people.length===0){
-    document.getElementById('issue-people').innerHTML='<div class="issue-empty"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>近30天无交接记录</div>';
-  }else{
-    document.getElementById('issue-people').innerHTML=people.map(p=>{
-      const initial=p.name.trim().slice(0,1).toUpperCase();
-      const rate=p.total>0?Math.round(p.fail*100/p.total):0;
-      return '<div class="issue-person">'+
-        '<div class="ip-avatar">'+esc(initial)+'</div>'+
-        '<div class="ip-body">'+
-          '<div class="ip-name">'+esc(p.name)+'<span class="ip-role '+(p.role==='hand'?'hand':'take')+'">'+(p.role==='hand'?'交班':'接班')+'</span></div>'+
-          '<div class="ip-stats">'+
-            '<span>共 <b>'+p.total+'</b> 次</span>'+
-            '<span class="pass">合格 <b>'+p.pass+'</b></span>'+
-            '<span class="fail">不合格 <b>'+p.fail+'</b></span>'+
-            '<span>率 <b>'+rate+'%</b></span>'+
-          '</div>'+
-        '</div>'+
-      '</div>';
-    }).join('');
+  const failRate=totalJudged>0?Math.round(totalFail*100/totalJudged):0;
+  bodyEl.innerHTML=
+    '<div class="issue-cards" id="issue-cards">'+
+      '<div class="issue-card fail"><div class="ic-num">'+totalFail+'</div><div class="ic-label">不合格项数</div></div>'+
+      '<div class="issue-card"><div class="ic-num" style="color:var(--danger)">'+failRate+'%</div><div class="ic-label">不合格率</div></div>'+
+    '</div>'+
+    '<div class="issue-note">口径：不合格率 = 不合格项 ÷（合格项 + 不合格项），不含未检项</div>'+
+    '<div class="issue-section-title">'+ic('user')+'人员统计<span class="issue-hint">按不合格数降序 · 点击下钻</span></div>'+
+    '<div class="issue-ptable" id="issue-people"></div>'+
+    '<div class="issue-section-title">'+ic('clipboard')+'不合格事项明细<span class="issue-hint" id="issue-list-count">0 条</span></div>'+
+    '<div class="issue-list" id="issue-list"></div>';
+  /* 人员统计表：同一人交班/接班合并为一行 */
+  const people=issuePeopleAgg(records);
+  issuePeopleList=people;
+  const ptableEl=document.getElementById('issue-people');
+  if(ptableEl){
+    if(people.length===0){
+      ptableEl.innerHTML='<div class="issue-empty">'+ic('checkCircle')+'所选周期内无交接记录</div>';
+    }else{
+      ptableEl.innerHTML='<div class="ipt-head"><span>人员</span><span>交 / 接分布</span><span>不合格</span><span></span></div>'+
+        people.map((p,i)=>{
+          const initial=p.name.slice(0,1).toUpperCase();
+          return '<div class="issue-person ipt-row" onclick="openIssueDrill('+i+')">'+
+            '<div class="ip-avatar">'+esc(initial)+'</div>'+
+            '<div class="ip-body">'+
+              '<div class="ip-name">'+esc(p.name)+'</div>'+
+              '<div class="ipt-dist"><span class="hand">交班 '+p.hand+'</span> · <span class="take">接班 '+p.take+'</span></div>'+
+            '</div>'+
+            '<div class="ipt-fail">'+p.fail+'</div>'+
+            ic('chevronRight','ipt-arrow')+
+          '</div>';
+        }).join('');
+    }
   }
-  /* 不合格事项明细（按记录分组） */
-  const failRecs=range.filter(r=>failCountOf(r)>0).sort((a,b)=>b.timestamp-a.timestamp);
-  document.getElementById('issue-list-count').textContent=failRecs.length+' 条记录';
-  if(failRecs.length===0){
-    document.getElementById('issue-list').innerHTML='<div class="issue-empty"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>近30天无不合格事项，班组状态良好</div>';
-  }else{
-    document.getElementById('issue-list').innerHTML=failRecs.map((r,i)=>{
-      const fc=failCountOf(r);
-      const shiftColor={'早班':'#E0A047','中班':'#3DA878','晚班':'#7A6BA8'}[r.shift]||'#5B8DEF';
-      const failItems=[];
-      Object.entries(r.sections||{}).forEach(([sid,sec])=>{
-        (sec.items||[]).forEach(it=>{
-          if(it.result==='fail')failItems.push({sec:sid,secTitle:sec.title||'',name:it.name,problem:it.problem||'',std:it.std||''});
-        });
-      });
-      return '<div class="issue-item" id="issue-item-'+r.id+'">'+
-        '<div class="ii-head" onclick="toggleIssueItem(\''+r.id+'\')">'+
-          '<div class="ii-store">'+(r.storeName||'未分类')+'<span class="pill" style="background:'+shiftColor+'">'+esc(r.shift)+'</span>· '+esc(r.date)+'</div>'+
-          '<div class="ii-count">'+ic('alert')+fc+' 项</div>'+
-          '<svg class="ii-chev icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>'+
-        '</div>'+
-        '<div class="ii-body">'+
-          '<div class="ii-people">交 <span class="hand">'+esc(r.handover||'-')+'</span> · 接 <span class="take">'+esc(r.takeover||'-')+'</span></div>'+
-          failItems.map(it=>'<div class="ii-fail"><span class="dot"></span><span><span class="name">'+esc(it.name)+'</span>'+(it.problem?'：'+esc(it.problem):'')+'</span></div>').join('')+
-          '<div style="margin-top:8px;text-align:right"><button class="bag-photo" style="all:unset;color:var(--primary);font-size:var(--fs-caption);font-weight:700;cursor:pointer;padding:4px 8px" onclick="closeIssueOverview();viewRecord(\''+r.id+'\')">查看完整记录 →</button></div>'+
-        '</div>'+
-      '</div>';
-    }).join('');
+  /* 不合格事项明细（按记录分组，时间倒序） */
+  const failRecs=records.filter(r=>failCountOf(r)>0).sort((a,b)=>(b.timestamp||'').localeCompare(a.timestamp||''));
+  const cntEl=document.getElementById('issue-list-count');
+  if(cntEl)cntEl.textContent=failRecs.length+' 条记录';
+  const listEl=document.getElementById('issue-list');
+  if(listEl){
+    if(failRecs.length===0){
+      listEl.innerHTML='<div class="issue-empty">'+ic('checkCircle')+'所选周期内无不合格事项，班组状态良好</div>';
+    }else{
+      listEl.innerHTML=failRecs.map(issueRecordItemHtml).join('');
+      setTimeout(()=>toggleIssueItem(failRecs[0].id,true),30);
+    }
   }
-  /* 显示浮层 */
+}
+function renderIssueDrillBody(bodyEl){
+  const filterEl=document.getElementById('issue-filter');
+  if(filterEl)filterEl.style.display='none';
+  const records=issueRangeRecords();
+  const people=issuePeopleAgg(records);
+  issuePeopleList=people;
+  const p=people.find(x=>x.name===issueDrillName);
+  if(!p){issueDrillName='';renderIssueOverview();return}
+  const rel=records.filter(r=>failCountOf(r)>0&&((r.handover||'').trim()===p.name||(r.takeover||'').trim()===p.name))
+    .sort((a,b)=>(b.timestamp||'').localeCompare(a.timestamp||''));
+  const rate=(p.fail+p.pass)>0?Math.round(p.fail*100/(p.fail+p.pass)):0;
+  const initial=p.name.slice(0,1).toUpperCase();
+  bodyEl.innerHTML=
+    '<div class="idr-back-row">'+
+      '<button type="button" class="idr-back" onclick="closeIssueDrill()" title="返回总览">'+ic('back')+'</button>'+
+      '<span class="idr-back-label">返回总览</span>'+
+    '</div>'+
+    '<div class="issue-person idr-card">'+
+      '<div class="ip-avatar">'+esc(initial)+'</div>'+
+      '<div class="ip-body">'+
+        '<div class="ip-name">'+esc(p.name)+'</div>'+
+        '<div class="ip-stats"><span class="ip-role hand">交班 '+p.hand+'</span><span class="ip-role take">接班 '+p.take+'</span></div>'+
+      '</div>'+
+      '<div class="idr-nums">'+
+        '<div class="idr-fail">'+p.fail+' 项不合格</div>'+
+        '<div class="idr-rate">涉及 '+p.recs+' 条记录 · 不合格率 '+rate+'%</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="issue-section-title">'+ic('clipboard')+'相关不合格记录<span class="issue-hint">'+rel.length+' 条</span></div>'+
+    '<div class="issue-list" id="issue-list">'+
+      (rel.length?rel.map(issueRecordItemHtml).join(''):'<div class="issue-empty">'+ic('checkCircle')+'该人员在所选周期内无不合格记录</div>')+
+    '</div>';
+  if(rel.length>0)setTimeout(()=>toggleIssueItem(rel[0].id,true),30);
+}
+function setIssueRange(mode){
+  if(mode==='custom'&&(!issueCustomStart||!issueCustomEnd)){
+    const cur=issueRangeDates(); /* 切换到自定义时，用当前区间预填起止日期 */
+    issueCustomStart=cur.start;issueCustomEnd=cur.end;
+  }
+  issueRangeMode=mode;
+  renderIssueOverview(); /* 切换区间即时重算，不重拉云端 */
+}
+function applyIssueCustom(){
+  const s=document.getElementById('iq-start'),e=document.getElementById('iq-end');
+  issueCustomStart=s?s.value:'';
+  issueCustomEnd=e?e.value:'';
+  renderIssueOverview();
+}
+function openIssueDrill(i){
+  const p=issuePeopleList[i];
+  if(!p)return;
+  issueDrillName=p.name;
+  renderIssueOverview();
+}
+function closeIssueDrill(){
+  issueDrillName='';
+  renderIssueOverview();
+}
+function showIssueLoading(){
+  const bodyEl=document.getElementById('issue-body');
+  if(bodyEl)bodyEl.innerHTML='<div class="issue-loading"><div class="spinner"></div><p>正在拉取云端数据…</p></div>';
+}
+async function syncIssueData(){
+  const errEl=document.getElementById('issue-error');
+  if(errEl)errEl.style.display='none';
+  showIssueLoading();
+  const ok=await syncRecordsFromCloud(); /* 自带 isSyncing 防重入 */
+  if(errEl)errEl.style.display=ok?'none':'flex'; /* 失败：提示条 + 本地缓存降级统计 */
+  renderIssueOverview();
+}
+async function openIssueOverview(){
   document.getElementById('issue-overlay').classList.add('show');
   document.getElementById('issue-sheet').classList.add('show');
   document.body.style.overflow='hidden';
-  /* 默认展开第一条 */
-  if(failRecs.length>0){
-    setTimeout(()=>toggleIssueItem(failRecs[0].id,true),30);
-  }
+  await syncIssueData(); /* 打开浮层 = 云端刷新 */
 }
 function toggleIssueItem(id,forceOpen){
   const el=document.getElementById('issue-item-'+id);
@@ -3270,6 +3448,10 @@ function closeIssueOverview(){
   document.getElementById('issue-overlay').classList.remove('show');
   document.getElementById('issue-sheet').classList.remove('show');
   document.body.style.overflow='';
+  /* [v3.9] 重置下钻态与日期选择态到默认（近30天） */
+  issueDrillName='';
+  issueRangeMode='30';
+  issueCustomStart='';issueCustomEnd='';
 }
 
 /* 共用：记录条 HTML */
@@ -3297,10 +3479,10 @@ function renderSidebar(){
   document.getElementById('sb-total').textContent=allRecords.length;
   const today=localDateStr(new Date());
   document.getElementById('sb-today').textContent=allRecords.filter(r=>r.date===today).length;
-  /* 不合格事项数：过去30天内的 fail 总数（不含已回收的） */
-  const cutoffMs=Date.now()-30*24*60*60*1000;
+  /* 不合格事项数：近30天（按记录 date 字符串区间比较，修复 timestamp 类型比较错误；不含已回收的） */
+  const start30=localDateStr(new Date(Date.now()-29*86400000));
   let issueCount=0;
-  allRecords.forEach(r=>{if(r.timestamp>=cutoffMs)issueCount+=failCountOf(r)});
+  allRecords.forEach(r=>{if(r.date&&r.date>=start30&&r.date<=today)issueCount+=failCountOf(r)});
   document.getElementById('sb-pass').textContent=issueCount;
   if(records.length===0){
     const msg=(filterStore||filterDate||passOnly)?'无匹配记录':'暂无记录';
