@@ -2677,6 +2677,20 @@ function goBack(){
   zone.addEventListener('touchend',()=>{tracking=false;},{passive:true});
 })();
 
+/* ===== [v4.0.1] 侧边栏列表滚动防误触（滚动位移>10px 时不触发 record-item onclick 跳详情） ===== */
+(function initSidebarScrollGuard(){
+  function bind(){
+    const list=document.getElementById('record-list');
+    if(!list)return setTimeout(bind,50);
+    let sx=0,sy=0;
+    window._sbMoved=false;
+    list.addEventListener('touchstart',e=>{const t=e.changedTouches[0];sx=t.clientX;sy=t.clientY;window._sbMoved=false},{passive:true});
+    list.addEventListener('touchmove',e=>{const t=e.changedTouches[0];if(Math.abs(t.clientX-sx)>10||Math.abs(t.clientY-sy)>10)window._sbMoved=true},{passive:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind);
+  else bind();
+})();
+
 /* ===== [v4.0] 通用浮层打开/关闭（统一进出场动效） ===== */
 /* 打开：先 display:flex，双 requestAnimationFrame 后加 .show，保证过渡生效 */
 function openOverlay(overlayEl,panelEl){
@@ -3538,7 +3552,7 @@ function failCountOf(r){let n=0;Object.values(r.sections||{}).forEach(s=>(s.item
 function fmtTime(ts){try{return new Date(ts).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})}catch{return''}}
 function recordItemHtml(r,failCount,time){
   const people=(r.handover||r.takeover)?('交：'+(r.handover||'-')+' · 接：'+(r.takeover||'-')):'';
-  return '<div class="record-item" onclick="viewRecord(\''+r.id+'\')">'+
+  return '<div class="record-item" onclick="if(window._sbMoved){window._sbMoved=false;return}viewRecord(\''+r.id+'\')">'+
     '<div class="ri-badge '+(failCount>0?'fail':'pass')+'">'+(failCount>0?ic('alert'):ic('check'))+'</div>'+
     '<div class="ri-info"><div class="ri-store">'+(r.storeName||'未分类')+' · '+r.shift+'</div>'+
     '<div class="ri-meta">'+r.date+' '+time+' · '+(failCount>0?failCount+'项不合格':'全部合格')+(people?' · '+people:'')+'</div></div>'+
