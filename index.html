@@ -1164,6 +1164,67 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .remark-actions .remark-cancel{background:var(--primary-fade);color:var(--primary)}
 .remark-actions .remark-ok{background:var(--primary);color:#fff}
 .remark-actions button:active{transform:scale(0.97)}
+/* [新] 不合格事项总览浮层 */
+.issue-overlay{position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.62);display:none;opacity:0;transition:opacity .25s ease}
+.issue-overlay.show{display:block;opacity:1}
+.issue-sheet{position:fixed;left:0;right:0;bottom:0;top:8vh;z-index:9998;background:var(--bg);border-radius:var(--radius-lg) var(--radius-lg) 0 0;display:none;flex-direction:column;animation:bagSlide .28s cubic-bezier(.22,1,.36,1);box-shadow:0 -8px 30px rgba(0,0,0,.25);max-width:680px;margin:0 auto}
+.issue-sheet.show{display:flex}
+.issue-handle{width:36px;height:4px;border-radius:var(--radius-pill);background:var(--border);margin:8px auto 4px;flex-shrink:0}
+.issue-header{position:relative;padding:8px 16px 12px;border-bottom:1px solid var(--divider);flex-shrink:0}
+.issue-title{display:flex;align-items:center;gap:8px;font-size:var(--fs-h2);font-weight:800;color:var(--text)}
+.issue-title .icon{width:22px;height:22px;color:var(--danger)}
+.issue-sub{font-size:var(--fs-caption);color:var(--text-muted);font-weight:600;margin-top:4px}
+.issue-close{position:absolute;top:6px;right:10px;width:34px;height:34px;border-radius:var(--radius-pill);border:none;background:var(--primary-fade);color:var(--primary);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.issue-close:active{transform:scale(0.9)}
+.issue-close .icon{width:16px;height:16px}
+.issue-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:14px 16px 6px;flex-shrink:0}
+.issue-card{background:var(--card-bg);border-radius:var(--radius-md);padding:10px 8px;text-align:center;border:1.5px solid var(--divider)}
+.issue-card.fail{border-color:var(--danger);background:var(--danger-fade)}
+.issue-card .ic-num{font-size:var(--fs-h2);font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.issue-card.fail .ic-num{color:var(--danger)}
+.issue-card .ic-label{font-size:var(--fs-micro);color:var(--text-muted);margin-top:5px;font-weight:700}
+.issue-section-title{display:flex;align-items:center;gap:6px;padding:14px 16px 8px;font-size:var(--fs-small);font-weight:800;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px}
+.issue-section-title .icon{width:15px;height:15px;color:var(--primary)}
+.issue-hint{margin-left:auto;font-size:var(--fs-micro);font-weight:600;color:var(--text-muted);text-transform:none;letter-spacing:0}
+.issue-people{padding:0 16px 8px;display:flex;flex-direction:column;gap:8px}
+.issue-person{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card-bg);border-radius:var(--radius-md);border:1.5px solid var(--divider)}
+.issue-person .ip-avatar{width:36px;height:36px;border-radius:var(--radius-pill);background:var(--primary-fade);color:var(--primary);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.issue-person .ip-body{flex:1;min-width:0}
+.issue-person .ip-name{font-size:var(--fs-body);font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px}
+.issue-person .ip-role{font-size:var(--fs-micro);color:var(--text-muted);font-weight:600;padding:1px 6px;background:var(--surface);border-radius:var(--radius-pill)}
+.issue-person .ip-role.hand{background:var(--primary-fade);color:var(--primary)}
+.issue-person .ip-role.take{background:var(--success-fade);color:var(--success)}
+.issue-person .ip-stats{font-size:var(--fs-caption);color:var(--text-muted);margin-top:3px;font-weight:600;display:flex;gap:8px}
+.issue-person .ip-stats b{color:var(--text);font-variant-numeric:tabular-nums}
+.issue-person .ip-stats .fail b{color:var(--danger)}
+.issue-person .ip-stats .pass b{color:var(--success)}
+.issue-list{padding:0 16px 32px;display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+.issue-item{background:var(--card-bg);border-radius:var(--radius-md);border:1.5px solid var(--divider);overflow:hidden}
+.issue-item .ii-head{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--surface);cursor:pointer;border-bottom:1px solid transparent}
+.issue-item.open .ii-head{border-bottom-color:var(--divider)}
+.issue-item .ii-store{font-size:var(--fs-body);font-weight:700;color:var(--text);flex:1;min-width:0}
+.issue-item .ii-store .pill{display:inline-block;font-size:var(--fs-micro);font-weight:700;padding:1px 6px;border-radius:var(--radius-pill);color:#fff;margin-left:5px;vertical-align:middle}
+.issue-item .ii-count{font-size:var(--fs-small);font-weight:800;color:var(--danger);background:var(--danger-fade);padding:3px 8px;border-radius:var(--radius-pill);display:flex;align-items:center;gap:3px;flex-shrink:0}
+.issue-item .ii-count .icon{width:11px;height:11px}
+.issue-item .ii-chev{width:18px;height:18px;color:var(--text-muted);transition:transform .2s ease;flex-shrink:0}
+.issue-item.open .ii-chev{transform:rotate(90deg)}
+.issue-item .ii-body{display:none;padding:6px 12px 12px}
+.issue-item.open .ii-body{display:block}
+.issue-item .ii-people{font-size:var(--fs-caption);color:var(--text-secondary);font-weight:600;margin-bottom:6px;display:flex;flex-wrap:wrap;gap:6px}
+.issue-item .ii-people .hand{color:var(--primary)}
+.issue-item .ii-people .take{color:var(--success)}
+.issue-item .ii-fail{display:flex;gap:6px;align-items:flex-start;font-size:var(--fs-small);color:var(--text);padding:6px 0;border-top:1px dashed var(--divider);line-height:1.55}
+.issue-item .ii-fail:first-child{border-top:none}
+.issue-item .ii-fail .dot{width:6px;height:6px;border-radius:var(--radius-pill);background:var(--danger);margin-top:7px;flex-shrink:0}
+.issue-item .ii-fail .name{font-weight:700;color:var(--text-secondary);margin-right:4px}
+.issue-empty{padding:32px 16px;text-align:center;color:var(--text-muted);font-size:var(--fs-small);font-weight:600}
+.issue-empty .icon{width:32px;height:32px;display:block;margin:0 auto 8px;color:var(--success)}
+@media (min-width:540px){
+  .issue-cards{grid-template-columns:repeat(4,1fr)}
+}
+@media (max-width:380px){
+  .issue-cards{grid-template-columns:repeat(2,1fr)}
+}
 .photo-tag{display:inline-flex;align-items:center;gap:3px;font-size:var(--fs-micro);font-weight:600;padding:1px 6px;border-radius:var(--radius-pill);background:var(--primary-fade);color:var(--primary);white-space:nowrap}
 .photo-tag .icon{width:11px;height:11px}
 /* Recycle Bin */
@@ -1998,8 +2059,8 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
       <div class="sb-stat" id="chip-today" onclick="filterBy('today')">
         <div class="num" id="sb-today">0</div><div class="label">今日</div>
       </div>
-      <div class="sb-stat" id="chip-pass" onclick="filterBy('pass')">
-        <div class="num" id="sb-pass">0</div><div class="label">全部合格</div>
+      <div class="sb-stat" id="chip-pass" onclick="openIssueOverview()">
+        <div class="num" id="sb-pass">0</div><div class="label">不合格事项</div>
       </div>
     </div>
   </div>
@@ -2010,6 +2071,32 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
   </div>
   <div class="sidebar-list" id="record-list">
     <div class="empty-state"><div class="es-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4a3 3 0 0 1 6 0"/></svg></div><p>暂无记录</p></div>
+  </div>
+  <!-- [新] 不合格事项总览浮层 -->
+  <div class="issue-overlay" id="issue-overlay" onclick="if(event.target===this)closeIssueOverview()"></div>
+  <div class="issue-sheet" id="issue-sheet">
+    <div class="issue-handle"></div>
+    <div class="issue-header">
+      <div class="issue-title">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+        <span>近30天不合格事项总览</span>
+      </div>
+      <div class="issue-sub" id="issue-sub">统计周期：<span id="issue-range"></span></div>
+      <button class="issue-close" onclick="closeIssueOverview()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="issue-cards" id="issue-cards"></div>
+    <div class="issue-section-title">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      交接人统计
+      <span class="issue-hint">按不合格次数降序</span>
+    </div>
+    <div class="issue-people" id="issue-people"></div>
+    <div class="issue-section-title">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+      不合格事项明细
+      <span class="issue-hint" id="issue-list-count">0 条</span>
+    </div>
+    <div class="issue-list" id="issue-list"></div>
   </div>
   <div class="sidebar-admin collapsed" id="sidebar-admin-section">
     <div class="sa-header" onclick="toggleAdminSection()">
@@ -3069,6 +3156,122 @@ function filterBy(mode){
   else if(mode==='pass')document.getElementById('chip-pass')?.classList.add('active');
 }
 
+/* [新] 不合格事项总览（过去30天） */
+function openIssueOverview(){
+  const records=getRecords().filter(r=>!r.deleted);
+  const now=Date.now();
+  const cutoff=now-30*24*60*60*1000;
+  const range=records.filter(r=>r.timestamp>=cutoff);
+  /* 顶部 4 卡片 */
+  let totalPass=0,totalFail=0,totalItems=0;
+  range.forEach(r=>{
+    Object.values(r.sections||{}).forEach(s=>{
+      (s.items||[]).forEach(it=>{
+        if(it.result==='pass')totalPass++;
+        else if(it.result==='fail')totalFail++;
+        totalItems++;
+      });
+    });
+  });
+  const failRate=totalItems>0?Math.round(totalFail*100/totalItems):0;
+  document.getElementById('issue-cards').innerHTML=
+    '<div class="issue-card"><div class="ic-num">'+range.length+'</div><div class="ic-label">记录</div></div>'+
+    '<div class="issue-card"><div class="ic-num" style="color:var(--success)">'+totalPass+'</div><div class="ic-label">合格项</div></div>'+
+    '<div class="issue-card fail"><div class="ic-num">'+totalFail+'</div><div class="ic-label">不合格项</div></div>'+
+    '<div class="issue-card"><div class="ic-num" style="color:var(--danger)">'+failRate+'%</div><div class="ic-label">不合格率</div></div>';
+  /* 周期文字 */
+  const endD=new Date(now);
+  const startD=new Date(cutoff);
+  const fmt=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  document.getElementById('issue-range').textContent=fmt(startD)+' ~ '+fmt(endD);
+  /* 交接人统计（按 交班人+接班人 聚合） */
+  const peopleMap={};
+  range.forEach(r=>{
+    [r.handover,r.takeover].forEach((name,i)=>{
+      if(!name)return;
+      const role=i===0?'hand':'take';
+      const key=name+'|'+role;
+      if(!peopleMap[key])peopleMap[key]={name,role,total:0,fail:0,pass:0};
+      peopleMap[key].total++;
+      Object.values(r.sections||{}).forEach(s=>{
+        (s.items||[]).forEach(it=>{
+          if(it.result==='fail')peopleMap[key].fail++;
+          else if(it.result==='pass')peopleMap[key].pass++;
+        });
+      });
+    });
+  });
+  const people=Object.values(peopleMap).sort((a,b)=>b.fail-a.fail||b.total-a.total);
+  if(people.length===0){
+    document.getElementById('issue-people').innerHTML='<div class="issue-empty"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>近30天无交接记录</div>';
+  }else{
+    document.getElementById('issue-people').innerHTML=people.map(p=>{
+      const initial=p.name.trim().slice(0,1).toUpperCase();
+      const rate=p.total>0?Math.round(p.fail*100/p.total):0;
+      return '<div class="issue-person">'+
+        '<div class="ip-avatar">'+esc(initial)+'</div>'+
+        '<div class="ip-body">'+
+          '<div class="ip-name">'+esc(p.name)+'<span class="ip-role '+(p.role==='hand'?'hand':'take')+'">'+(p.role==='hand'?'交班':'接班')+'</span></div>'+
+          '<div class="ip-stats">'+
+            '<span>共 <b>'+p.total+'</b> 次</span>'+
+            '<span class="pass">合格 <b>'+p.pass+'</b></span>'+
+            '<span class="fail">不合格 <b>'+p.fail+'</b></span>'+
+            '<span>率 <b>'+rate+'%</b></span>'+
+          '</div>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+  }
+  /* 不合格事项明细（按记录分组） */
+  const failRecs=range.filter(r=>failCountOf(r)>0).sort((a,b)=>b.timestamp-a.timestamp);
+  document.getElementById('issue-list-count').textContent=failRecs.length+' 条记录';
+  if(failRecs.length===0){
+    document.getElementById('issue-list').innerHTML='<div class="issue-empty"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>近30天无不合格事项，班组状态良好</div>';
+  }else{
+    document.getElementById('issue-list').innerHTML=failRecs.map((r,i)=>{
+      const fc=failCountOf(r);
+      const shiftColor={'早班':'#E0A047','中班':'#3DA878','晚班':'#7A6BA8'}[r.shift]||'#5B8DEF';
+      const failItems=[];
+      Object.entries(r.sections||{}).forEach(([sid,sec])=>{
+        (sec.items||[]).forEach(it=>{
+          if(it.result==='fail')failItems.push({sec:sid,secTitle:sec.title||'',name:it.name,problem:it.problem||'',std:it.std||''});
+        });
+      });
+      return '<div class="issue-item" id="issue-item-'+r.id+'">'+
+        '<div class="ii-head" onclick="toggleIssueItem(\''+r.id+'\')">'+
+          '<div class="ii-store">'+(r.storeName||'未分类')+'<span class="pill" style="background:'+shiftColor+'">'+esc(r.shift)+'</span>· '+esc(r.date)+'</div>'+
+          '<div class="ii-count">'+ic('alert')+fc+' 项</div>'+
+          '<svg class="ii-chev icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>'+
+        '</div>'+
+        '<div class="ii-body">'+
+          '<div class="ii-people">交 <span class="hand">'+esc(r.handover||'-')+'</span> · 接 <span class="take">'+esc(r.takeover||'-')+'</span></div>'+
+          failItems.map(it=>'<div class="ii-fail"><span class="dot"></span><span><span class="name">'+esc(it.name)+'</span>'+(it.problem?'：'+esc(it.problem):'')+'</span></div>').join('')+
+          '<div style="margin-top:8px;text-align:right"><button class="bag-photo" style="all:unset;color:var(--primary);font-size:var(--fs-caption);font-weight:700;cursor:pointer;padding:4px 8px" onclick="closeIssueOverview();viewRecord(\''+r.id+'\')">查看完整记录 →</button></div>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+  }
+  /* 显示浮层 */
+  document.getElementById('issue-overlay').classList.add('show');
+  document.getElementById('issue-sheet').classList.add('show');
+  document.body.style.overflow='hidden';
+  /* 默认展开第一条 */
+  if(failRecs.length>0){
+    setTimeout(()=>toggleIssueItem(failRecs[0].id,true),30);
+  }
+}
+function toggleIssueItem(id,forceOpen){
+  const el=document.getElementById('issue-item-'+id);
+  if(!el)return;
+  if(forceOpen===true)el.classList.add('open');
+  else el.classList.toggle('open');
+}
+function closeIssueOverview(){
+  document.getElementById('issue-overlay').classList.remove('show');
+  document.getElementById('issue-sheet').classList.remove('show');
+  document.body.style.overflow='';
+}
+
 /* 共用：记录条 HTML */
 function failCountOf(r){let n=0;Object.values(r.sections||{}).forEach(s=>(s.items||[]).forEach(it=>{if(it.result==='fail')n++}));return n}
 function fmtTime(ts){try{return new Date(ts).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})}catch{return''}}
@@ -3094,7 +3297,11 @@ function renderSidebar(){
   document.getElementById('sb-total').textContent=allRecords.length;
   const today=localDateStr(new Date());
   document.getElementById('sb-today').textContent=allRecords.filter(r=>r.date===today).length;
-  document.getElementById('sb-pass').textContent=allRecords.filter(r=>r.allPass).length;
+  /* 不合格事项数：过去30天内的 fail 总数（不含已回收的） */
+  const cutoffMs=Date.now()-30*24*60*60*1000;
+  let issueCount=0;
+  allRecords.forEach(r=>{if(r.timestamp>=cutoffMs)issueCount+=failCountOf(r)});
+  document.getElementById('sb-pass').textContent=issueCount;
   if(records.length===0){
     const msg=(filterStore||filterDate||passOnly)?'无匹配记录':'暂无记录';
     list.innerHTML='<div class="empty-state"><div class="es-icon">'+ic('clipboard')+'</div><p>'+msg+'</p></div>';
@@ -4472,20 +4679,43 @@ function addStore(){
   const name=document.getElementById('new-store-name').value.trim();
   if(!name){showToast('请输入门店名称','error');return}
   const stores=getStores();
-  stores.push({id:'store_'+Date.now(),name});
-  saveStores(stores);
-  document.getElementById('new-store-name').value='';
-  renderStoreMgmt();populateStoreSelect();populateFilterStores();
-  showToast('门店已添加，并同步到所有设备','success');
-  pushStoresToCloud(stores);
+  if(stores.some(s=>s.name===name)){showToast('已存在同名门店','error');return}
+  showConfirm('确定要添加新门店「'+esc(name)+'」吗？',()=>{
+    stores.push({id:'store_'+Date.now(),name});
+    saveStores(stores);
+    document.getElementById('new-store-name').value='';
+    renderStoreMgmt();populateStoreSelect();populateFilterStores();
+    showToast('门店已添加，并同步到所有设备','success');
+    pushStoresToCloud(stores);
+  },{okText:'添加',title:'添加门店'});
 }
 
-function deleteStore(id){
-  showConfirm('确定删除该门店？已填写的记录不会被删除。',()=>{
+async function deleteStore(id){
+  const store=getStores().find(s=>s.id===id);
+  if(!store)return;
+  /* 统计该门店的记录条数（含未删除的） */
+  const recCount=getRecords().filter(r=>r.storeId===id).length;
+  const msg=recCount>0
+    ? '确定要删除门店「'+esc(store.name)+'」吗？\n该门店下共 '+recCount+' 条交接记录将被一并清除（不可恢复），仅回收站中已删除的记录会保留。'
+    : '确定要删除门店「'+esc(store.name)+'」吗？\n该门店下暂无记录。';
+  showConfirm(msg,async()=>{
+    /* 1) 先软删除该门店下的所有云端记录 */
+    const recs=getRecords().filter(r=>r.storeId===id);
+    if(recs.length>0){
+      showToast('正在清理 '+recs.length+' 条记录...','info');
+      for(const r of recs){
+        try{await deleteRecordFromCloud(r.id)}catch(e){console.error('云端删除失败',r.id,e)}
+      }
+    }
+    /* 2) 本地记录过滤掉该门店 */
+    const remainRecs=getRecords().filter(r=>r.storeId!==id);
+    RECORDS_CACHE=remainRecs;
+    try{localStorage.setItem(STORAGE_KEY,JSON.stringify(remainRecs))}catch(e){console.error('localStorage write failed',e)}
+    /* 3) 删除门店 */
     const stores=getStores().filter(s=>s.id!==id);
     saveStores(stores);
-    renderStoreMgmt();populateStoreSelect();populateFilterStores();
-    showToast('门店已删除，并同步到所有设备','success');
+    renderStoreMgmt();populateStoreSelect();populateFilterStores();renderSidebar();
+    showToast('门店及 '+recCount+' 条记录已删除','success');
     pushStoresToCloud(stores);
   },{danger:true,okText:'删除',title:'删除门店'});
 }
