@@ -731,9 +731,9 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .quick-card{position:relative;background:var(--card-bg);border-radius:var(--radius);padding:var(--space-md) var(--space-sm);text-align:center;cursor:pointer;transition:var(--transition-press),var(--transition-tap);box-shadow:var(--shadow-sm);border:1px solid var(--border-soft);overflow:hidden}
 .quick-card::before{content:'';position:absolute;top:0;left:0;width:2.5px;height:100%;background:linear-gradient(180deg,var(--qc-color,var(--primary)),var(--qc-soft,var(--primary-fade)));opacity:0.85;pointer-events:none}
 .quick-card:active{transform:scale(0.97);box-shadow:var(--shadow-xs)}
-/* [v4.17] 首页快捷入口：左侧实拍与右侧等宽，实拍跨两行；右侧卡片文字图标居中 */
-.quick-row-hero{grid-template-columns:1fr 1fr;gap:10px}
-.quick-col{display:grid;grid-template-columns:1fr;grid-template-rows:1fr 1fr;gap:10px;align-items:stretch}
+/* [v4.18] 首页快捷入口：左侧实拍与右侧等宽，两侧都跨两行保证上下边缘对齐 */
+.quick-row-hero{grid-template-columns:1fr 1fr;gap:10px;align-items:stretch}
+.quick-col{display:grid;grid-template-columns:1fr;grid-template-rows:1fr 1fr;gap:10px;align-items:stretch;grid-row:span 2}
 .quick-hero{position:relative;background:var(--card-bg);color:var(--text);padding:var(--space-md);text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:112px;grid-row:span 2;overflow:hidden;border:1px solid var(--border-soft);box-shadow:var(--shadow-sm)}
 .quick-hero:active{transform:scale(0.98);box-shadow:var(--shadow-xs)}
 .quick-hero .qc-hero-camera{width:52px;height:52px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--qc-soft,#EAF1FE),rgba(255,255,255,0.35));border-radius:16px;margin:0 auto;flex-shrink:0;box-shadow:inset 0 1px 0 rgba(255,255,255,0.6)}
