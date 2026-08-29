@@ -731,9 +731,9 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .quick-card{position:relative;background:var(--card-bg);border-radius:var(--radius);padding:var(--space-md) var(--space-sm);text-align:center;cursor:pointer;transition:var(--transition-press),var(--transition-tap);box-shadow:var(--shadow-sm);border:1px solid var(--border-soft);overflow:hidden}
 .quick-card::before{content:'';position:absolute;top:0;left:0;width:2.5px;height:100%;background:linear-gradient(180deg,var(--qc-color,var(--primary)),var(--qc-soft,var(--primary-fade)));opacity:0.85;pointer-events:none}
 .quick-card:active{transform:scale(0.97);box-shadow:var(--shadow-xs)}
-/* [v4.16] 首页快捷入口：左侧实拍与右侧等宽，实拍跨两行 */
+/* [v4.17] 首页快捷入口：左侧实拍与右侧等宽，实拍跨两行；右侧卡片文字图标居中 */
 .quick-row-hero{grid-template-columns:1fr 1fr;gap:10px}
-.quick-col{display:grid;grid-template-columns:1fr;grid-template-rows:1fr 1fr;gap:10px}
+.quick-col{display:grid;grid-template-columns:1fr;grid-template-rows:1fr 1fr;gap:10px;align-items:stretch}
 .quick-hero{position:relative;background:var(--card-bg);color:var(--text);padding:var(--space-md);text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:112px;grid-row:span 2;overflow:hidden;border:1px solid var(--border-soft);box-shadow:var(--shadow-sm)}
 .quick-hero:active{transform:scale(0.98);box-shadow:var(--shadow-xs)}
 .quick-hero .qc-hero-camera{width:52px;height:52px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--qc-soft,#EAF1FE),rgba(255,255,255,0.35));border-radius:16px;margin:0 auto;flex-shrink:0;box-shadow:inset 0 1px 0 rgba(255,255,255,0.6)}
@@ -742,24 +742,15 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .quick-hero .qc-hero-title{font-size:22px;font-weight:800;letter-spacing:1px;line-height:1.1}
 .quick-hero .qc-hero-sub{font-size:12px;opacity:0.7;font-weight:500;color:var(--text-muted)}
 .quick-hero.hero-photo::after{content:'';position:absolute;right:14px;top:50%;transform:translateY(-50%);width:24px;height:24px;background:linear-gradient(135deg,var(--qc-soft),transparent);border-radius:50%;opacity:0.5;pointer-events:none}
-.qc-sparkle{position:absolute;color:rgba(255,255,255,0.75);pointer-events:none}
-.qc-sparkle.qc-sp-1{top:14px;left:14px;width:18px;height:18px}
-.qc-sparkle.qc-sp-2{top:22px;right:22px;width:12px;height:12px;color:rgba(255,255,255,0.6)}
-.qc-sparkle.qc-sp-3{top:52%;right:18px;width:10px;height:10px;color:rgba(255,255,255,0.5)}
-.qc-sparkle.qc-sp-4{top:40%;left:38%;width:14px;height:14px;color:rgba(255,255,255,0.55)}
-.qc-icon{width:32px;height:32px;border-radius:var(--radius-sm);margin:0 auto 8px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--qc-soft,var(--primary-fade)),rgba(255,255,255,0.35));color:var(--qc-color,var(--primary));box-shadow:inset 0 1px 0 rgba(255,255,255,0.6)}
-.qc-icon .icon{width:17px;height:17px}
-.qc-name{font-size:13px;font-weight:700}
-.qc-sub{font-size:10px;color:var(--text-muted);margin-top:1px}
-.quick-col .quick-card{position:relative;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:8px;padding:8px 10px 8px 12px;text-align:left}
+.quick-col .quick-card{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:var(--space-sm);text-align:center;min-height:0}
 .quick-col .quick-card .qc-icon{width:30px;height:30px;border-radius:var(--radius-sm);margin:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--qc-soft,var(--primary-fade)),rgba(255,255,255,0.35));color:var(--qc-color,var(--primary));box-shadow:inset 0 1px 0 rgba(255,255,255,0.6);flex-shrink:0}
 .quick-col .quick-card .qc-icon .icon{width:16px;height:16px}
-.quick-col .quick-card .qc-text{display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-width:0}
+.quick-col .quick-card .qc-text{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
 .quick-col .quick-card .qc-name{font-size:13px;font-weight:700}
 .quick-col .quick-card .qc-sub{font-size:10px;color:var(--text-muted);margin-top:0}
-/* [v4.16] 深色/霓虹主题：减弱图标背景上的白色叠加，避免发灰发黑 */
-[data-theme="dark"] .quick-hero .qc-hero-camera,[data-theme="slate"] .quick-hero .qc-hero-camera,[data-theme="neon"] .quick-hero .qc-hero-camera,[data-theme="aurora"] .quick-hero .qc-hero-camera{background:linear-gradient(135deg,var(--qc-soft),rgba(255,255,255,0.08))}
-[data-theme="dark"] .quick-col .quick-card .qc-icon,[data-theme="slate"] .quick-col .quick-card .qc-icon,[data-theme="neon"] .quick-col .quick-card .qc-icon,[data-theme="aurora"] .quick-col .quick-card .qc-icon{background:linear-gradient(135deg,var(--qc-soft),rgba(255,255,255,0.08))}
+/* [v4.17] 深色/霓虹主题：图标背景改用 surface 色+边框，避免硬编码浅色在深色下发灰发黑 */
+[data-theme="dark"] .quick-hero .qc-hero-camera,[data-theme="slate"] .quick-hero .qc-hero-camera,[data-theme="neon"] .quick-hero .qc-hero-camera,[data-theme="aurora"] .quick-hero .qc-hero-camera{background:var(--surface);border:1px solid var(--border);box-shadow:none}
+[data-theme="dark"] .quick-col .quick-card .qc-icon,[data-theme="slate"] .quick-col .quick-card .qc-icon,[data-theme="neon"] .quick-col .quick-card .qc-icon,[data-theme="aurora"] .quick-col .quick-card .qc-icon{background:var(--surface);border:1px solid var(--border);box-shadow:none}
 
 /* ===== Section Card ===== */
 .section-card{margin:0 var(--screen-margin) var(--section-gap);background:var(--card-bg);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--border-soft)}
@@ -1481,7 +1472,7 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .day-detail-table .dd-count small{font-size:var(--fs-caption);font-weight:600;opacity:.7}
 .sdot-cell{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;min-width:68px;transition:transform .15s;background:transparent;border:none;border-radius:0;padding:0}
 .sdot-cell:active{transform:scale(0.95)}
-.sdot-cell .sdot{width:56px;height:7px;border-radius:4px;display:inline-block;box-shadow:inset 0 1px 0 rgba(255,255,255,0.2)}
+.sdot-cell .sdot{width:36px;height:10px;border-radius:5px;display:inline-block;box-shadow:inset 0 1px 0 rgba(255,255,255,0.2)}
 .sdot-cell.pass .sdot{background:var(--success)}
 .sdot-cell.fail .sdot{background:var(--warning)}
 .sdot-cell.miss .sdot{background:var(--danger-soft);border:1.5px solid var(--danger);box-sizing:border-box}
