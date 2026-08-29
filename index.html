@@ -731,14 +731,14 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .quick-card{background:var(--card-bg);border-radius:var(--radius);padding:var(--space-md) var(--space-sm);text-align:center;cursor:pointer;transition:var(--transition-press),var(--transition-tap);box-shadow:var(--shadow-sm);border:1px solid var(--border-soft)}
 .quick-card:active{transform:scale(0.97);box-shadow:var(--shadow-xs)}
 /* [v4.4] 首页实拍 hero：大图左+2小图右（参考团购页 hero 排版） */
-.quick-row-hero{grid-template-columns:1.1fr 1fr}
+.quick-row-hero{grid-template-columns:1fr 1fr}
 .quick-col{display:grid;grid-template-rows:1fr 1fr;gap:10px}
-.quick-hero{position:relative;background:linear-gradient(135deg,var(--qc-hero-from,#5B8DEF),var(--qc-hero-to,#7B6CD9));color:#fff;padding:var(--space-base);text-align:left;display:flex;flex-direction:column;justify-content:flex-end;min-height:200px;overflow:hidden;border:none;box-shadow:var(--shadow-sm)}
+.quick-hero{position:relative;background:var(--card-bg);color:var(--text);padding:var(--space-base);text-align:left;display:flex;flex-direction:column;justify-content:flex-end;min-height:200px;overflow:hidden;border:1px solid var(--border-soft);box-shadow:var(--shadow-sm)}
 .quick-hero:active{transform:scale(0.98);box-shadow:var(--shadow-xs)}
-.quick-hero .qc-hero-camera{width:48px;height:48px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.20);border-radius:14px;margin-bottom:10px}
-.quick-hero .qc-hero-camera .icon{width:26px;height:26px;color:#fff}
+.quick-hero .qc-hero-camera{width:48px;height:48px;display:flex;align-items:center;justify-content:center;background:var(--qc-soft,#EAF1FE);border-radius:14px;margin-bottom:10px}
+.quick-hero .qc-hero-camera .icon{width:26px;height:26px;color:var(--qc-color,#5B8DEF)}
 .quick-hero .qc-hero-title{font-size:22px;font-weight:800;letter-spacing:1px;line-height:1.1}
-.quick-hero .qc-hero-sub{font-size:12px;opacity:0.88;margin-top:3px;font-weight:500}
+.quick-hero .qc-hero-sub{font-size:12px;opacity:0.7;margin-top:3px;font-weight:500;color:var(--text-muted)}
 .qc-sparkle{position:absolute;color:rgba(255,255,255,0.75);pointer-events:none}
 .qc-sparkle.qc-sp-1{top:14px;left:14px;width:18px;height:18px}
 .qc-sparkle.qc-sp-2{top:22px;right:22px;width:12px;height:12px;color:rgba(255,255,255,0.6)}
@@ -1756,11 +1756,7 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
         <span class="cta-arrow"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></span>
       </button>
       <div class="quick-row quick-row-hero">
-        <div class="quick-card quick-hero" style="--qc-hero-from:#5B8DEF;--qc-hero-to:#7B6CD9" onclick="showView('records');setRecordsViewTab('photo')">
-          <svg class="qc-sparkle qc-sp-1" viewBox="0 0 24 24"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z" fill="currentColor"/></svg>
-          <svg class="qc-sparkle qc-sp-2" viewBox="0 0 24 24"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z" fill="currentColor"/></svg>
-          <svg class="qc-sparkle qc-sp-3" viewBox="0 0 24 24"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z" fill="currentColor"/></svg>
-          <svg class="qc-sparkle qc-sp-4" viewBox="0 0 24 24"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z" fill="currentColor"/></svg>
+        <div class="quick-card quick-hero" style="--qc-color:#5B8DEF;--qc-soft:#EAF1FE" onclick="showView('records');setRecordsViewTab('photo')">
           <div class="qc-hero-camera"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></div>
           <div class="qc-hero-title">实拍</div>
           <div class="qc-hero-sub" id="qc-photo-count">现场照片</div>
