@@ -3387,7 +3387,7 @@ function issueRecordItemHtml(r){
     '<div class="ii-body">'+
       '<div class="ii-people">交 <span class="hand">'+esc(r.handover||'-')+'</span> · 接 <span class="take">'+esc(r.takeover||'-')+'</span></div>'+
       failItems.map(it=>'<div class="ii-fail"><span class="dot"></span><span><span class="name">'+esc(it.name)+'</span>'+(it.problem?'：'+esc(it.problem):'')+'</span></div>').join('')+
-      '<div style="margin-top:8px;text-align:right"><button class="bag-photo" style="all:unset;color:var(--primary);font-size:var(--fs-caption);font-weight:700;cursor:pointer;padding:4px 8px" onclick="closeIssueOverview();viewRecord(\''+r.id+'\')">查看完整记录 →</button></div>'+
+      '<div style="margin-top:8px;text-align:right"><button class="bag-photo" style="all:unset;color:var(--primary);font-size:var(--fs-caption);font-weight:700;cursor:pointer;padding:4px 8px" onclick="closeIssueOverview(true);viewRecord(\''+r.id+'\')">查看完整记录 →</button></div>'+
     '</div>'+
   '</div>';
 }
@@ -3553,8 +3553,16 @@ function toggleIssueItem(id,forceOpen){
   if(forceOpen===true)el.classList.add('open');
   else el.classList.toggle('open');
 }
-function closeIssueOverview(){
-  closeOverlay(document.getElementById('issue-overlay'),document.getElementById('issue-sheet'));
+function closeIssueOverview(sync){
+  const o=document.getElementById('issue-overlay'),s=document.getElementById('issue-sheet');
+  if(sync){ /* [v4.10] 同步关闭：跳详情时立即 display:none + 清 .show，避免退场动画残留导致回更多重新弹出 */
+    if(o){o.classList.remove('show');o.style.display='none'}
+    if(s){s.classList.remove('show');s.style.display='none'}
+    document.body.style.overflow='';
+    issueDrillName='';issueRangeMode='30';issueCustomStart='';issueCustomEnd='';
+    return;
+  }
+  closeOverlay(o,s);
   document.body.style.overflow='';
   /* [v3.9] 重置下钻态与日期选择态到默认（近30天） */
   issueDrillName='';
