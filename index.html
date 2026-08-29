@@ -90,6 +90,8 @@
   --ease-enter:cubic-bezier(0.22,1,0.36,1);
   --ease-exit:cubic-bezier(0.4,0,0.2,1);
   --transition-btn:transform 120ms var(--ease-standard),box-shadow 120ms var(--ease-standard),background-color 80ms var(--ease-standard); /* 按钮显式过渡，禁 transition:all */
+  /* [v4.5] 深色主题按钮3D增强：高光更亮+内凹更深，确保深色背景下立体感可见 */
+  [data-theme="dark"],[data-theme="slate"],[data-theme="neon"],[data-theme="aurora"]{--btn-hl:inset 0 1px 0 rgba(255,255,255,0.55);--btn-hl-press:inset 0 1px 0 rgba(255,255,255,0.18),inset 0 2px 5px rgba(0,0,0,0.28)}
   /* ===== 图标（保留） ===== */
   --icon-stroke:1.6px; --icon-size-sm:16px; --icon-size:20px; --icon-size-lg:24px;
 }
@@ -733,7 +735,7 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .quick-col{display:grid;grid-template-rows:1fr 1fr;gap:10px}
 .quick-hero{position:relative;background:linear-gradient(135deg,var(--qc-hero-from,#5B8DEF),var(--qc-hero-to,#7B6CD9));color:#fff;padding:var(--space-base);text-align:left;display:flex;flex-direction:column;justify-content:flex-end;min-height:200px;overflow:hidden;border:none;box-shadow:var(--shadow-sm)}
 .quick-hero:active{transform:scale(0.98);box-shadow:var(--shadow-xs)}
-.quick-hero .qc-hero-camera{width:48px;height:48px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.22);border-radius:14px;margin-bottom:10px;backdrop-filter:blur(4px)}
+.quick-hero .qc-hero-camera{width:48px;height:48px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.20);border-radius:14px;margin-bottom:10px}
 .quick-hero .qc-hero-camera .icon{width:26px;height:26px;color:#fff}
 .quick-hero .qc-hero-title{font-size:22px;font-weight:800;letter-spacing:1px;line-height:1.1}
 .quick-hero .qc-hero-sub{font-size:12px;opacity:0.88;margin-top:3px;font-weight:500}
@@ -1624,7 +1626,7 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .cta-btn,.btn-primary{transition:var(--transition-btn);position:relative;overflow:hidden}
 .cta-btn:active,.btn-primary:active{transform:translateY(1px) scale(var(--press-scale,0.96));box-shadow:var(--btn-hl-press),var(--shadow-xs)}  /* [v4.0] 压暗由 inset 阴影承担，去 filter 重绘 */
 /* ===== [v4.0] 次按钮/图标按钮：浅立体（顶部高光 + shadow-xs），:active 阴影降为 none ===== */
-.btn-ghost,.icon-btn,.detail-back,.filter-toggle,.sidebar-footer button,.cal-nav button,.history-btn,.issue-close,.issue-refresh,.idr-back,.bsh-close,.rf-clear,.load-more-btn{box-shadow:var(--btn-hl),var(--shadow-xs);transition:transform 120ms var(--ease-standard),box-shadow 120ms var(--ease-standard),background-color 80ms var(--ease-standard),color 80ms var(--ease-standard),border-color 80ms var(--ease-standard)}
+.btn-ghost,.icon-btn,.detail-back,.filter-toggle,.sidebar-footer button,.cal-nav button,.history-btn,.issue-close,.issue-refresh,.idr-back,.bsh-close,.rf-clear,.load-more-btn,.ci-btn,.allpass-btn,.fs-toolbar-btn,.clear-filter,.sa-item,.ddt-close,.detail-del-btn,.sp-remain{box-shadow:var(--btn-hl),inset 0 -2px 0 rgba(0,0,0,0.10),var(--shadow-xs);transition:transform 120ms var(--ease-standard),box-shadow 120ms var(--ease-standard),background-color 80ms var(--ease-standard),color 80ms var(--ease-standard),border-color 80ms var(--ease-standard)}
 .btn-ghost:active,.icon-btn:active,.detail-back:active,.filter-toggle:active,.sidebar-footer button:active,.cal-nav button:active,.history-btn:active,.issue-close:active,.issue-refresh:active,.idr-back:active,.bsh-close:active,.rf-clear:active,.load-more-btn:active{box-shadow:none}
 /* 减弱动画无障碍降级（§2.4） */
 @media (prefers-reduced-motion:reduce){
