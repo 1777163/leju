@@ -784,6 +784,8 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .ri-info{flex:1;min-width:0}
 .ri-store{font-size:var(--fs-body);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ri-meta{font-size:var(--fs-caption);color:var(--text-muted);margin-top:2px}
+/* [v4.19] 记录条目"不合格"提示红色 */
+.ri-fail-text{color:var(--danger);font-weight:700}
 .ri-arrow{color:var(--text-muted)}
 .ri-arrow .icon{width:18px;height:18px}
 
@@ -1428,6 +1430,10 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .sgc-icon{width:16px;height:16px;color:var(--primary);flex-shrink:0}
 .sgc-name{font-size:var(--fs-body);font-weight:700;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sgc-count{font-size:var(--fs-caption);font-weight:700;color:var(--primary);background:var(--primary-fade);padding:2px 8px;border-radius:var(--radius-pill)}
+/* [v4.19] 门店存在不合格记录：整栏变色 + 名称后提示 */
+.store-group-collapse.has-fail{background:var(--danger-fade);border-color:var(--danger-light)}
+.sgc-fail-hint{font-size:var(--fs-caption);font-weight:700;color:var(--danger);white-space:nowrap;flex:none}
+.day-detail-table tr.has-fail td{background:var(--danger-fade)}
 .sgc-chevron{width:16px;height:16px;color:var(--text-muted);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);transform:rotate(0deg)}
 .store-group-collapse.collapsed .sgc-chevron{transform:rotate(-90deg)}
 .sgc-body{overflow:hidden;max-height:600px;transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1)}
@@ -1548,6 +1554,10 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
 .confirm-actions{display:flex;gap:8px;margin-top:var(--space-lg)}
 .confirm-actions .btn-primary{flex:1}
 .confirm-actions .btn-ghost{flex:1;justify-content:center}
+/* [v4.19] 晚班提交日期确认弹窗 - 日期选择控件 */
+.night-date-row{margin-top:var(--space-md)}
+.night-date-row input[type="date"]{width:100%;height:44px;padding:0 14px;border:1.5px solid var(--border);border-radius:var(--radius-pill);background:var(--surface);color:var(--text);font-size:var(--fs-body);font-weight:600;font-family:inherit;outline:none;box-sizing:border-box;transition:var(--transition-fast)}
+.night-date-row input[type="date"]:focus{border-color:var(--primary)}
 
 /* PWA Guide — 猫耳朵底部弹窗 */
 .pwa-guide-card{width:100%;max-width:440px;background:var(--card-bg);border-radius:28px 28px 0 0;padding:0 24px calc(24px + env(safe-area-inset-bottom,0px));position:relative;animation:catSlideUp .4s cubic-bezier(.34,1.56,.64,1);box-shadow:0 -4px 24px rgba(0,0,0,.1)}
@@ -2262,6 +2272,20 @@ html[data-pseudo-fs] .pseudo-fs-exit{display:flex}
   </div>
 </div>
 
+<!-- ===== [v4.19] Night Shift Date Confirm Modal（晚班提交日期确认） ===== -->
+<div class="modal-overlay" id="night-confirm-modal">
+  <div class="confirm-modal">
+    <div class="confirm-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+    <h3>确认提交日期</h3>
+    <p class="confirm-message">请注意提交日期，需要选择上班当日的日期</p>
+    <div class="night-date-row"><input type="date" id="night-date-input"></div>
+    <div class="confirm-actions">
+      <button class="btn-ghost" style="justify-content:center" onclick="closeNightConfirm()">取消</button>
+      <button class="btn-primary" id="night-confirm-ok">确认提交</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===== Scroll Hint ===== -->
 <div class="scroll-hint" id="scroll-hint" onclick="scrollDownHint()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>下滑查看更多</div>
 
@@ -2769,6 +2793,28 @@ function showConfirm(message,onConfirm,opts){
 }
 function closeConfirm(){closeOverlay(document.getElementById('confirm-modal'))}
 
+/* ===== [v4.19] 晚班提交日期确认浮层 ===== */
+function openNightConfirm(){
+  const overlay=document.getElementById('night-confirm-modal');
+  const inp=document.getElementById('night-date-input');
+  if(inp)inp.value=localDateStr(new Date()); /* 默认当前日期，可手动修改 */
+  const okBtn=document.getElementById('night-confirm-ok');
+  const newOk=okBtn.cloneNode(true);
+  okBtn.parentNode.replaceChild(newOk,okBtn);
+  newOk.id='night-confirm-ok';
+  newOk.addEventListener('click',()=>{
+    const picked=document.getElementById('night-date-input').value;
+    if(!picked){showToast('请选择提交日期','error');return}
+    /* 以弹窗中选择的日期作为提交日期，覆盖表单日期后走原提交流程 */
+    document.getElementById('f-date').value=picked;
+    window._nightConfirmed=true;
+    closeNightConfirm();
+    submitForm();
+  });
+  openOverlay(overlay);
+}
+function closeNightConfirm(){closeOverlay(document.getElementById('night-confirm-modal'))} /* 取消：仅关闭弹窗，表单数据不动 */
+
 /* ===== Init ===== */
 async function initApp(){
   document.getElementById('f-date').value=localDateStr(new Date());
@@ -3091,6 +3137,13 @@ async function submitForm(){
   if(missingSectionConfirm){showToast('请勾选「'+missingSectionConfirm.title+'」底部的确认项','error');return}
 
   if(!document.getElementById('confirm-pledge').checked){showToast('请勾选底部「交接班承诺」确认框','error');return}
+
+  /* [v4.19] 晚班提交前先弹日期确认浮窗（校验全部通过后才弹出；确认后经 _nightConfirmed 直通） */
+  if(shift==='晚班'&&!window._nightConfirmed){
+    openNightConfirm();
+    return;
+  }
+  window._nightConfirmed=false;
 
   const dupExists=getRecords().some(r=>r.storeId===store.id&&r.date===date&&r.shift===shift);
   if(dupExists){
@@ -3615,7 +3668,7 @@ function recordItemHtml(r,failCount,time){
   return '<div class="record-item" onclick="if(window._sbMoved){window._sbMoved=false;return}viewRecord(\''+r.id+'\')">'+
     '<div class="ri-badge '+(failCount>0?'fail':'pass')+'">'+(failCount>0?ic('alert'):ic('check'))+'</div>'+
     '<div class="ri-info"><div class="ri-store">'+(r.storeName||'未分类')+' · '+r.shift+'</div>'+
-    '<div class="ri-meta">'+r.date+' '+time+' · '+(failCount>0?failCount+'项不合格':'全部合格')+(people?' · '+people:'')+'</div></div>'+
+    '<div class="ri-meta">'+r.date+' '+time+' · '+(failCount>0?'<span class="ri-fail-text">'+failCount+'项不合格</span>':'全部合格')+(people?' · '+people:'')+'</div></div>'+
     '<div class="ri-arrow">'+ic('chevronRight')+'</div></div>';
 }
 
@@ -4834,7 +4887,9 @@ function todaySummaryHtml(stores,todayStr){
       return '<span class="sdot-cell miss"><span class="sdot miss"></span><span class="sdot-name">'+(label||'')+'</span><span class="sdot-time">缺交</span></span>';
     };
     const doneCnt=[d.early,d.mid,d.night].filter(x=>x).length;totalToday+=doneCnt;
-    rows+='<tr><td class="dd-store">'+ic('store')+s.name+'</td><td class="dd-dots">'+shiftDot(d.early,'早')+shiftDot(d.mid,'中')+shiftDot(d.night,'晚')+'</td><td class="dd-count">'+doneCnt+'<small>/3</small></td></tr>';
+    /* [v4.19] 今日表格：门店任一班次存在不合格 → 整行淡红底 */
+    const storeHasFail=[d.early,d.mid,d.night].some(rec=>rec&&failCountOf(rec)>0);
+    rows+='<tr class="'+(storeHasFail?'has-fail':'')+'"><td class="dd-store">'+ic('store')+s.name+'</td><td class="dd-dots">'+shiftDot(d.early,'早')+shiftDot(d.mid,'中')+shiftDot(d.night,'晚')+'</td><td class="dd-count">'+doneCnt+'<small>/3</small></td></tr>';
   });
   return '<div class="today-collapse" id="today-collapse-section">'+
     '<div class="tc-header">'+
@@ -4927,10 +4982,13 @@ function renderRecordsList(){
     const gid='sgc-'+store.id;
     /* Count fail records */
     const failCnt=sr.filter(r=>failCountOf(r)>0).length;
-    html+='<div class="store-group-collapse" id="'+gid+'">';
+    /* [v4.19] 门店存在不合格记录：整栏变色 */
+    html+='<div class="store-group-collapse'+(failCnt>0?' has-fail':'')+'" id="'+gid+'">';
     html+='<div class="sgc-header" onclick="toggleStoreGroup(\''+gid+'\')">';
     html+=ic('store').replace('class="icon"','class="sgc-icon icon"');
     html+='<span class="sgc-name">'+store.name+'</span>';
+    /* [v4.19] 门店名称后提示该店存在不合格事项 */
+    if(failCnt>0)html+='<span class="sgc-fail-hint">该存在不合适事项</span>';
     html+='<span class="sgc-count">'+sr.length+'条</span>';
     if(failCnt>0)html+='<span class="sgc-count" style="color:var(--danger);background:var(--danger-fade)">'+failCnt+'不合格</span>';
     html+='<svg class="sgc-chevron icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
